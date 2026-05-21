@@ -1,0 +1,626 @@
+{%- comment -%}
+  Header Drawer (Mobile Menu) — Square Lovable essence 1ad745b9
+  Fullscreen slide-down from top + search + categories with thumbnails + editorial tiles + 3-col footer
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign drawer_id = 'header-drawer'
+
+  assign mobile_categories = section.blocks | where: 'type', 'mobile_category'
+  assign mobile_tiles = section.blocks | where: 'type', 'mobile_tile'
+  assign mobile_footer_items = section.blocks | where: 'type', 'mobile_footer_item'
+-%}
+
+<style>
+  .header-drawer__overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 999998 !important;
+    transition: opacity 300ms ease, visibility 0ms linear 300ms;
+    cursor: pointer;
+  }
+
+  .header-drawer__overlay[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 300ms ease, visibility 0ms linear 0ms;
+  }
+
+  .header-drawer {
+    position: fixed;
+    inset: 0;
+    background-color: #FFFFFF;
+    color: var(--color-noir);
+    z-index: 999999 !important;
+    transform: translateY(-100%);
+    transition: transform 450ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .header-drawer[data-open="true"] {
+    transform: translateY(0);
+  }
+
+  .header-drawer__inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (min-width: 768px) {
+    .header-drawer,
+    .header-drawer__overlay {
+      display: none !important;
+    }
+  }
+
+  .header-drawer__top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+
+  .header-drawer__logo img {
+    display: block;
+    height: 70px;
+    width: auto;
+    max-width: 70vw;
+    object-fit: contain;
+  }
+
+  .header-drawer__close {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    padding: 8px;
+    color: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    transition: color 300ms ease;
+  }
+
+  .header-drawer__close:hover,
+  .header-drawer__close:focus-visible {
+    color: var(--color-noir);
+    outline: none;
+  }
+  .header-drawer__close svg { width: 20px; height: 20px; }
+
+  .header-drawer__search {
+    padding: 0 16px 4px 16px;
+    flex-shrink: 0;
+  }
+
+  .header-drawer__search form { margin: 0; }
+
+  .header-drawer__search-input {
+    width: 100%;
+    background-color: rgba(238, 236, 229, 0.25);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
+    padding: 8px 12px;
+    font-family: var(--font-body-family);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--color-noir);
+    transition: border-color 300ms ease;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+  .header-drawer__search-input::placeholder {
+    color: rgba(0, 0, 0, 0.3);
+  }
+
+  .header-drawer__search-input:focus,
+  .header-drawer__search-input:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .header-drawer__search-input::-webkit-search-cancel-button,
+  .header-drawer__search-input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .header-drawer__nav {
+    flex: 1;
+    padding: 4px 0 0 0;
+    list-style: none;
+    margin: 0;
+  }
+
+  .header-drawer__nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 300ms ease;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .header-drawer__nav-item:hover,
+  .header-drawer__nav-item:focus-visible {
+    background-color: rgba(238, 236, 229, 0.2);
+    outline: none;
+  }
+
+  .header-drawer[data-open="true"] .header-drawer__nav-item {
+    animation: headerDrawerStagger 350ms cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(1) { animation-delay: 50ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(2) { animation-delay: 90ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(3) { animation-delay: 130ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(4) { animation-delay: 170ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(5) { animation-delay: 210ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(6) { animation-delay: 250ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(7) { animation-delay: 290ms; }
+
+  @keyframes headerDrawerStagger {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-drawer__nav-thumb {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background-color: rgba(238, 236, 229, 0.2);
+  }
+
+  .header-drawer__nav-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .header-drawer__nav-label {
+    flex: 1;
+    font-family: var(--font-body-family);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-noir);
+    line-height: 1.3;
+  }
+
+  .header-drawer__nav-badge {
+    font-family: var(--font-body-family);
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background-color: var(--color-noir);
+    color: #FFFFFF;
+    padding: 2px 6px;
+    line-height: 1;
+  }
+
+  .header-drawer__nav-arrow {
+    flex-shrink: 0;
+    color: rgba(0, 0, 0, 0.3);
+    display: inline-flex;
+  }
+  .header-drawer__nav-arrow svg { width: 14px; height: 14px; }
+
+  .header-drawer__tiles {
+    padding: 12px 16px 32px 16px;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .header-drawer__tile {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .header-drawer__tile-img {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: rgba(238, 236, 229, 0.2);
+  }
+
+  .header-drawer__tile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 700ms ease;
+    display: block;
+  }
+
+  .header-drawer__tile:hover .header-drawer__tile-img img,
+  .header-drawer__tile:focus-visible .header-drawer__tile-img img {
+    transform: scale(1.05);
+  }
+
+  .header-drawer__tile-label {
+    margin-top: 8px;
+    font-family: var(--font-body-family);
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-noir);
+  }
+
+  .header-drawer__footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 8px 16px 12px 16px;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .header-drawer__footer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.7);
+    transition: color 300ms ease;
+  }
+
+  .header-drawer__footer-item:hover,
+  .header-drawer__footer-item:focus-visible {
+    color: var(--color-noir);
+    outline: none;
+  }
+
+  .header-drawer__footer-item svg { width: 16px; height: 16px; }
+
+  .header-drawer__footer-label {
+    font-family: var(--font-body-family);
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  body.drawer-open { overflow: hidden; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header-drawer,
+    .header-drawer__overlay,
+    .header-drawer * {
+      transition: none !important;
+      animation: none !important;
+    }
+    .header-drawer[data-open="true"] .header-drawer__nav-item {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .header-drawer a:focus-visible,
+  .header-drawer button:focus-visible {
+    outline: 2px solid var(--color-noir);
+    outline-offset: 2px;
+  }
+</style>
+
+<aside
+  id="{{ drawer_id }}"
+  class="header-drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menu mobile"
+  data-open="false"
+  hidden
+>
+  <div class="header-drawer__inner">
+  <div class="header-drawer__top">
+    <a href="{{ routes.root_url }}" class="header-drawer__logo" aria-label="{{ shop.name | escape }} — Accueil">
+      {%- if s.logo_default != blank -%}
+        <img
+          src="{{ s.logo_default | image_url: width: 320 }}"
+          alt="{{ shop.name | escape }}"
+          width="{{ s.logo_default.width }}"
+          height="{{ s.logo_default.height }}"
+          loading="lazy"
+          decoding="async"
+        >
+      {%- else -%}
+        <span style="font-family: var(--font-heading-family); font-size: 18px;">{{ shop.name | escape }}</span>
+      {%- endif -%}
+    </a>
+
+    <button
+      type="button"
+      class="header-drawer__close"
+      aria-label="Fermer le menu"
+      data-drawer-close
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+        <line x1="6" y1="6" x2="18" y2="18"/>
+        <line x1="18" y1="6" x2="6" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="header-drawer__search">
+    {%- if settings.predictive_search_enabled -%}
+      <predictive-search class="header-drawer__predictive" data-loading-text="{{ 'accessibility.loading' | t }}">
+    {%- else -%}
+      <search-form class="header-drawer__predictive">
+    {%- endif -%}
+        <form action="{{ routes.search_url }}" method="get" role="search">
+          <label class="visually-hidden" for="header-drawer-q">Rechercher</label>
+          <input
+            id="header-drawer-q"
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            class="header-drawer__search-input"
+            placeholder="Rechercher un produit, une pièce…"
+            role="combobox"
+            aria-expanded="false"
+            aria-owns="header-drawer-predictive-results"
+            aria-controls="header-drawer-predictive-results"
+            aria-haspopup="listbox"
+            aria-autocomplete="list"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          >
+          <input type="hidden" name="options[prefix]" value="last">
+          <div
+            class="header-drawer__predictive-results predictive-search predictive-search--header"
+            id="header-drawer-predictive-results"
+            tabindex="-1"
+            data-predictive-search
+            hidden
+          ></div>
+        </form>
+    {%- if settings.predictive_search_enabled -%}
+      </predictive-search>
+    {%- else -%}
+      </search-form>
+    {%- endif -%}
+  </div>
+
+  <nav class="header-drawer__nav" role="navigation" aria-label="Catégories">
+    {%- for block in mobile_categories -%}
+      <a
+        href="{{ block.settings.url | default: '#' }}"
+        class="header-drawer__nav-item"
+        data-mm-link
+        {{ block.shopify_attributes }}
+      >
+        <span class="header-drawer__nav-thumb">
+          {%- if block.settings.image != blank -%}
+            <img
+              src="{{ block.settings.image | image_url: width: 96 }}"
+              alt="{{ block.settings.label | escape }}"
+              width="96"
+              height="96"
+              loading="lazy"
+              decoding="async"
+            >
+          {%- elsif block.settings.image_asset_url != blank -%}
+            <img
+              src="{{ block.settings.image_asset_url | asset_url }}"
+              alt="{{ block.settings.label | escape }}"
+              width="96"
+              height="96"
+              loading="lazy"
+              decoding="async"
+            >
+          {%- endif -%}
+        </span>
+        <span class="header-drawer__nav-label">{{ block.settings.label | escape }}</span>
+        {%- if block.settings.badge != blank -%}
+          <span class="header-drawer__nav-badge">{{ block.settings.badge | escape }}</span>
+        {%- endif -%}
+        <span class="header-drawer__nav-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </span>
+      </a>
+    {%- endfor -%}
+  </nav>
+
+  {%- if mobile_tiles.size > 0 -%}
+    <div class="header-drawer__tiles">
+      {%- for block in mobile_tiles -%}
+        <a
+          href="{{ block.settings.url | default: '#' }}"
+          class="header-drawer__tile"
+          data-mm-link
+          {{ block.shopify_attributes }}
+        >
+          <span class="header-drawer__tile-img">
+            {%- if block.settings.image != blank -%}
+              <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.label | escape }}" loading="lazy" decoding="async">
+            {%- elsif block.settings.image_asset_url != blank -%}
+              <img src="{{ block.settings.image_asset_url | asset_url }}" alt="{{ block.settings.label | escape }}" loading="lazy" decoding="async">
+            {%- endif -%}
+          </span>
+          <span class="header-drawer__tile-label">{{ block.settings.label | escape }}</span>
+        </a>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- if mobile_footer_items.size > 0 -%}
+    <div class="header-drawer__footer" style="grid-template-columns: repeat({{ mobile_footer_items.size }}, 1fr);">
+      {%- for block in mobile_footer_items -%}
+        <a
+          href="{{ block.settings.url | default: '#' }}"
+          class="header-drawer__footer-item"
+          data-mm-link
+          {{ block.shopify_attributes }}
+        >
+          {%- case block.settings.icon -%}
+            {%- when 'user' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+              </svg>
+            {%- when 'help' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            {%- when 'mail' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="1"/>
+                <polyline points="3 7 12 13 21 7"/>
+              </svg>
+            {%- when 'heart' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21s-8-5.2-8-10.4A4.1 4.1 0 0 1 11.5 8L12 9l.5-1A4.1 4.1 0 0 1 20 10.6C20 15.8 12 21 12 21z"/>
+              </svg>
+            {%- when 'phone' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            {%- when 'map' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            {%- else -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/>
+              </svg>
+          {%- endcase -%}
+          <span class="header-drawer__footer-label">{{ block.settings.label | escape }}</span>
+        </a>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+  </div>
+</aside>
+
+<div class="header-drawer__overlay" data-drawer-close aria-hidden="true"></div>
+
+<script>
+(function() {
+  function initDrawer() {
+    var drawer = document.getElementById('{{ drawer_id }}');
+    var overlay = document.querySelector('.header-drawer__overlay');
+    if (!drawer || !overlay) return;
+    var lastFocused = null;
+
+    function openDrawer() {
+      lastFocused = document.activeElement;
+      drawer.hidden = false;
+      overlay.hidden = false;
+      void drawer.offsetWidth;
+      drawer.setAttribute('data-open', 'true');
+      overlay.setAttribute('data-open', 'true');
+      document.body.classList.add('drawer-open');
+      document.querySelectorAll('[data-drawer-open]').forEach(function(btn) {
+        btn.setAttribute('aria-expanded', 'true');
+      });
+    }
+
+    function closeDrawer() {
+      drawer.setAttribute('data-open', 'false');
+      overlay.setAttribute('data-open', 'false');
+      document.body.classList.remove('drawer-open');
+      document.querySelectorAll('[data-drawer-open]').forEach(function(btn) {
+        btn.setAttribute('aria-expanded', 'false');
+      });
+      setTimeout(function() {
+        drawer.hidden = true;
+        overlay.hidden = true;
+      }, 450);
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+    }
+
+    function attachListeners() {
+      document.querySelectorAll('[data-drawer-open]').forEach(function(btn) {
+        if (btn.__drawerBound) return;
+        btn.__drawerBound = true;
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openDrawer();
+        });
+      });
+      document.querySelectorAll('[data-drawer-close]').forEach(function(btn) {
+        if (btn.__drawerBound) return;
+        btn.__drawerBound = true;
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeDrawer();
+        });
+      });
+    }
+    attachListeners();
+
+    document.addEventListener('click', function(e) {
+      var openTrigger = e.target.closest('[data-drawer-open]');
+      var closeTrigger = e.target.closest('[data-drawer-close]');
+      if (openTrigger && drawer.getAttribute('data-open') !== 'true') {
+        e.preventDefault();
+        openDrawer();
+        return;
+      }
+      if (closeTrigger && drawer.getAttribute('data-open') === 'true') {
+        e.preventDefault();
+        closeDrawer();
+        return;
+      }
+    });
+
+    var mo = new MutationObserver(attachListeners);
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && drawer.getAttribute('data-open') === 'true') {
+        closeDrawer();
+      }
+    });
+
+    drawer.querySelectorAll('[data-mm-link]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        var href = link.getAttribute('href');
+        if (href && !href.startsWith('#')) {
+          setTimeout(closeDrawer, 100);
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDrawer);
+  } else {
+    initDrawer();
+  }
+})();
+</script>

@@ -1,0 +1,400 @@
+{%- liquid
+  assign noir = '#1A1A1A'
+  assign creme = '#F5F3EE'
+  assign section_id = 'croquis-' | append: section.id
+  assign layout = section.settings.desktop_layout | default: 'split'
+-%}
+
+{%- capture section_css -%}
+/* ── Section margins ── */
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+/* ── Container ── */
+#{{ section_id }} {
+  width: 100%;
+  padding: 0 20px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} { padding: 0 64px; }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} { padding: 0 80px; }
+}
+
+/* ── Header ── */
+#{{ section_id }} .croquis__subtitle {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+  margin-bottom: 12px;
+}
+#{{ section_id }} .croquis__title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: {{ noir }};
+  margin: 0 0 32px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .croquis__title {
+    font-size: 32px;
+    margin-bottom: 40px;
+  }
+}
+#{{ section_id }} .croquis__separator {
+  border: none;
+  border-top: 1px solid rgba(26,26,26,0.04);
+  margin: 0 0 32px;
+  display: none;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .croquis__separator {
+    display: block;
+  }
+}
+
+/* ── Mobile tabs ── */
+#{{ section_id }} .croquis__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 32px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .croquis__tabs { display: none; }
+}
+#{{ section_id }} .croquis__tab-btn {
+  padding: 10px 24px;
+  background: none;
+  border: 1px solid rgba(26,26,26,0.12);
+  cursor: pointer;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+  transition: background 0.25s ease, color 0.25s ease;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .croquis__tab-btn:first-child {
+  border-radius: 2px 0 0 2px;
+  border-right: none;
+}
+#{{ section_id }} .croquis__tab-btn:last-child {
+  border-radius: 0 2px 2px 0;
+}
+#{{ section_id }} .croquis__tab-btn.is-active {
+  background: {{ noir }};
+  color: #fff;
+  border-color: {{ noir }};
+  font-weight: 500;
+}
+
+/* ── Grid desktop ── */
+#{{ section_id }} .croquis__grid {
+  display: block;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .croquis__grid.is-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+  /* Layout HERO : une image principale large + miniature commutable */
+  #{{ section_id }} .croquis__grid.is-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-rows: auto;
+    gap: 40px;
+    align-items: start;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel {
+    position: relative;
+    background: {{ creme }};
+    padding: 40px 48px;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--hero {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 420px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--thumb {
+    grid-column: 2;
+    grid-row: 1;
+    cursor: pointer;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid rgba(26,26,26,0.08);
+    transition: border-color 0.25s ease, transform 0.25s ease;
+    display: flex !important;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--thumb:hover {
+    border-color: rgba(26,26,26,0.3);
+    transform: translateY(-2px);
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--hero img {
+    max-width: 100%;
+    max-height: 460px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--thumb img {
+    width: 100%;
+    height: auto;
+    max-height: 160px;
+    object-fit: contain;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--hero .croquis__panel-label {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    margin-bottom: 0;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--thumb .croquis__panel-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: {{ noir }};
+    color: #fff;
+    padding: 4px 10px;
+    margin-bottom: 0;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--thumb {
+    position: relative;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--thumb .croquis__thumb-cta {
+    display: block;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    color: rgba(26,26,26,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--hero .croquis__thumb-cta {
+    display: none;
+  }
+}
+@media (min-width: 1100px) {
+  #{{ section_id }} .croquis__grid.is-hero {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 48px;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--hero {
+    min-height: 520px;
+  }
+  #{{ section_id }} .croquis__grid.is-hero .croquis__panel--hero img {
+    max-height: 560px;
+  }
+}
+
+/* ── Panel ── */
+#{{ section_id }} .croquis__panel {
+  display: none;
+}
+#{{ section_id }} .croquis__panel.is-active {
+  display: block;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .croquis__panel {
+    display: block !important;
+  }
+}
+#{{ section_id }} .croquis__panel-label {
+  display: none;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #fff;
+  background: {{ noir }};
+  padding: 6px 14px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .croquis__panel-label {
+    display: inline-block;
+  }
+}
+#{{ section_id }} .croquis__panel img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+#{{ section_id }} .croquis__thumb-cta {
+  display: none;
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<div id="{{ section_id }}">
+
+  {%- if section.settings.subtitle != blank -%}
+    <div class="croquis__subtitle">{{ section.settings.subtitle }}</div>
+  {%- endif -%}
+  {%- if section.settings.title != blank -%}
+    <h2 class="croquis__title">{{ section.settings.title }}</h2>
+  {%- endif -%}
+  <hr class="croquis__separator">
+
+  {%- comment -%} ══ Mobile tabs ══ {%- endcomment -%}
+  <div class="croquis__tabs">
+    <button class="croquis__tab-btn is-active" data-croquis-btn="0">{{ section.settings.label_face | default: 'face' }}</button>
+    <button class="croquis__tab-btn" data-croquis-btn="1">{{ section.settings.label_cote | default: 'côté' }}</button>
+  </div>
+
+  {%- comment -%} ══ Images grid ══ {%- endcomment -%}
+  <div class="croquis__grid is-{{ layout }}" data-croquis-grid data-layout="{{ layout }}">
+    <div class="croquis__panel is-active {% if layout == 'hero' %}croquis__panel--hero{% endif %}" data-croquis-panel="0">
+      <div class="croquis__panel-label">{{ section.settings.label_face | default: 'face' }}</div>
+      {%- if section.settings.image_face != blank -%}
+        <img
+          src="{{ section.settings.image_face | image_url: width: 1200 }}"
+          alt="{{ section.settings.label_face | default: 'Vue de face' | escape }}"
+          width="{{ section.settings.image_face.width }}"
+          height="{{ section.settings.image_face.height }}"
+          loading="lazy"
+        >
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+      {%- if layout == 'hero' -%}
+        <span class="croquis__thumb-cta">voir en grand</span>
+      {%- endif -%}
+    </div>
+
+    <div class="croquis__panel {% if layout == 'hero' %}croquis__panel--thumb{% endif %}" data-croquis-panel="1">
+      <div class="croquis__panel-label">{{ section.settings.label_cote | default: 'côté' }}</div>
+      {%- if section.settings.image_cote != blank -%}
+        <img
+          src="{{ section.settings.image_cote | image_url: width: 1200 }}"
+          alt="{{ section.settings.label_cote | default: 'Vue de côté' | escape }}"
+          width="{{ section.settings.image_cote.width }}"
+          height="{{ section.settings.image_cote.height }}"
+          loading="lazy"
+        >
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+      {%- if layout == 'hero' -%}
+        <span class="croquis__thumb-cta">voir en grand</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var wrap = document.getElementById('{{ section_id }}');
+  if (!wrap) return;
+  var btns = wrap.querySelectorAll('[data-croquis-btn]');
+  var panels = wrap.querySelectorAll('[data-croquis-panel]');
+  btns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btns.forEach(function(b){ b.classList.remove('is-active'); });
+      panels.forEach(function(p){ p.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      var idx = btn.getAttribute('data-croquis-btn');
+      var panel = wrap.querySelector('[data-croquis-panel="'+idx+'"]');
+      if (panel) panel.classList.add('is-active');
+    });
+  });
+
+  /* Hero layout : clic sur la miniature → swap hero/thumb */
+  var grid = wrap.querySelector('[data-croquis-grid]');
+  if (grid && grid.getAttribute('data-layout') === 'hero') {
+    grid.addEventListener('click', function(e) {
+      if (window.innerWidth < 768) return;
+      var thumb = e.target.closest('.croquis__panel--thumb');
+      if (!thumb) return;
+      var hero = grid.querySelector('.croquis__panel--hero');
+      if (!hero || hero === thumb) return;
+      hero.classList.remove('croquis__panel--hero');
+      hero.classList.add('croquis__panel--thumb');
+      thumb.classList.remove('croquis__panel--thumb');
+      thumb.classList.add('croquis__panel--hero');
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Croquis dimensions",
+  "class": "croquis-section",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Sous-titre", "default": "dimensions" },
+    { "type": "text", "id": "title", "label": "Titre", "default": "Trouvez votre place." },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Disposition desktop",
+      "options": [
+        { "value": "split", "label": "Deux colonnes égales" },
+        { "value": "hero", "label": "Vue principale + miniature" }
+      ],
+      "default": "split",
+      "info": "Le mode « Vue principale + miniature » affiche une image en grand sur fond crème, avec la seconde en carte cliquable pour permuter."
+    },
+    { "type": "header", "content": "Vue de face" },
+    { "type": "text", "id": "label_face", "label": "Label", "default": "face" },
+    { "type": "image_picker", "id": "image_face", "label": "Image face" },
+    { "type": "header", "content": "Vue de côté" },
+    { "type": "text", "id": "label_cote", "label": "Label", "default": "côté" },
+    { "type": "image_picker", "id": "image_cote", "label": "Image côté" },
+    { "type": "header", "content": "Marges" },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge supérieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge inférieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge supérieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge inférieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Croquis dimensions"
+    }
+  ]
+}
+{% endschema %}

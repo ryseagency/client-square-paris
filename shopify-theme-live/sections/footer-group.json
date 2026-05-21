@@ -1,0 +1,87 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "menu_xE7CkH": {
+          "type": "menu",
+          "settings": {
+            "title": "LA MAISON",
+            "menu": "footer"
+          }
+        },
+        "menu_aAyQjq": {
+          "type": "menu",
+          "settings": {
+            "title": "SERVICES",
+            "menu": "services"
+          }
+        },
+        "social_97ChP4": {
+          "type": "social",
+          "settings": {
+            "title": "SUIVRE",
+            "vertical": false,
+            "instagram": "#",
+            "facebook": "#",
+            "pinterest": "#",
+            "tiktok": "",
+            "youtube": "",
+            "linkedin": "",
+            "twitter": ""
+          }
+        },
+        "contact_VcrnPP": {
+          "type": "contact",
+          "settings": {
+            "title": "CONTACT",
+            "email": "contact@squareparis.com",
+            "phone": "",
+            "address": "231 rue Saint-Honoré, Paris"
+          }
+        }
+      },
+      "block_order": [
+        "menu_xE7CkH",
+        "menu_aAyQjq",
+        "social_97ChP4",
+        "contact_VcrnPP"
+      ],
+      "settings": {
+        "logo": "shopify://shop_images/square_blanc.png",
+        "logo_height": 44,
+        "logo_height_md": 52,
+        "logo_margin_top": 0,
+        "logo_margin_top_md": 24,
+        "tagline": "<p>Mobilier français pensé pour durer.</p>",
+        "tagline_margin_bottom": 16,
+        "tagline_margin_bottom_md": 0,
+        "copyright": "SQUARE PARIS",
+        "show_year": true,
+        "legal_menu": "main-menu",
+        "bg_color": "#3d4030",
+        "text_color": "#ffffff",
+        "title_color": "#ffffff",
+        "title_opacity": 45,
+        "link_color": "#eeece5",
+        "link_opacity": 30,
+        "link_hover_opacity": 60,
+        "tagline_opacity": 25
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

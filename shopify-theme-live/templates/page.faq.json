@@ -1,0 +1,226 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "main_faq_yWeeAC": {
+      "type": "main-faq",
+      "blocks": {
+        "category_gpTEDj": {
+          "type": "category",
+          "settings": {
+            "title": "Commande & paiement"
+          }
+        },
+        "question_LLMhaW": {
+          "type": "question",
+          "settings": {
+            "question": "Quels sont les moyens de paiement acceptés ?",
+            "answer": "<p>Nous acceptons Visa, Mastercard, American Express, Apple Pay et le paiement en 3× sans frais via Alma à partir de 200€.</p>"
+          }
+        },
+        "question_nRXNhm": {
+          "type": "question",
+          "settings": {
+            "question": "Puis-je modifier ma commande après validation ?",
+            "answer": "<p>Toute modification est possible dans les 24h suivant la commande. Contactez-nous rapidement par email.</p>"
+          }
+        },
+        "question_DcVrC4": {
+          "type": "question",
+          "settings": {
+            "question": "Comment suivre ma commande ?",
+            "answer": "<p>Vous recevez un email de suivi dès l'expédition avec un lien permettant de suivre le colis en temps réel.</p>"
+          }
+        },
+        "category_8ekpqp": {
+          "type": "category",
+          "settings": {
+            "title": "Livraison"
+          }
+        },
+        "question_VUjt96": {
+          "type": "question",
+          "settings": {
+            "question": "Quels sont les délais de livraison ?",
+            "answer": "<p>Comptez 2 à 4 semaines pour la fabrication et 5 à 10 jours ouvrés pour la livraison en France métropolitaine.</p>"
+          }
+        },
+        "question_EAyXQh": {
+          "type": "question",
+          "settings": {
+            "question": "La livraison est-elle gratuite ?",
+            "answer": "<p>La livraison standard est offerte en France métropolitaine pour toute commande supérieure à 800€.</p>"
+          }
+        },
+        "question_wTyFr8": {
+          "type": "question",
+          "settings": {
+            "question": "Livrez-vous à l'étranger ?",
+            "answer": "<p>Oui, nous livrons en Belgique, au Luxembourg, en Suisse et en Allemagne. Contactez-nous pour les autres destinations.</p>"
+          }
+        },
+        "category_Yb7rgA": {
+          "type": "category",
+          "settings": {
+            "title": "Produits & matériaux"
+          }
+        },
+        "question_XCheAU": {
+          "type": "question",
+          "settings": {
+            "question": "Vos produits sont-ils fabriqués en France ?",
+            "answer": "<p>Tous nos canapés sont conçus et assemblés dans notre atelier situé en Vendée, avec des matériaux sélectionnés en Europe.</p>"
+          }
+        },
+        "question_YUqdcw": {
+          "type": "question",
+          "settings": {
+            "question": "Comment entretenir le tissu au quotidien ?",
+            "answer": "<p>Aspirez régulièrement avec un embout doux et traitez les taches immédiatement à l'eau tiède. Une notice complète est livrée avec votre canapé.</p>"
+          }
+        },
+        "question_KKeBPW": {
+          "type": "question",
+          "settings": {
+            "question": "Puis-je commander des échantillons de tissu ?",
+            "answer": "<p>Oui, nous envoyons gratuitement jusqu'à 5 échantillons sur simple demande depuis la fiche produit.</p>"
+          }
+        },
+        "category_PmnJPE": {
+          "type": "category",
+          "settings": {
+            "title": "Retours & garantie"
+          }
+        },
+        "question_JrkY8h": {
+          "type": "question",
+          "settings": {
+            "question": "Quelle est la politique de retour ?",
+            "answer": "<p>Vous disposez de 30 jours après réception pour nous retourner votre canapé. Les frais de retour sont offerts en France métropolitaine.</p>"
+          }
+        },
+        "question_jDrBQT": {
+          "type": "question",
+          "settings": {
+            "question": "Quelle garantie sur les canapés ?",
+            "answer": "<p>Nos canapés sont garantis 10 ans sur la structure et 5 ans sur les mousses et les housses.</p>"
+          }
+        },
+        "question_bbGbhW": {
+          "type": "question",
+          "settings": {
+            "question": "Que faire en cas de défaut à la livraison ?",
+            "answer": "<p>Signalez-le sous 48h par email avec photos à l'appui. Nous nous engageons à résoudre la situation rapidement.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "category_gpTEDj",
+        "question_LLMhaW",
+        "question_nRXNhm",
+        "question_DcVrC4",
+        "category_8ekpqp",
+        "question_VUjt96",
+        "question_EAyXQh",
+        "question_wTyFr8",
+        "category_Yb7rgA",
+        "question_XCheAU",
+        "question_YUqdcw",
+        "question_KKeBPW",
+        "category_PmnJPE",
+        "question_JrkY8h",
+        "question_jDrBQT",
+        "question_bbGbhW"
+      ],
+      "name": "FAQ - Page",
+      "settings": {
+        "kicker": "faq",
+        "heading": "Vos questions,\nnos réponses.",
+        "body": "Tout ce que vous devez savoir avant et après votre commande SQUARE.",
+        "heading_size_mobile": 44,
+        "heading_size_desktop": 44,
+        "heading_weight": "400",
+        "category_size_mobile": 24,
+        "category_size_desktop": 25,
+        "category_weight": "400",
+        "question_size_mobile": 14,
+        "question_size_desktop": 15,
+        "question_weight": "400",
+        "category_gap_mobile": 24,
+        "category_gap_desktop": 58,
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "divider_color": "#e5e5e5",
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 44,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "faq_page_cta_WRKDbE": {
+      "type": "faq-page-cta",
+      "name": "FAQ page CTA",
+      "settings": {
+        "kicker": "besoin d'aide ?",
+        "heading": "Vous n'avez pas trouvé\nvotre réponse ?",
+        "body": "Beytulah, votre conseiller dédié, vous répond personnellement sous 2h.",
+        "button_label": "nous contacter",
+        "button_link": "",
+        "heading_size_mobile": 28,
+        "heading_size_desktop": 36,
+        "heading_weight": "400",
+        "bg_color": "#3d3f30",
+        "text_color": "#F5F3EE",
+        "muted_color": "#91928b",
+        "divider_color": "#91928b",
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "newsletter_G3n3AK": {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "settings": {
+        "eyebrow": "<p>Restons en contact</p>",
+        "heading": "<p>Rejoignez l'art de vivre Square.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Inscrivez-vous et bénéficiez de -10% sur votre première commande.</p>",
+        "input_placeholder": "Votre adresse e-mail",
+        "button_label": "S'inscrire",
+        "success_message": "Merci, vous êtes inscrit(e) !",
+        "legal_text": "<p>En vous inscrivant, vous acceptez notre politique de confidentialité.</p>",
+        "heading_size_min": 28,
+        "heading_size_vw": 4,
+        "heading_size_max": 44,
+        "bg_color": "#FFFFFF",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "button_color": "#000000"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "main_faq_yWeeAC",
+    "faq_page_cta_WRKDbE",
+    "newsletter_G3n3AK"
+  ]
+}

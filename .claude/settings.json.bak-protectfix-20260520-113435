@@ -1,0 +1,69 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/pre-edit-protect.sh && .claude/hooks/pre-edit-protect.sh || true'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/pre-edit-liquid-guard.sh && .claude/hooks/pre-edit-liquid-guard.sh || true'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/pre-bash-push-validator.sh && .claude/hooks/pre-bash-push-validator.sh || true'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/post-edit-quality.sh && .claude/hooks/post-edit-quality.sh || true'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/stop-verification.sh && .claude/hooks/stop-verification.sh || true'"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/userpromptsubmit-skill-injector.sh && .claude/hooks/userpromptsubmit-skill-injector.sh || true'"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/session-start-validator.sh && .claude/hooks/session-start-validator.sh || true'"
+          }
+        ]
+      }
+    ]
+  }
+}

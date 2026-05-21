@@ -1,0 +1,75 @@
+/* ============================================
+   SQ Reveal — Unified animation system
+   Aligned with Lovable maquette animations
+   ============================================ */
+
+/* --- RevealParagraph / generic fade-up --- */
+[data-reveal="fade-up"] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+[data-reveal="fade-up"].is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Support custom final opacity via CSS variable */
+[data-reveal="fade-up"][data-reveal-opacity] {
+  /* final opacity set by style attribute */
+}
+
+/* --- RevealText (word-by-word) --- */
+[data-reveal="words"] .sq-word {
+  display: inline-block;
+  overflow: hidden;
+  margin-right: 0.3em;
+  vertical-align: top;
+}
+[data-reveal="words"] .sq-word-inner {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+[data-reveal="words"].is-revealed .sq-word-inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- RevealImage (clip-path) --- */
+[data-reveal="clip-up"] {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.4s ease-out;
+}
+[data-reveal="clip-up"].is-revealed {
+  clip-path: inset(0 0 0 0);
+}
+
+/* --- Cascade delay support (set by JS) --- */
+/* transition-delay set inline by the script */
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal] .sq-word-inner {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    clip-path: none !important;
+  }
+}
+
+/* --- Lenis smooth scroll --- */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}

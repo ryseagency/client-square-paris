@@ -1,0 +1,597 @@
+{%- liquid
+  assign section_id = 'featured-products-' | append: section.id
+  assign options = section.settings
+
+  assign eyebrow = options.eyebrow
+  assign heading = options.heading
+  assign subheading = options.subheading
+  assign heading_tag = options.heading_tag | default: 'h2'
+  assign text_align = options.text_align | default: 'center'
+
+  assign eyebrow_color = options.eyebrow_color | default: '#000000'
+  assign heading_color = options.heading_color | default: '#000000'
+  assign text_color = options.text_color | default: '#000000'
+  assign bg_color = options.bg_color | default: '#FFFFFF'
+  assign badge_bg_color = options.badge_bg_color | default: '#40221E'
+  assign badge_text_color = options.badge_text_color | default: '#FFFFFF'
+  assign discount_color = options.discount_color | default: '#3D4030'
+
+  assign heading_min = options.heading_size_min | default: 24
+  assign heading_vw = options.heading_size_vw | default: 3
+  assign heading_max = options.heading_size_max | default: 42
+
+  assign round_swatches = options.round_swatches
+
+  assign collection = options.collection
+  assign products_to_show = options.products_to_show | default: 4
+  assign columns_desktop = options.columns_desktop | default: 4
+  assign new_days_threshold = options.new_days_threshold | default: 30
+  assign badge_metafield_namespace = options.badge_metafield_namespace | default: 'custom'
+  assign badge_metafield_key = options.badge_metafield_key | default: 'badge'
+-%}
+
+{%- capture section_css -%}
+  /* pt-2 md:pt-4 pb-14 md:pb-20 px-4 md:px-6 xl:px-8 */
+  #{{ section_id }} {
+    background-color: {{ bg_color }};
+    padding: 8px 16px 56px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} { padding: 16px 24px 80px; }
+  }
+  @media (min-width: 1280px) {
+    #{{ section_id }} { padding-left: 32px; padding-right: 32px; }
+  }
+
+  #{{ section_id }} .fp__inner { max-width: 1760px; margin: 0 auto; }
+
+  #{{ section_id }} .fp__header {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .fp__header { text-align: {{ text_align }}; }
+  }
+
+  #{{ section_id }} .fp__eyebrow {
+    display: block;
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: {{ eyebrow_color }};
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  #{{ section_id }} .fp__eyebrow * { margin: 0; color: inherit; font-family: inherit; }
+
+  #{{ section_id }} .fp__heading {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 1;
+    color: {{ heading_color }};
+    font-size: clamp({{ heading_min }}px, {{ heading_vw }}vw, {{ heading_max }}px);
+    margin: 0;
+  }
+  #{{ section_id }} .fp__heading * { font-family: inherit; font-weight: inherit; color: inherit; margin: 0; }
+
+  #{{ section_id }} .fp__sub {
+    font-family: var(--font-body-family);
+    font-weight: var(--font-weight-body);
+    font-size: var(--fs-body-desktop);
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+    color: {{ text_color }};
+    max-width: 500px;
+    margin-top: 16px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .fp__header.fp--center .fp__sub { margin-left: auto; margin-right: auto; }
+    #{{ section_id }} .fp__header.fp--right .fp__sub { margin-left: auto; }
+  }
+  #{{ section_id }} .fp__sub * { margin: 0; color: inherit; font-family: inherit; }
+
+  #{{ section_id }} .fp__grid {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #{{ section_id }} .fp__grid::-webkit-scrollbar { display: none; }
+  @media (min-width: 768px) {
+    #{{ section_id }} .fp__grid {
+      display: grid;
+      grid-template-columns: repeat({{ columns_desktop }}, 1fr);
+      gap: 32px;
+      overflow: visible;
+    }
+  }
+
+  #{{ section_id }} .fp__card {
+    min-width: calc(100vw - 32px);
+    scroll-snap-align: start;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .fp__card { min-width: 0; }
+  }
+
+  #{{ section_id }} .fp__media {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFFFFF;
+    padding: 24px 16px 8px;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+  #{{ section_id }} .fp__media img {
+    width: 95%;
+    height: 95%;
+    object-fit: contain;
+    transition: transform 800ms cubic-bezier(0.25,0.1,0,1);
+  }
+  #{{ section_id }} .fp__card:hover .fp__media img,
+  #{{ section_id }} .fp__card:focus-visible .fp__media img {
+    transform: scale(1.03);
+  }
+
+  #{{ section_id }} .fp__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 9px;
+    text-transform: uppercase;
+    background-color: {{ badge_bg_color }};
+    color: {{ badge_text_color }};
+    padding: 6px 10px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #{{ section_id }} .fp__info { margin-top: 16px; }
+  #{{ section_id }} .fp__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  #{{ section_id }} .fp__name {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1;
+    color: {{ heading_color }};
+  }
+  #{{ section_id }} .fp__prices {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  #{{ section_id }} .fp__discount {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    color: {{ discount_color }};
+    background-color: rgba({{ discount_color | color_extract: 'red' }}, {{ discount_color | color_extract: 'green' }}, {{ discount_color | color_extract: 'blue' }}, 0.1);
+    padding: 2px 6px;
+    line-height: 1;
+  }
+  #{{ section_id }} .fp__old-price {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    color: {{ text_color }};
+    opacity: 0.3;
+    text-decoration: line-through;
+  }
+  #{{ section_id }} .fp__price {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: {{ heading_color }};
+  }
+  #{{ section_id }} .fp__type {
+    display: block;
+    font-family: var(--font-body-family);
+    font-weight: var(--font-weight-body);
+    font-size: 12px;
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+    color: {{ text_color }};
+    opacity: 0.5;
+    margin-top: 2px;
+  }
+  #{{ section_id }} .fp__carac {
+    display: block;
+    font-family: var(--font-body-family);
+    font-weight: var(--font-weight-body);
+    font-size: 12px;
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+    color: {{ text_color }};
+    opacity: 0.5;
+    margin-top: 2px;
+  }
+
+  #{{ section_id }} .fp__swatches {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  #{{ section_id }} .fp__swatch {
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(0,0,0,0.1);
+    display: inline-block;
+  }
+
+  #{{ section_id }} .fp__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .fp__dots { display: none; }
+  }
+  #{{ section_id }} .fp__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.12);
+    transition: background-color 0.3s ease;
+  }
+  #{{ section_id }} .fp__dot.is-active { background-color: rgba(0,0,0,0.6); }
+
+  #{{ section_id }} .fp__empty {
+    padding: 48px 24px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: {{ text_color }};
+    opacity: 0.5;
+    border: 1px dashed rgba(0,0,0,0.15);
+  }
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+<section id="{{ section_id }}" class="fp" aria-labelledby="{{ section_id }}-heading">
+  <div class="fp__inner">
+    <div class="fp__header fp--{{ text_align }}">
+      {%- if eyebrow != blank -%}
+        <span class="fp__eyebrow" data-reveal="fade-up" data-reveal-delay="0.1" data-reveal-opacity="0.5">{{ eyebrow }}</span>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <{{ heading_tag }} id="{{ section_id }}-heading" class="fp__heading" data-reveal="words" data-reveal-stagger="0.06">{{ heading }}</{{ heading_tag }}>
+      {%- endif -%}
+
+      {%- if subheading != blank -%}
+        <div class="fp__sub" data-reveal="fade-up" data-reveal-delay="0.3" data-reveal-opacity="0.6">{{ subheading }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- if collection == blank or collection.products_count == 0 -%}
+      <div class="fp__empty">
+        {%- if collection == blank -%}
+          Sélectionnez une collection dans les réglages de la section.
+        {%- else -%}
+          Cette collection ne contient aucun produit.
+        {%- endif -%}
+      </div>
+    {%- else -%}
+
+      {%- assign total_products = collection.products.size -%}
+      {%- if total_products > products_to_show -%}
+        {%- assign total_products = products_to_show -%}
+      {%- endif -%}
+
+      <div class="fp__grid" data-fp-scroll role="list">
+        {%- for product in collection.products limit: products_to_show -%}
+          {%- liquid
+            assign display_name = product.title
+            assign display_type = product.type
+
+            assign product_url = product.url | default: '#'
+            assign product_image = product.featured_image
+            assign product_price = product.price
+            assign product_compare_price = product.compare_at_price
+            assign has_discount = false
+            assign discount_pct = 0
+            if product_compare_price > product_price and product_compare_price > 0
+              assign has_discount = true
+              assign diff = product_compare_price | minus: product_price
+              assign discount_pct = diff | times: 100 | divided_by: product_compare_price
+            endif
+
+            # Caractéristique produit (metafield custom.caracteristique)
+            assign carac_text = product.metafields.custom.caracteristique | default: blank
+
+            # Badge : priorité au metafield produit, fallback sur auto-NOUVEAUTÉ si récent
+            assign badge_text = blank
+            assign mf_badge = product.metafields[badge_metafield_namespace][badge_metafield_key]
+            if mf_badge != blank
+              assign badge_text = mf_badge | upcase
+            elsif product.created_at != blank
+              assign days_since_created = 'now' | date: '%s' | minus: product.created_at | date: '%s' | divided_by: 86400
+              if days_since_created <= new_days_threshold
+                assign badge_text = 'NOUVEAUTÉ'
+              endif
+            endif
+          -%}
+
+          <a
+            href="{{ product_url }}"
+            class="fp__card"
+            role="listitem"
+            aria-label="{{ display_name | strip_html | escape }}"
+            title="{{ display_name | strip_html | escape }}"
+          >
+            <div class="fp__media">
+              {%- if badge_text != blank -%}
+                <span class="fp__badge">{{ badge_text }}</span>
+              {%- endif -%}
+
+              {%- if product_image != blank -%}
+                <img
+                  src="{{ product_image | image_url: width: 800 }}"
+                  srcset="{{ product_image | image_url: width: 400 }} 400w, {{ product_image | image_url: width: 600 }} 600w, {{ product_image | image_url: width: 800 }} 800w, {{ product_image | image_url: width: 1200 }} 1200w"
+                  sizes="(min-width: 1024px) {{ 100 | divided_by: columns_desktop }}vw, (min-width: 768px) 50vw, 85vw"
+                  alt="{{ product_image.alt | default: display_name | strip_html | escape }}"
+                  width="{{ product_image.width }}"
+                  height="{{ product_image.height }}"
+                  loading="lazy"
+                  decoding="async"
+                >
+              {%- endif -%}
+            </div>
+
+            <div class="fp__info">
+              <div class="fp__row">
+                <span class="fp__name">{{ display_name | downcase }}</span>
+                <div class="fp__prices">
+                  {%- if has_discount -%}
+                    <span class="fp__discount">-{{ discount_pct }}%</span>
+                    <span class="fp__old-price">{{ product_compare_price | money | remove: ',00' }}</span>
+                  {%- endif -%}
+                  <span class="fp__price">{{ product_price | money | remove: ',00' }}</span>
+                </div>
+              </div>
+
+              {%- if display_type != blank -%}
+                <span class="fp__type">{{ display_type }}</span>
+              {%- endif -%}
+
+              {%- if carac_text != blank -%}
+                <span class="fp__carac">{{ carac_text }}</span>
+              {%- endif -%}
+
+              {%- comment -%} Récupère l'option couleur du produit (si elle existe) {%- endcomment -%}
+              {%- assign color_option = null -%}
+              {%- assign color_option_index = 0 -%}
+              {%- for opt in product.options_with_values -%}
+                {%- assign opt_name_down = opt.name | downcase -%}
+                {%- if opt_name_down contains 'color' or opt_name_down contains 'couleur' -%}
+                  {%- assign color_option = opt -%}
+                  {%- assign color_option_index = forloop.index0 -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if color_option != null and color_option.values.size > 1 -%}
+                <div class="fp__swatches" aria-hidden="true">
+                  {%- for val in color_option.values -%}
+                    {%- comment -%}
+                      Pour chaque valeur de couleur, on cherche la 1ère variante
+                      qui a cette valeur, et on lit son metafield couleur.
+                    {%- endcomment -%}
+                    {%- assign swatch_color = blank -%}
+                    {%- for variant in product.variants -%}
+                      {%- assign v_val = variant.options[color_option_index] -%}
+                      {%- if v_val == val -%}
+                        {%- assign mf_color = variant.metafields.custom.color -%}
+                        {%- if mf_color != blank -%}
+                          {%- assign swatch_color = mf_color -%}
+                        {%- endif -%}
+                        {%- break -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+
+                    {%- comment -%} Fallback : mapping des noms de couleurs FR/EN courants {%- endcomment -%}
+                    {%- if swatch_color == blank -%}
+                      {%- assign val_key = val | downcase | strip -%}
+                      {%- case val_key -%}
+                        {%- when 'noir', 'black' -%}{%- assign swatch_color = '#000000' -%}
+                        {%- when 'blanc', 'white' -%}{%- assign swatch_color = '#FFFFFF' -%}
+                        {%- when 'gris', 'grey', 'gray' -%}{%- assign swatch_color = '#808080' -%}
+                        {%- when 'gris clair', 'light grey' -%}{%- assign swatch_color = '#D3D3D3' -%}
+                        {%- when 'gris foncé', 'dark grey' -%}{%- assign swatch_color = '#4A4A4A' -%}
+                        {%- when 'beige', 'écru', 'ecru' -%}{%- assign swatch_color = '#EEECE5' -%}
+                        {%- when 'crème', 'creme', 'cream' -%}{%- assign swatch_color = '#F5F0E6' -%}
+                        {%- when 'marron', 'brown' -%}{%- assign swatch_color = '#6F4E37' -%}
+                        {%- when 'chocolat', 'chocolate' -%}{%- assign swatch_color = '#40221E' -%}
+                        {%- when 'taupe' -%}{%- assign swatch_color = '#8B7E74' -%}
+                        {%- when 'sable', 'sand' -%}{%- assign swatch_color = '#D2B48C' -%}
+                        {%- when 'bleu', 'blue' -%}{%- assign swatch_color = '#2C5282' -%}
+                        {%- when 'bleu marine', 'navy' -%}{%- assign swatch_color = '#1E2A4A' -%}
+                        {%- when 'bleu ciel', 'sky blue' -%}{%- assign swatch_color = '#87CEEB' -%}
+                        {%- when 'vert', 'green' -%}{%- assign swatch_color = '#3D4030' -%}
+                        {%- when 'vert olive', 'olive' -%}{%- assign swatch_color = '#708238' -%}
+                        {%- when 'vert sauge', 'sage' -%}{%- assign swatch_color = '#9CAF88' -%}
+                        {%- when 'rouge', 'red' -%}{%- assign swatch_color = '#B22222' -%}
+                        {%- when 'bordeaux', 'burgundy' -%}{%- assign swatch_color = '#6B1F2E' -%}
+                        {%- when 'rose', 'pink' -%}{%- assign swatch_color = '#E8B4C5' -%}
+                        {%- when 'jaune', 'yellow' -%}{%- assign swatch_color = '#E3C04C' -%}
+                        {%- when 'moutarde', 'mustard' -%}{%- assign swatch_color = '#C4A35A' -%}
+                        {%- when 'orange' -%}{%- assign swatch_color = '#D97742' -%}
+                        {%- when 'terracotta', 'terre cuite' -%}{%- assign swatch_color = '#C66B3D' -%}
+                        {%- when 'violet', 'purple' -%}{%- assign swatch_color = '#6B4E8B' -%}
+                        {%- when 'or', 'gold' -%}{%- assign swatch_color = '#C9A96E' -%}
+                        {%- when 'argent', 'silver' -%}{%- assign swatch_color = '#C0C0C0' -%}
+                        {%- else -%}{%- assign swatch_color = val_key -%}
+                      {%- endcase -%}
+                    {%- endif -%}
+
+                    <span class="fp__swatch" style="background-color: {{ swatch_color }};" title="{{ val | escape }}"></span>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+
+      {%- if total_products > 1 -%}
+        <div class="fp__dots" data-fp-dots aria-hidden="true">
+          {%- for product in collection.products limit: products_to_show -%}
+            <span class="fp__dot{% if forloop.first %} is-active{% endif %}" data-fp-dot="{{ forloop.index0 }}"></span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+(function(){
+  var section = document.getElementById('{{ section_id }}');
+  if (!section) return;
+
+  /* Scroll dots (mobile carousel) */
+  var scroller = section.querySelector('[data-fp-scroll]');
+  var dots = section.querySelectorAll('[data-fp-dot]');
+  if (!scroller || dots.length === 0) return;
+
+  var cards = scroller.children;
+  var raf = null;
+  var update = function(){
+    var total = scroller.scrollWidth / cards.length;
+    if (total <= 0) return;
+    var idx = Math.round(scroller.scrollLeft / total);
+    if (idx < 0) idx = 0;
+    if (idx > cards.length - 1) idx = cards.length - 1;
+    for (var i = 0; i < dots.length; i++) {
+      if (i === idx) dots[i].classList.add('is-active');
+      else dots[i].classList.remove('is-active');
+    }
+    raf = null;
+  };
+  scroller.addEventListener('scroll', function(){
+    if (raf === null) raf = requestAnimationFrame(update);
+  }, { passive: true });
+})();
+</script>
+
+{%- if collection != blank and collection.products_count > 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  {% if heading != blank %}"name": {{ heading | strip_html | json }},{% endif %}
+  {% if subheading != blank %}"description": {{ subheading | strip_html | json }},{% endif %}
+  "itemListElement": [
+    {%- for product in collection.products limit: products_to_show -%}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "item": {
+          "@type": "Product",
+          "name": {{ product.title | json }},
+          {% if product.featured_image != blank %}"image": {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }},{% endif %}
+          "url": {{ product.url | prepend: request.origin | json }},
+          "offers": {
+            "@type": "Offer",
+            "price": "{{ product.price | money_without_currency | replace: ',', '.' | replace: ' ', '' }}",
+            "priceCurrency": {{ cart.currency.iso_code | json }},
+            "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+          }
+        }
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Featured products",
+  "tag": "section",
+  "class": "section-featured-products",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    { "type": "header", "content": "Source des produits" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "products_to_show", "label": "Nombre de produits affichés", "min": 2, "max": 12, "step": 1, "default": 4 },
+    { "type": "range", "id": "columns_desktop", "label": "Colonnes (desktop)", "min": 2, "max": 6, "step": 1, "default": 4 },
+
+    { "type": "header", "content": "Badge (metafield produit)", "info": "Créer un metafield produit 'custom.badge' (single line text) dans Settings → Custom data → Products. Remplissez-le avec le texte du badge (ex: NOUVEAUTÉ, BESTSELLER, LIVRAISON OFFERTE) sur chaque fiche produit." },
+    { "type": "text", "id": "badge_metafield_namespace", "label": "Namespace du metafield", "default": "custom" },
+    { "type": "text", "id": "badge_metafield_key", "label": "Clé du metafield", "default": "badge" },
+    { "type": "range", "id": "new_days_threshold", "label": "Auto-badge 'NOUVEAUTÉ' si créé depuis moins de (jours)", "min": 0, "max": 180, "step": 5, "default": 30, "info": "Mis uniquement si aucun metafield badge n'est défini. Mettre 0 pour désactiver." },
+
+    { "type": "header", "content": "Contenu" },
+    { "type": "richtext", "id": "eyebrow", "label": "Sur-titre", "default": "<p>Sélection</p>" },
+    { "type": "richtext", "id": "heading", "label": "Titre", "default": "<p>Nos essentiels.</p>" },
+    {
+      "type": "select", "id": "heading_tag", "label": "Balise HTML du titre",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h1", "label": "H1" }
+      ],
+      "default": "h2"
+    },
+    { "type": "richtext", "id": "subheading", "label": "Sous-titre", "default": "<p>Les pièces fondatrices de l'univers SQUARE, pensées pour sublimer chaque intérieur.</p>" },
+    {
+      "type": "select", "id": "text_align", "label": "Alignement du texte (desktop)",
+      "info": "Sur mobile, le texte reste aligné à gauche.",
+      "options": [
+        { "value": "left", "label": "Gauche" },
+        { "value": "center", "label": "Centre" },
+        { "value": "right", "label": "Droite" }
+      ],
+      "default": "center"
+    },
+
+    { "type": "header", "content": "Typographie titre" },
+    { "type": "range", "id": "heading_size_min", "label": "Taille min (mobile)", "min": 16, "max": 48, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "heading_size_vw", "label": "Taille fluide", "min": 2, "max": 8, "step": 1, "unit": "vw", "default": 3 },
+    { "type": "range", "id": "heading_size_max", "label": "Taille max (desktop)", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 42 },
+
+    { "type": "header", "content": "Couleurs" },
+    { "type": "color", "id": "bg_color", "label": "Fond de section", "default": "#FFFFFF" },
+    { "type": "color", "id": "eyebrow_color", "label": "Couleur sur-titre", "default": "#000000" },
+    { "type": "color", "id": "heading_color", "label": "Couleur titre & nom produit", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Couleur texte secondaire", "default": "#000000" },
+    { "type": "color", "id": "badge_bg_color", "label": "Fond des badges", "default": "#40221E" },
+    { "type": "color", "id": "badge_text_color", "label": "Texte des badges", "default": "#FFFFFF" },
+    { "type": "color", "id": "discount_color", "label": "Couleur badge de réduction", "default": "#3D4030" },
+
+    { "type": "header", "content": "Pastilles couleurs (swatches)" },
+    { "type": "checkbox", "id": "round_swatches", "label": "Pastilles rondes", "default": true, "info": "Décocher pour des carrés." }
+  ],
+  "presets": [
+    {
+      "name": "Featured products",
+      "category": "Produit"
+    }
+  ]
+}
+{% endschema %}

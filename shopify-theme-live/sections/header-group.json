@@ -1,0 +1,108 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "message_MW8axG": {
+          "type": "message",
+          "settings": {
+            "text": "LIVRAISON EN FRANCE / BELGIQUE / LUXEMBOURG / CORSE",
+            "link": ""
+          }
+        },
+        "message_Tq8E7m": {
+          "type": "message",
+          "settings": {
+            "text": "PAIEMENT EN 3×",
+            "link": ""
+          }
+        },
+        "message_QcdyNw": {
+          "type": "message",
+          "settings": {
+            "text": "GARANTIE 2 ANS",
+            "link": ""
+          }
+        },
+        "message_YWqmJW": {
+          "type": "message",
+          "settings": {
+            "text": "DESIGN FRANÇAIS",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "message_MW8axG",
+        "message_Tq8E7m",
+        "message_QcdyNw",
+        "message_YWqmJW"
+      ],
+      "settings": {
+        "bg_color": "#000000",
+        "text_color": "#ffffff",
+        "text_opacity": 80,
+        "height": 28,
+        "font_size": 10,
+        "rotation_interval": 3,
+        "timer_enabled": true,
+        "timer_label": "Fin des soldes dans",
+        "timer_end_date": "2026-12-31",
+        "timer_end_time": "23:59",
+        "timer_format": "hms",
+        "timer_unit_days": "j",
+        "timer_unit_hours": "h",
+        "timer_unit_minutes": "m",
+        "timer_unit_seconds": "",
+        "timer_expired_text": "Offre expirée"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_default": "shopify://shop_images/NOIR_SANS_FOND.svg",
+        "logo_transparent": "shopify://shop_images/BLANC_SANS_FOND.svg",
+        "logo_height_desktop": 190,
+        "logo_height_mobile": 160,
+        "menu": "main-menu",
+        "show_search": true,
+        "height_desktop": 90,
+        "height_mobile": 70,
+        "max_width": 1760,
+        "enable_transparent_on_home": true,
+        "enable_transparent_on_collection": true,
+        "text_color_transparent": "#ffffff",
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "border_color": "#ffffff",
+        "cart_badge_bg": "#000000",
+        "cart_badge_color": "#ffffff",
+        "drawer_banner_eyebrow": "NOUVELLE COLLECTION",
+        "drawer_banner_title": "Essentiels 2026",
+        "drawer_banner_link": "",
+        "drawer_subtitle_1": "Notre vision du luxe",
+        "drawer_subtitle_2": "Pièces iconiques",
+        "drawer_subtitle_3": "Depuis Paris",
+        "drawer_subtitle_4": "Nous rencontrer",
+        "drawer_quick_links": "",
+        "drawer_address": "231 rue Saint-Honoré, Paris",
+        "drawer_email": "contact@squareparis.com"
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
+}

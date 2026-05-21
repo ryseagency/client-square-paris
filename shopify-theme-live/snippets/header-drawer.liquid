@@ -1,0 +1,746 @@
+{%- comment -%}
+  ============================================
+  Snippet: Header Drawer (Mobile Menu)
+  Icônes SVG inline — aucune dépendance snippets externes
+  ============================================
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign drawer_id = 'header-drawer'
+
+  assign subtitles = ''
+  assign subtitles = subtitles | append: s.drawer_subtitle_1 | append: '|||'
+  assign subtitles = subtitles | append: s.drawer_subtitle_2 | append: '|||'
+  assign subtitles = subtitles | append: s.drawer_subtitle_3 | append: '|||'
+  assign subtitles = subtitles | append: s.drawer_subtitle_4
+  assign subtitles_arr = subtitles | split: '|||'
+-%}
+
+<style>
+  .header-drawer__overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 999998 !important;
+    transition: opacity 400ms ease, visibility 0ms linear 400ms;
+    cursor: pointer;
+  }
+
+  .header-drawer__overlay[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 400ms ease, visibility 0ms linear 0ms;
+  }
+
+  .header-drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 85vw;
+    max-width: 380px;
+    background-color: #FFFFFF !important;
+    color: var(--color-noir, #000);
+    z-index: 999999 !important;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 450ms cubic-bezier(0.25, 0.1, 0.25, 1);
+    will-change: transform;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.1);
+  }
+
+  .header-drawer[data-open="true"] {
+    transform: translateX(0);
+  }
+
+  @media (min-width: 1024px) {
+    .header-drawer,
+    .header-drawer__overlay {
+      display: none !important;
+    }
+  }
+
+  .header-drawer__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 0 16px;
+    flex-shrink: 0;
+  }
+
+  .header-drawer__logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .header-drawer__logo img {
+    display: block;
+    height: 90px;
+    width: auto;
+    max-width: 220px;
+    object-fit: contain;
+  }
+
+  .header-drawer__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    padding: 8px;
+    margin: -8px;
+    color: rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: color 300ms ease;
+  }
+
+  .header-drawer__close:hover,
+  .header-drawer__close:focus-visible {
+    color: var(--color-noir, #000);
+    outline: none;
+  }
+  .header-drawer__close svg { width: 22px; height: 22px; }
+
+  .header-drawer__banner {
+    position: relative;
+    margin: 4px 12px 4px 12px;
+    height: 120px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    flex-shrink: 0;
+  }
+
+  .header-drawer__banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .header-drawer__banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+  }
+
+  .header-drawer__banner-content {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 12px;
+    z-index: 2;
+  }
+
+  .header-drawer__banner-eyebrow {
+    display: block;
+    font-family: var(--font-accent-family, var(--font-body-family));
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 2px 0;
+  }
+
+  .header-drawer__banner-title {
+    display: block;
+    font-family: var(--font-heading-family);
+    font-size: 14px;
+    font-weight: var(--font-weight-heading, 400);
+    letter-spacing: 0.1em;
+    color: #FFFFFF;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .header-drawer__quick {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 24px;
+    flex-shrink: 0;
+  }
+
+  .header-drawer__quick-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.5);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 300ms ease;
+    font-family: var(--font-body-family);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .header-drawer__quick-item:hover,
+  .header-drawer__quick-item:focus-visible {
+    color: var(--color-noir, #000);
+    outline: none;
+  }
+  .header-drawer__quick-item svg { width: 16px; height: 16px; }
+
+  .header-drawer__separator {
+    height: 1px;
+    margin: 0 24px;
+    background-color: rgba(0, 0, 0, 0.06);
+    border: 0;
+    flex-shrink: 0;
+  }
+
+  .header-drawer__nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 24px 0 24px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .header-drawer__nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header-drawer__nav-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  }
+  .header-drawer__nav-item:last-child {
+    border-bottom: 0;
+  }
+
+  .header-drawer__nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 300ms ease;
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  .header-drawer[data-open="true"] .header-drawer__nav-link {
+    animation: headerDrawerFadeIn 400ms cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(1) .header-drawer__nav-link { animation-delay: 150ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(2) .header-drawer__nav-link { animation-delay: 220ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(3) .header-drawer__nav-link { animation-delay: 290ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(4) .header-drawer__nav-link { animation-delay: 360ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(5) .header-drawer__nav-link { animation-delay: 430ms; }
+  .header-drawer[data-open="true"] .header-drawer__nav-item:nth-child(6) .header-drawer__nav-link { animation-delay: 500ms; }
+
+  @keyframes headerDrawerFadeIn {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .header-drawer__nav-title {
+    display: block;
+    font-family: var(--font-heading-family);
+    font-size: 18px;
+    font-weight: var(--font-weight-heading, 400);
+    letter-spacing: 0.1em;
+    color: var(--color-noir, #000);
+    line-height: 1.2;
+    text-transform: lowercase;
+  }
+
+  .header-drawer__nav-subtitle {
+    display: block;
+    font-family: var(--font-body-family);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: rgba(0, 0, 0, 0.35);
+    margin-top: 2px;
+  }
+
+  .header-drawer__nav-arrow {
+    flex-shrink: 0;
+    color: rgba(0, 0, 0, 0.15);
+    transition: color 300ms ease, transform 300ms ease;
+  }
+  .header-drawer__nav-arrow svg { width: 16px; height: 16px; }
+
+  .header-drawer__nav-link:hover .header-drawer__nav-arrow,
+  .header-drawer__nav-link:focus-visible .header-drawer__nav-arrow {
+    color: rgba(0, 0, 0, 0.5);
+    transform: translateX(4px);
+  }
+
+  .header-drawer__quick-links {
+    margin-top: 32px;
+    opacity: 0;
+  }
+
+  .header-drawer[data-open="true"] .header-drawer__quick-links {
+    animation: headerDrawerFadeOpacity 400ms ease forwards;
+    animation-delay: 500ms;
+  }
+
+  @keyframes headerDrawerFadeOpacity {
+    to { opacity: 1; }
+  }
+
+  .header-drawer__quick-links-label {
+    display: block;
+    font-family: var(--font-accent-family, var(--font-body-family));
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.25);
+    margin: 0 0 12px 0;
+  }
+
+  .header-drawer__quick-links-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header-drawer__quick-link {
+    display: inline-flex;
+    font-family: var(--font-body-family);
+    font-size: 11px;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: color 300ms ease, border-color 300ms ease;
+  }
+
+  .header-drawer__quick-link:hover,
+  .header-drawer__quick-link:focus-visible {
+    color: var(--color-noir, #000);
+    border-color: rgba(0, 0, 0, 0.2);
+    outline: none;
+  }
+
+  .header-drawer__footer {
+    padding: 8px 24px 24px 24px;
+    flex-shrink: 0;
+    opacity: 0;
+  }
+
+  .header-drawer[data-open="true"] .header-drawer__footer {
+    animation: headerDrawerFadeOpacity 400ms ease forwards;
+    animation-delay: 600ms;
+  }
+
+  .header-drawer__footer-separator {
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.06);
+    border: 0;
+    margin: 0 0 20px 0;
+  }
+
+  .header-drawer__wishlist-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    font-family: var(--font-body-family);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-noir, #000);
+    text-decoration: none;
+    transition: opacity 300ms ease;
+  }
+  .header-drawer__wishlist-row svg { width: 18px; height: 18px; }
+  .header-drawer__wishlist-row:hover,
+  .header-drawer__wishlist-row:focus-visible { opacity: 0.6; outline: none; }
+
+  .header-drawer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .header-drawer__contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(0, 0, 0, 0.3);
+    font-family: var(--font-body-family);
+    font-size: 9px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+  .header-drawer__contact-item svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  .header-drawer__contact-item--link:hover,
+  .header-drawer__contact-item--link:focus-visible {
+    color: var(--color-noir, #000);
+    outline: none;
+  }
+
+  body.drawer-open {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header-drawer,
+    .header-drawer__overlay,
+    .header-drawer * {
+      transition: none !important;
+      animation: none !important;
+    }
+    .header-drawer[data-open="true"] .header-drawer__nav-link,
+    .header-drawer[data-open="true"] .header-drawer__quick-links,
+    .header-drawer[data-open="true"] .header-drawer__footer {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .header-drawer a:focus-visible,
+  .header-drawer button:focus-visible {
+    outline: 2px solid var(--color-noir, #000);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+</style>
+
+<aside
+  id="{{ drawer_id }}"
+  class="header-drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menu mobile"
+  data-open="false"
+  hidden
+>
+  <div class="header-drawer__top">
+    <a href="{{ routes.root_url }}" class="header-drawer__logo" aria-label="{{ shop.name | escape }} — Accueil">
+      {%- if s.logo_default != blank -%}
+        <img
+          src="{{ s.logo_default | image_url: width: 320 }}"
+          alt="{{ shop.name | escape }}"
+          width="{{ s.logo_default.width }}"
+          height="{{ s.logo_default.height }}"
+          loading="lazy"
+          decoding="async"
+        >
+      {%- else -%}
+        <span style="font-family: var(--font-heading-family); font-size: 20px;">{{ shop.name | escape }}</span>
+      {%- endif -%}
+    </a>
+
+    <button
+      type="button"
+      class="header-drawer__close"
+      aria-label="Fermer le menu"
+      data-drawer-close
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+        <line x1="6" y1="6" x2="18" y2="18"/>
+        <line x1="18" y1="6" x2="6" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  {%- if s.drawer_banner_image != blank -%}
+    <a
+      href="{{ s.drawer_banner_link | default: routes.root_url }}"
+      class="header-drawer__banner"
+      aria-label="{{ s.drawer_banner_title | default: 'Collection' | escape }}"
+    >
+      <img
+        src="{{ s.drawer_banner_image | image_url: width: 760 }}"
+        srcset="
+          {{ s.drawer_banner_image | image_url: width: 380 }} 380w,
+          {{ s.drawer_banner_image | image_url: width: 760 }} 760w
+        "
+        sizes="380px"
+        alt="{{ s.drawer_banner_title | default: 'Collection' | escape }}"
+        width="760"
+        height="240"
+        loading="lazy"
+        decoding="async"
+      >
+      <div class="header-drawer__banner-content">
+        {%- if s.drawer_banner_eyebrow != blank -%}
+          <span class="header-drawer__banner-eyebrow">{{ s.drawer_banner_eyebrow | escape }}</span>
+        {%- endif -%}
+        {%- if s.drawer_banner_title != blank -%}
+          <span class="header-drawer__banner-title">{{ s.drawer_banner_title | escape }}</span>
+        {%- endif -%}
+      </div>
+    </a>
+  {%- endif -%}
+
+  <div class="header-drawer__quick">
+    {%- if s.show_search -%}
+      <a href="{{ routes.search_url }}" class="header-drawer__quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.5" y2="16.5"/>
+        </svg>
+        <span>Rechercher</span>
+      </a>
+    {%- endif -%}
+
+    {%- if shop.customer_accounts_enabled -%}
+      <a
+        href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
+        class="header-drawer__quick-item"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+        </svg>
+        <span>{%- if customer -%}Mon compte{%- else -%}Compte{%- endif -%}</span>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <hr class="header-drawer__separator" aria-hidden="true">
+
+  <nav class="header-drawer__nav" role="navigation" aria-label="Menu mobile">
+    {%- if s.menu != blank -%}
+      <ul class="header-drawer__nav-list" role="list">
+        {%- for link in s.menu.links -%}
+          {%- assign subtitle = subtitles_arr[forloop.index0] -%}
+          <li class="header-drawer__nav-item">
+            <a
+              href="{{ link.url }}"
+              class="header-drawer__nav-link"
+              {% if link.current %}aria-current="page"{% endif %}
+            >
+              <div>
+                <span class="header-drawer__nav-title">{{ link.title | escape }}</span>
+                {%- if subtitle != blank -%}
+                  <span class="header-drawer__nav-subtitle">{{ subtitle | escape }}</span>
+                {%- endif -%}
+              </div>
+              <span class="header-drawer__nav-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- if s.drawer_quick_links != blank and s.drawer_quick_links.links.size > 0 -%}
+      <div class="header-drawer__quick-links">
+        <span class="header-drawer__quick-links-label">Accès rapide</span>
+        <ul class="header-drawer__quick-links-list" role="list">
+          {%- for link in s.drawer_quick_links.links -%}
+            <li>
+              <a href="{{ link.url }}" class="header-drawer__quick-link">{{ link.title | escape }}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  </nav>
+
+  <div class="header-drawer__footer">
+    {%- if s.show_header_wishlist -%}
+      <a href="/pages/wishlist" class="header-drawer__wishlist-row" data-swym-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 21s-8-5.2-8-10.4A4.1 4.1 0 0 1 11.5 8L12 9l.5-1A4.1 4.1 0 0 1 20 10.6C20 15.8 12 21 12 21z"/>
+        </svg>
+        <span>Ma wishlist</span>
+      </a>
+    {%- endif -%}
+    <hr class="header-drawer__footer-separator" aria-hidden="true">
+    <div class="header-drawer__contact">
+      {%- if s.drawer_address != blank -%}
+        <div class="header-drawer__contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+          <span>{{ s.drawer_address | escape }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- if s.drawer_email != blank -%}
+        <a href="mailto:{{ s.drawer_email }}" class="header-drawer__contact-item header-drawer__contact-item--link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="1"/>
+            <polyline points="3 7 12 13 21 7"/>
+          </svg>
+          <span>{{ s.drawer_email | escape }}</span>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</aside>
+
+<div class="header-drawer__overlay" data-drawer-close aria-hidden="true"></div>
+
+<script>
+(function() {
+  function initDrawer() {
+    var drawer = document.getElementById('{{ drawer_id }}');
+    var overlay = document.querySelector('.header-drawer__overlay');
+
+    if (!drawer || !overlay) {
+      console.warn('[drawer] missing elements', { drawer: !!drawer, overlay: !!overlay });
+      return;
+    }
+
+    var lastFocusedElement = null;
+
+    function getFocusableElements() {
+      return drawer.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])');
+    }
+
+    function openDrawer() {
+      console.log('[drawer] OPEN');
+      lastFocusedElement = document.activeElement;
+      drawer.hidden = false;
+      overlay.hidden = false;
+      void drawer.offsetWidth;
+      drawer.setAttribute('data-open', 'true');
+      overlay.setAttribute('data-open', 'true');
+      document.body.classList.add('drawer-open');
+
+      document.querySelectorAll('[data-drawer-open]').forEach(function(btn) {
+        btn.setAttribute('aria-expanded', 'true');
+      });
+
+      setTimeout(function() {
+        var f = getFocusableElements();
+        if (f.length > 0) f[0].focus();
+      }, 100);
+    }
+
+    function closeDrawer() {
+      console.log('[drawer] CLOSE');
+      drawer.setAttribute('data-open', 'false');
+      overlay.setAttribute('data-open', 'false');
+      document.body.classList.remove('drawer-open');
+
+      document.querySelectorAll('[data-drawer-open]').forEach(function(btn) {
+        btn.setAttribute('aria-expanded', 'false');
+      });
+
+      setTimeout(function() {
+        drawer.hidden = true;
+        overlay.hidden = true;
+      }, 450);
+
+      if (lastFocusedElement && lastFocusedElement.focus) {
+        lastFocusedElement.focus();
+      }
+    }
+
+    // Méthode 1 : listeners directs sur chaque bouton trouvé MAINTENANT
+    function attachDirectListeners() {
+      document.querySelectorAll('[data-drawer-open]').forEach(function(btn) {
+        if (btn.__drawerBound) return;
+        btn.__drawerBound = true;
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openDrawer();
+        });
+      });
+
+      document.querySelectorAll('[data-drawer-close]').forEach(function(btn) {
+        if (btn.__drawerBound) return;
+        btn.__drawerBound = true;
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeDrawer();
+        });
+      });
+    }
+    attachDirectListeners();
+
+    // Méthode 2 : délégation globale en filet de sécurité
+    document.addEventListener('click', function(e) {
+      var openTrigger = e.target.closest('[data-drawer-open]');
+      var closeTrigger = e.target.closest('[data-drawer-close]');
+
+      if (openTrigger && drawer.getAttribute('data-open') !== 'true') {
+        e.preventDefault();
+        openDrawer();
+        return;
+      }
+
+      if (closeTrigger && drawer.getAttribute('data-open') === 'true') {
+        e.preventDefault();
+        closeDrawer();
+        return;
+      }
+    });
+
+    // Ré-attache sur nouveaux boutons si Shopify les recrée dynamiquement
+    var mo = new MutationObserver(attachDirectListeners);
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && drawer.getAttribute('data-open') === 'true') {
+        closeDrawer();
+      }
+    });
+
+    drawer.addEventListener('keydown', function(e) {
+      if (e.key !== 'Tab') return;
+      var f = getFocusableElements();
+      if (f.length === 0) return;
+      var first = f[0];
+      var last = f[f.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    drawer.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        var href = link.getAttribute('href');
+        if (href && !href.startsWith('#')) {
+          setTimeout(closeDrawer, 100);
+        }
+      });
+    });
+
+    console.log('[drawer] initialized');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDrawer);
+  } else {
+    initDrawer();
+  }
+})();
+</script>

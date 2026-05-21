@@ -1,0 +1,362 @@
+{%- liquid
+  assign section_id = 'reassurance-' | append: section.id
+  assign options = section.settings
+
+  assign bg_color = options.bg_color | default: '#EEECE5'
+  assign title_color = options.title_color | default: '#000000'
+  assign text_color = options.text_color | default: '#000000'
+
+  assign columns_desktop = options.columns_desktop | default: 4
+  assign icon_position = options.icon_position | default: 'top'
+  assign auto_scroll_speed = options.auto_scroll_speed | default: 3
+-%}
+
+{%- capture section_css -%}
+  /* py-6 md:py-8 px-4 md:px-6 xl:px-8 */
+  #{{ section_id }} {
+    background-color: {{ bg_color }};
+    padding: 24px 16px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} { padding: 32px 24px; }
+  }
+  @media (min-width: 1280px) {
+    #{{ section_id }} { padding-left: 32px; padding-right: 32px; }
+  }
+
+  #{{ section_id }} .rs__inner { max-width: 1760px; margin: 0 auto; }
+
+  /* Desktop : grille 4 colonnes */
+  #{{ section_id }} .rs__grid {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .rs__grid {
+      display: grid;
+      grid-template-columns: repeat({{ columns_desktop }}, 1fr);
+      gap: 32px;
+    }
+  }
+
+  /* Mobile : carousel horizontal */
+  #{{ section_id }} .rs__carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #{{ section_id }} .rs__carousel::-webkit-scrollbar { display: none; }
+  @media (min-width: 768px) {
+    #{{ section_id }} .rs__carousel { display: none; }
+  }
+
+  /* Item : reveal handled by sq-reveal system */
+
+  /* Mobile : largeur 70vw snap-center */
+  #{{ section_id }} .rs__carousel .rs__item {
+    min-width: 70vw;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .rs__grid .rs__item { min-width: 0; }
+  }
+
+  /* Titre : ST Nova Sans 400 14px (13px mobile) mb-1.5 */
+  #{{ section_id }} .rs__title {
+    display: block;
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: {{ title_color }};
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .rs__title { font-size: 14px; }
+  }
+
+  /* Description : Poppins 300 11px noir/40 leading-relaxed (1.65) */
+  #{{ section_id }} .rs__desc {
+    font-family: var(--font-body-family);
+    font-weight: var(--font-weight-body);
+    font-size: 11px;
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+    color: {{ text_color }};
+    opacity: 0.4;
+    margin: 0;
+  }
+  #{{ section_id }} .rs__desc * { margin: 0; color: inherit; font-family: inherit; }
+
+  /* Dots mobile */
+  #{{ section_id }} .rs__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .rs__dots { display: none; }
+  }
+  #{{ section_id }} .rs__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+  }
+  #{{ section_id }} .rs__dot.is-active { background-color: rgba(0,0,0,0.5); }
+
+  #{{ section_id }} .rs__empty {
+    padding: 24px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: {{ text_color }};
+    opacity: 0.5;
+  }
+
+  /* prefers-reduced-motion handled by sq-reveal.css */
+
+  /* Icon : centered above title */
+  #{{ section_id }} .rs__icon {
+    display: block;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+
+  {% if icon_position == 'left' %}
+  /* Left-aligned icon: icon + text side by side */
+  #{{ section_id }} .rs__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    text-align: left;
+  }
+  #{{ section_id }} .rs__icon {
+    flex-shrink: 0;
+    margin: 2px 0 0;
+  }
+  {% else %}
+  /* Top-centered icon */
+  #{{ section_id }} .rs__item { text-align: center; }
+  #{{ section_id }} .rs__icon {
+    margin: 0 auto 10px;
+  }
+  {% endif %}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+<section
+  id="{{ section_id }}"
+  class="rs"
+  {%- if options.section_label != blank -%}
+  aria-label="{{ options.section_label | escape }}"
+  {%- else -%}
+  aria-label="Nos garanties"
+  {%- endif -%}
+>
+  <div class="rs__inner">
+    {%- if section.blocks.size == 0 -%}
+      <div class="rs__empty">Ajoutez des piliers dans les réglages de la section.</div>
+    {%- else -%}
+
+      {%- comment -%} Desktop : grille {%- endcomment -%}
+      <div class="rs__grid" role="list">
+        {%- for block in section.blocks -%}
+          <div class="rs__item" role="listitem" data-rs-item data-reveal="fade-up" data-reveal-delay="{{ forloop.index0 | times: 0.15 }}" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon != blank -%}
+              <img src="{{ block.settings.icon | image_url: width: 56 }}" alt="" class="rs__icon" width="28" height="28" loading="lazy" decoding="async">
+            {%- endif -%}
+            {% if icon_position == 'left' %}<div class="rs__text">{% endif %}
+            {%- if block.settings.title != blank -%}
+              <span class="rs__title">{{ block.settings.title }}</span>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <div class="rs__desc">{{ block.settings.description }}</div>
+            {%- endif -%}
+            {% if icon_position == 'left' %}</div>{% endif %}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Mobile : carousel {%- endcomment -%}
+      <div class="rs__carousel" data-rs-scroll role="list">
+        {%- for block in section.blocks -%}
+          <div class="rs__item" role="listitem" data-rs-item data-reveal="fade-up" data-reveal-delay="{{ forloop.index0 | times: 0.15 }}">
+            {%- if block.settings.icon != blank -%}
+              <img src="{{ block.settings.icon | image_url: width: 56 }}" alt="" class="rs__icon" width="28" height="28" loading="lazy" decoding="async">
+            {%- endif -%}
+            {% if icon_position == 'left' %}<div class="rs__text">{% endif %}
+            {%- if block.settings.title != blank -%}
+              <span class="rs__title">{{ block.settings.title }}</span>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <div class="rs__desc">{{ block.settings.description }}</div>
+            {%- endif -%}
+            {% if icon_position == 'left' %}</div>{% endif %}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if section.blocks.size > 1 -%}
+        <div class="rs__dots" aria-hidden="true">
+          {%- for block in section.blocks -%}
+            <span class="rs__dot{% if forloop.first %} is-active{% endif %}" data-rs-dot="{{ forloop.index0 }}"></span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+(function(){
+  var section = document.getElementById('{{ section_id }}');
+  if (!section) return;
+
+  var scroller = section.querySelector('[data-rs-scroll]');
+  var dots = section.querySelectorAll('[data-rs-dot]');
+  if (!scroller || dots.length === 0) return;
+
+  var cards = scroller.children;
+  var raf = null;
+  var currentIdx = 0;
+  var autoTimer = null;
+  var AUTO_DELAY = {{ auto_scroll_speed }}000;
+
+  var update = function(){
+    var total = scroller.scrollWidth / cards.length;
+    if (total <= 0) return;
+    var idx = Math.round(scroller.scrollLeft / total);
+    if (idx < 0) idx = 0;
+    if (idx > cards.length - 1) idx = cards.length - 1;
+    currentIdx = idx;
+    for (var i = 0; i < dots.length; i++) {
+      if (i === idx) dots[i].classList.add('is-active');
+      else dots[i].classList.remove('is-active');
+    }
+    raf = null;
+  };
+  scroller.addEventListener('scroll', function(){
+    if (raf === null) raf = requestAnimationFrame(update);
+  }, { passive: true });
+
+  /* Auto-scroll mobile */
+  function scrollToIndex(i) {
+    var total = scroller.scrollWidth / cards.length;
+    scroller.scrollTo({ left: total * i, behavior: 'smooth' });
+  }
+  function autoNext() {
+    var next = currentIdx + 1;
+    if (next >= cards.length) next = 0;
+    scrollToIndex(next);
+  }
+  function startAuto() {
+    stopAuto();
+    autoTimer = setInterval(autoNext, AUTO_DELAY);
+  }
+  function stopAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  }
+
+  /* Pause on touch, resume after */
+  scroller.addEventListener('touchstart', stopAuto, { passive: true });
+  scroller.addEventListener('touchend', function(){ setTimeout(startAuto, AUTO_DELAY); }, { passive: true });
+
+  /* Only run on mobile */
+  var mq = window.matchMedia('(max-width: 767px)');
+  function handleMQ(e) { e.matches ? startAuto() : stopAuto(); }
+  mq.addEventListener ? mq.addEventListener('change', handleMQ) : mq.addListener(handleMQ);
+  if (mq.matches) startAuto();
+})();
+</script>
+
+{%- if section.blocks.size > 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  {% if options.section_label != blank %}"name": {{ options.section_label | strip_html | json }},{% else %}"name": "Nos garanties",{% endif %}
+  "numberOfItems": {{ section.blocks.size }},
+  "itemListElement": [
+    {%- for block in section.blocks -%}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "item": {
+          "@type": "Thing",
+          "name": {{ block.settings.title | strip_html | json }},
+          "description": {{ block.settings.description | strip_html | json }}
+        }
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Réassurance",
+  "tag": "section",
+  "class": "section-reassurance",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    { "type": "header", "content": "Général" },
+    { "type": "text", "id": "section_label", "label": "Libellé ARIA de la section (SEO)", "default": "Nos garanties", "info": "Utilisé pour l'accessibilité et le schema SEO." },
+
+    { "type": "header", "content": "Grille" },
+    { "type": "range", "id": "columns_desktop", "label": "Colonnes (desktop)", "min": 2, "max": 6, "step": 1, "default": 4 },
+    {
+      "type": "select", "id": "icon_position", "label": "Position des icônes",
+      "options": [
+        { "value": "top", "label": "Centrée au-dessus" },
+        { "value": "left", "label": "Alignée à gauche" }
+      ],
+      "default": "top"
+    },
+
+    { "type": "range", "id": "auto_scroll_speed", "label": "Vitesse défilement auto (mobile)", "min": 1, "max": 10, "step": 1, "unit": "s", "default": 3, "info": "Intervalle en secondes entre chaque slide sur mobile." },
+
+    { "type": "header", "content": "Couleurs" },
+    { "type": "color", "id": "bg_color", "label": "Fond de section", "default": "#EEECE5" },
+    { "type": "color", "id": "title_color", "label": "Couleur des titres", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Couleur des descriptions", "default": "#000000" }
+  ],
+  "blocks": [
+    {
+      "type": "pillar",
+      "name": "Pilier",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icône", "info": "Image carrée recommandée (56×56px ou SVG)." },
+        { "type": "text", "id": "title", "label": "Titre", "default": "Livraison soignée" },
+        { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Sur rendez-vous, partout en France métropolitaine, Belgique et Luxembourg.</p>" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Réassurance",
+      "category": "Contenu",
+      "blocks": [
+        { "type": "pillar", "settings": { "title": "Livraison soignée", "description": "<p>Sur rendez-vous, partout en France métropolitaine, Belgique et Luxembourg.</p>" } },
+        { "type": "pillar", "settings": { "title": "Garantie 2 ans", "description": "<p>Sur l'ensemble du catalogue. Tissus certifiés Oeko-Tex.</p>" } },
+        { "type": "pillar", "settings": { "title": "Paiement en 3×", "description": "<p>Sans frais jusqu'à 2 999 €, sans dossier ni justificatif.</p>" } },
+        { "type": "pillar", "settings": { "title": "Service client", "description": "<p>Une équipe française à votre écoute, du lundi au samedi.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

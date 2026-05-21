@@ -1,0 +1,310 @@
+{%- liquid
+  assign noir = '#1A1A1A'
+  assign section_id = 'faq-' | append: section.id
+-%}
+
+{%- capture section_css -%}
+/* ── Margins ── */
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+/* ── Container ── */
+#{{ section_id }} {
+  width: 100%;
+  background: #ffffff;
+  padding: {{ section.settings.padding_top_mobile }}px 20px {{ section.settings.padding_bottom_mobile }}px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} { padding: {{ section.settings.padding_top_desktop }}px 64px {{ section.settings.padding_bottom_desktop }}px; }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} { padding: {{ section.settings.padding_top_desktop }}px 80px {{ section.settings.padding_bottom_desktop }}px; }
+}
+
+/* ── Layout ── */
+#{{ section_id }} .faq__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .faq__layout {
+    flex-direction: row;
+    gap: 80px;
+  }
+}
+
+/* ── Left column ── */
+#{{ section_id }} .faq__left {
+  flex-shrink: 0;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .faq__left {
+    width: 280px;
+  }
+}
+#{{ section_id }} .faq__subtitle {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+  margin-bottom: 12px;
+}
+#{{ section_id }} .faq__title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: {{ noir }};
+  margin: 0 0 16px;
+  line-height: 1.2;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .faq__title {
+    font-size: 32px;
+  }
+}
+#{{ section_id }} .faq__description {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(26,26,26,0.4);
+  margin: 0;
+}
+
+/* ── Right column (accordion) ── */
+#{{ section_id }} .faq__right {
+  flex: 1;
+}
+#{{ section_id }} .faq__item {
+  border-top: 1px solid rgba(26,26,26,0.08);
+}
+#{{ section_id }} .faq__item:last-child {
+  border-bottom: 1px solid rgba(26,26,26,0.08);
+}
+#{{ section_id }} .faq__question {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  gap: 16px;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .faq__number {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  color: rgba(26,26,26,0.2);
+  flex-shrink: 0;
+  min-width: 20px;
+}
+#{{ section_id }} .faq__question-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: {{ noir }};
+  flex: 1;
+}
+#{{ section_id }} .faq__icon {
+  flex-shrink: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  color: rgba(26,26,26,0.3);
+  transition: transform 0.3s ease;
+  line-height: 1;
+}
+#{{ section_id }} .faq__item.is-open .faq__icon {
+  transform: rotate(45deg);
+}
+#{{ section_id }} .faq__answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+#{{ section_id }} .faq__answer-inner {
+  padding: 0 0 24px 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgba(26,26,26,0.6);
+}
+#{{ section_id }} .faq__answer-inner p {
+  margin: 0;
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<div id="{{ section_id }}">
+  <div class="faq__layout">
+
+    {%- comment -%} ══ Left column ══ {%- endcomment -%}
+    <div class="faq__left">
+      {%- if section.settings.subtitle != blank -%}
+        <div class="faq__subtitle">{{ section.settings.subtitle }}</div>
+      {%- endif -%}
+      {%- if section.settings.title != blank -%}
+        <h2 class="faq__title">{{ section.settings.title | newline_to_br }}</h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <p class="faq__description">{{ section.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ══ Right column — accordion ══ {%- endcomment -%}
+    {%- if section.blocks.size > 0 -%}
+      <div class="faq__right">
+        {%- for block in section.blocks -%}
+          <div class="faq__item" {{ block.shopify_attributes }}>
+            <button class="faq__question" aria-expanded="false" data-faq-toggle>
+              <span class="faq__question-text">{{ block.settings.question }}</span>
+              <span class="faq__icon">+</span>
+            </button>
+            <div class="faq__answer">
+              <div class="faq__answer-inner">{{ block.settings.answer }}</div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var wrap = document.getElementById('{{ section_id }}');
+  if (!wrap) return;
+  wrap.querySelectorAll('[data-faq-toggle]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.closest('.faq__item');
+      var answer = item.querySelector('.faq__answer');
+      var isOpen = item.classList.contains('is-open');
+      /* close all */
+      wrap.querySelectorAll('.faq__item.is-open').forEach(function(el){
+        el.classList.remove('is-open');
+        el.querySelector('.faq__question').setAttribute('aria-expanded','false');
+        el.querySelector('.faq__answer').style.maxHeight = null;
+      });
+      if (!isOpen) {
+        item.classList.add('is-open');
+        btn.setAttribute('aria-expanded','true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "class": "faq-section",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Sous-titre", "default": "faq" },
+    { "type": "textarea", "id": "title", "label": "Titre", "default": "Vos questions,\nnos réponses." },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Tout ce que vous devez savoir avant de choisir votre YOKO." },
+    { "type": "header", "content": "Padding" },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top — desktop",
+      "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom — desktop",
+      "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64
+    },
+    { "type": "header", "content": "Marges" },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge supérieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge inférieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge supérieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge inférieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Puis-je commander un seul module séparément ?" },
+        { "type": "richtext", "id": "answer", "label": "Réponse", "default": "<p>Oui, chaque module est disponible à l'unité. Vous pouvez composer votre canapé pièce par pièce.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "question": "Puis-je commander un seul module séparément ?",
+            "answer": "<p>Oui, chaque module est disponible à l'unité. Vous pouvez composer votre canapé pièce par pièce.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Comment entretenir le tissu au quotidien ?",
+            "answer": "<p>Un simple coup d'aspirateur suffit pour l'entretien courant. Les housses sont déhoussables et lavables en machine à 30°C.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Quelle est la politique de retour pour un canapé sur mesure ?",
+            "answer": "<p>Vous disposez de 14 jours après réception pour nous retourner votre canapé. Les frais de retour sont à notre charge.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,567 @@
+{%- liquid
+  assign section_id = 'collections-signatures-' | append: section.id
+  assign options = section.settings
+
+  assign eyebrow = options.eyebrow
+  assign heading = options.heading
+  assign heading_tag = options.heading_tag | default: 'h2'
+
+  assign link_label = options.link_label
+  assign link_url = options.link_url
+
+  assign eyebrow_color = options.eyebrow_color | default: '#000000'
+  assign heading_color = options.heading_color | default: '#000000'
+  assign text_color = options.text_color | default: '#000000'
+  assign bg_color = options.bg_color | default: '#FFFFFF'
+
+  assign badge_new_bg = options.badge_new_bg | default: '#40221E'
+  assign badge_shipping_bg = options.badge_shipping_bg | default: '#3D4030'
+  assign badge_text_color = options.badge_text_color | default: '#FFFFFF'
+
+  assign hover_overlay_color = options.hover_overlay_color | default: '#40221E'
+
+  assign heading_min = options.heading_size_min | default: 24
+  assign heading_vw = options.heading_size_vw | default: 3
+  assign heading_max = options.heading_size_max | default: 42
+
+  assign columns_desktop = options.columns_desktop | default: 2
+  assign card_ratio = options.card_ratio | default: '4/3'
+  assign text_on_image = options.text_on_image
+
+  assign badge_metafield_namespace = options.badge_metafield_namespace | default: 'custom'
+  assign badge_metafield_key = options.badge_metafield_key | default: 'badges'
+-%}
+
+{%- capture section_css -%}
+  /* pt-4 md:pt-8 pb-14 md:pb-20 px-4 md:px-6 xl:px-8 */
+  #{{ section_id }} {
+    background-color: {{ bg_color }};
+    padding: 16px 16px 56px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} { padding: 32px 24px 80px; }
+  }
+  @media (min-width: 1280px) {
+    #{{ section_id }} { padding-left: 32px; padding-right: 32px; }
+  }
+
+  #{{ section_id }} .cs__inner { max-width: 1760px; margin: 0 auto; }
+
+  /* Header : colonne mobile, flex-row items-end md */
+  #{{ section_id }} .cs__header {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .cs__header {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+  }
+
+  /* Eyebrow : ST Nova Sans 400 11px tracking 0.2em */
+  #{{ section_id }} .cs__eyebrow {
+    display: block;
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: {{ eyebrow_color }};
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  #{{ section_id }} .cs__eyebrow * { margin: 0; color: inherit; font-family: inherit; }
+
+  /* Titre : Poppins 600 clamp leading-tight (1.25) */
+  #{{ section_id }} .cs__heading {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 1.25;
+    color: {{ heading_color }};
+    font-size: clamp({{ heading_min }}px, {{ heading_vw }}vw, {{ heading_max }}px);
+    margin: 0;
+  }
+  #{{ section_id }} .cs__heading * { font-family: inherit; font-weight: inherit; color: inherit; margin: 0; }
+
+  /* Lien catalogue : Poppins 300 11px tracking 0.15em border-bottom */
+  #{{ section_id }} .cs__link {
+    display: inline-block;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: {{ text_color }};
+    text-decoration: none;
+    border-bottom: 1px solid rgba({{ text_color | color_extract: 'red' }}, {{ text_color | color_extract: 'green' }}, {{ text_color | color_extract: 'blue' }}, 0.2);
+    padding-bottom: 2px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    white-space: nowrap;
+  }
+  #{{ section_id }} .cs__link:hover,
+  #{{ section_id }} .cs__link:focus-visible {
+    opacity: 1;
+    border-bottom-color: {{ text_color }};
+  }
+
+  /* Grille : mobile carousel / desktop grid-cols-N gap-2 */
+  #{{ section_id }} .cs__grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #{{ section_id }} .cs__grid::-webkit-scrollbar { display: none; }
+  @media (min-width: 768px) {
+    #{{ section_id }} .cs__grid {
+      display: grid;
+      grid-template-columns: repeat({{ columns_desktop }}, 1fr);
+      gap: 8px;
+      overflow: visible;
+    }
+  }
+
+  /* Card wrapper */
+  #{{ section_id }} .cs__card {
+    width: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  /* Media : aspect-ratio 4/3, overflow hidden, isolation (pour overlay fiable) */
+  #{{ section_id }} .cs__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: {{ card_ratio }};
+    background-color: #F5F3EE;
+    isolation: isolate;
+  }
+  #{{ section_id }} .cs__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 800ms cubic-bezier(0.25,0.1,0,1);
+  }
+  #{{ section_id }} .cs__card:hover .cs__media img,
+  #{{ section_id }} .cs__card:focus-visible .cs__media img { transform: scale(1.03); }
+
+  /* Overlay hover (comme Lovable : marron 5%) */
+  #{{ section_id }} .cs__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-color: rgba({{ hover_overlay_color | color_extract: 'red' }}, {{ hover_overlay_color | color_extract: 'green' }}, {{ hover_overlay_color | color_extract: 'blue' }}, 0);
+    pointer-events: none;
+    transition: background-color 800ms cubic-bezier(0.25,0.1,0,1);
+  }
+  #{{ section_id }} .cs__card:hover .cs__media::after,
+  #{{ section_id }} .cs__card:focus-visible .cs__media::after {
+    background-color: rgba({{ hover_overlay_color | color_extract: 'red' }}, {{ hover_overlay_color | color_extract: 'green' }}, {{ hover_overlay_color | color_extract: 'blue' }}, 0.05);
+  }
+
+  /* Badges : stack top-left */
+  #{{ section_id }} .cs__badges {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  #{{ section_id }} .cs__badge {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 9px;
+    text-transform: uppercase;
+    color: {{ badge_text_color }};
+    padding: 6px 10px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #{{ section_id }} .cs__badge--new { background-color: {{ badge_new_bg }}; }
+  #{{ section_id }} .cs__badge--shipping { background-color: {{ badge_shipping_bg }}; }
+  #{{ section_id }} .cs__badge--custom { background-color: {{ badge_new_bg }}; }
+
+  /* Infos sous l'image (default) */
+  #{{ section_id }} .cs__info { margin-top: 12px; }
+
+  /* Nom : ST Nova Sans 400 14px */
+  #{{ section_id }} .cs__name {
+    display: block;
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: {{ heading_color }};
+    line-height: 1.2;
+  }
+
+  /* Accroche : Poppins 300 11px noir/40 */
+  #{{ section_id }} .cs__tag {
+    display: block;
+    font-family: var(--font-body-family);
+    font-weight: var(--font-weight-body);
+    font-size: 11px;
+    letter-spacing: var(--ls-body);
+    color: {{ text_color }};
+    opacity: 0.4;
+    margin-top: 4px;
+    line-height: 1.3;
+    text-transform: none;
+  }
+
+  /* Overlay mode: texte sur l'image en bas à gauche */
+  {% if text_on_image %}
+  #{{ section_id }} .cs__info--overlay {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 2;
+    margin-top: 0;
+  }
+  #{{ section_id }} .cs__info--overlay .cs__name { color: #fff; }
+  #{{ section_id }} .cs__info--overlay .cs__tag { color: #fff; opacity: 0.7; }
+  #{{ section_id }} .cs__media--has-overlay::after {
+    background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 50%) !important;
+  }
+  {% endif %}
+
+  /* Dots mobile */
+  #{{ section_id }} .cs__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .cs__dots { display: none; }
+  }
+  #{{ section_id }} .cs__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.12);
+    transition: background-color 0.3s ease;
+  }
+  #{{ section_id }} .cs__dot.is-active { background-color: rgba(0,0,0,0.6); }
+
+  #{{ section_id }} .cs__empty {
+    padding: 48px 24px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: {{ text_color }};
+    opacity: 0.5;
+    border: 1px dashed rgba(0,0,0,0.15);
+  }
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+<section id="{{ section_id }}" class="cs" aria-labelledby="{{ section_id }}-heading">
+  <div class="cs__inner">
+    <div class="cs__header">
+      <div class="cs__header-left">
+        {%- if eyebrow != blank -%}
+          <span class="cs__eyebrow" data-reveal="fade-up" data-reveal-delay="0.1" data-reveal-opacity="0.5">{{ eyebrow }}</span>
+        {%- endif -%}
+
+        {%- if heading != blank -%}
+          <{{ heading_tag }} id="{{ section_id }}-heading" class="cs__heading" data-reveal="words" data-reveal-stagger="0.06">{{ heading }}</{{ heading_tag }}>
+        {%- endif -%}
+      </div>
+
+      {%- if link_label != blank and link_url != blank -%}
+        <a href="{{ link_url }}" class="cs__link" title="{{ link_label | escape }}" data-reveal="fade-up" data-reveal-delay="0.3" data-reveal-opacity="0.6">
+          {{ link_label }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size == 0 -%}
+      <div class="cs__empty">Ajoutez des collections dans les réglages de la section.</div>
+    {%- else -%}
+      <div class="cs__grid" data-cs-scroll role="list">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign col = collections[block.settings.collection]
+            assign custom_name = block.settings.custom_name
+            assign custom_tag = block.settings.custom_tag
+            assign custom_image = block.settings.custom_image
+
+            assign display_name = custom_name
+            if display_name == blank
+              assign display_name = col.title
+            endif
+
+            assign display_tag = custom_tag
+            if display_tag == blank
+              assign display_tag = col.description | strip_html | truncate: 60, ''
+            endif
+
+            assign col_url = col.url | default: '#'
+            assign col_image = custom_image
+            if col_image == blank
+              assign col_image = col.featured_image
+              if col_image == blank and col.products.first.featured_image != blank
+                assign col_image = col.products.first.featured_image
+              endif
+            endif
+
+            # Badges : priorité au block, sinon au metafield de la collection
+            assign show_new = block.settings.badge_new
+            assign show_shipping = block.settings.badge_shipping
+            assign custom_badge = block.settings.custom_badge
+
+            assign mf_badges = col.metafields[badge_metafield_namespace][badge_metafield_key]
+            if show_new == false and show_shipping == false and custom_badge == blank and mf_badges != blank
+              assign mf_badges_down = mf_badges | downcase
+              if mf_badges_down contains 'nouveaut' or mf_badges_down contains 'new'
+                assign show_new = true
+              endif
+              if mf_badges_down contains 'livraison' or mf_badges_down contains 'shipping'
+                assign show_shipping = true
+              endif
+            endif
+          -%}
+
+          <a
+            href="{{ col_url }}"
+            class="cs__card"
+            role="listitem"
+            {{ block.shopify_attributes }}
+            aria-label="{{ display_name | strip_html | escape }}"
+            title="{{ display_name | strip_html | escape }}"
+          >
+            <div class="cs__media{% if text_on_image %} cs__media--has-overlay{% endif %}">
+              {%- if show_new or show_shipping or custom_badge != blank -%}
+                <div class="cs__badges" aria-hidden="true">
+                  {%- if show_new -%}
+                    <span class="cs__badge cs__badge--new">{{ options.badge_new_label | default: 'NOUVEAUTÉ' }}</span>
+                  {%- endif -%}
+                  {%- if show_shipping -%}
+                    <span class="cs__badge cs__badge--shipping">{{ options.badge_shipping_label | default: 'LIVRAISON OFFERTE' }}</span>
+                  {%- endif -%}
+                  {%- if custom_badge != blank -%}
+                    <span class="cs__badge cs__badge--custom">{{ custom_badge | upcase }}</span>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if col_image != blank -%}
+                <img
+                  src="{{ col_image | image_url: width: 1200 }}"
+                  srcset="{{ col_image | image_url: width: 600 }} 600w, {{ col_image | image_url: width: 900 }} 900w, {{ col_image | image_url: width: 1200 }} 1200w, {{ col_image | image_url: width: 1600 }} 1600w"
+                  sizes="(min-width: 1024px) {{ 100 | divided_by: columns_desktop }}vw, 100vw"
+                  alt="{{ col_image.alt | default: display_name | strip_html | escape }}"
+                  width="{{ col_image.width }}"
+                  height="{{ col_image.height }}"
+                  loading="lazy"
+                  decoding="async"
+                >
+              {%- endif -%}
+
+              {%- if text_on_image -%}
+                <div class="cs__info cs__info--overlay">
+                  {%- if display_name != blank -%}
+                    <span class="cs__name">{{ display_name | downcase }}</span>
+                  {%- endif -%}
+                  {%- if display_tag != blank -%}
+                    <span class="cs__tag">{{ display_tag }}</span>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- unless text_on_image -%}
+            <div class="cs__info">
+              {%- if display_name != blank -%}
+                <span class="cs__name">{{ display_name | downcase }}</span>
+              {%- endif -%}
+              {%- if display_tag != blank -%}
+                <span class="cs__tag">{{ display_tag }}</span>
+              {%- endif -%}
+            </div>
+            {%- endunless -%}
+          </a>
+        {%- endfor -%}
+      </div>
+
+      {%- if section.blocks.size > 1 -%}
+        <div class="cs__dots" data-cs-dots aria-hidden="true">
+          {%- for block in section.blocks -%}
+            <span class="cs__dot{% if forloop.first %} is-active{% endif %}" data-cs-dot="{{ forloop.index0 }}"></span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+(function(){
+  var section = document.getElementById('{{ section_id }}');
+  if (!section) return;
+
+  /* Scroll dots only — animations handled by sq-reveal.js */
+  var scroller = section.querySelector('[data-cs-scroll]');
+  var dots = section.querySelectorAll('[data-cs-dot]');
+  if (!scroller || dots.length === 0) return;
+
+  var cards = scroller.children;
+  var raf = null;
+  var update = function(){
+    var total = scroller.scrollWidth / cards.length;
+    if (total <= 0) return;
+    var idx = Math.round(scroller.scrollLeft / total);
+    if (idx < 0) idx = 0;
+    if (idx > cards.length - 1) idx = cards.length - 1;
+    for (var i = 0; i < dots.length; i++) {
+      if (i === idx) dots[i].classList.add('is-active');
+      else dots[i].classList.remove('is-active');
+    }
+    raf = null;
+  };
+  scroller.addEventListener('scroll', function(){
+    if (raf === null) raf = requestAnimationFrame(update);
+  }, { passive: true });
+})();
+</script>
+
+{%- if section.blocks.size > 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  {% if heading != blank %}"name": {{ heading | strip_html | json }},{% endif %}
+  "numberOfItems": {{ section.blocks.size }},
+  "itemListElement": [
+    {%- for block in section.blocks -%}
+      {%- assign col = collections[block.settings.collection] -%}
+      {%- assign col_name = block.settings.custom_name | default: col.title -%}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "item": {
+          "@type": "CollectionPage",
+          "name": {{ col_name | strip_html | json }}
+          {%- if col.url != blank -%},
+          "url": {{ col.url | prepend: request.origin | json }}
+          {%- endif -%}
+          {%- if col.featured_image != blank -%},
+          "image": {{ col.featured_image | image_url: width: 1200 | prepend: 'https:' | json }}
+          {%- endif -%}
+        }
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Collections signatures",
+  "tag": "section",
+  "class": "section-collections-signatures",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    { "type": "header", "content": "Contenu" },
+    { "type": "richtext", "id": "eyebrow", "label": "Sur-titre", "default": "<p>L'édition de saison</p>" },
+    { "type": "richtext", "id": "heading", "label": "Titre", "default": "<p>Nos collections signatures.</p>" },
+    {
+      "type": "select", "id": "heading_tag", "label": "Balise HTML du titre",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h1", "label": "H1" }
+      ],
+      "default": "h2"
+    },
+
+    { "type": "header", "content": "Lien catalogue" },
+    { "type": "text", "id": "link_label", "label": "Texte du lien", "default": "Voir tout le catalogue" },
+    { "type": "url", "id": "link_url", "label": "URL du lien" },
+
+    { "type": "header", "content": "Typographie titre" },
+    { "type": "range", "id": "heading_size_min", "label": "Taille min (mobile)", "min": 16, "max": 48, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "heading_size_vw", "label": "Taille fluide", "min": 2, "max": 8, "step": 1, "unit": "vw", "default": 3 },
+    { "type": "range", "id": "heading_size_max", "label": "Taille max (desktop)", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 42 },
+
+    { "type": "header", "content": "Grille" },
+    { "type": "range", "id": "columns_desktop", "label": "Colonnes (desktop)", "min": 1, "max": 4, "step": 1, "default": 2 },
+    {
+      "type": "select", "id": "card_ratio", "label": "Ratio des images",
+      "options": [
+        { "value": "4/3", "label": "4:3 (paysage)" },
+        { "value": "3/2", "label": "3:2" },
+        { "value": "1/1", "label": "1:1 (carré)" },
+        { "value": "3/4", "label": "3:4 (portrait)" },
+        { "value": "16/9", "label": "16:9" }
+      ],
+      "default": "4/3"
+    },
+
+    { "type": "checkbox", "id": "text_on_image", "label": "Texte sur l'image", "default": false, "info": "Affiche le nom et l'accroche en overlay en bas à gauche de l'image, au lieu de sous l'image." },
+
+    { "type": "header", "content": "Badges (via metafield collection)", "info": "Créer un metafield collection 'custom.badges' (single line text) dans Settings → Custom data → Collections. Saisir 'nouveauté' et/ou 'livraison' séparés par des virgules pour activer les badges automatiquement. Sinon, les badges peuvent être activés manuellement dans chaque block." },
+    { "type": "text", "id": "badge_metafield_namespace", "label": "Namespace metafield", "default": "custom" },
+    { "type": "text", "id": "badge_metafield_key", "label": "Clé metafield", "default": "badges" },
+    { "type": "text", "id": "badge_new_label", "label": "Libellé badge 'nouveauté'", "default": "NOUVEAUTÉ" },
+    { "type": "text", "id": "badge_shipping_label", "label": "Libellé badge 'livraison'", "default": "LIVRAISON OFFERTE" },
+
+    { "type": "header", "content": "Couleurs" },
+    { "type": "color", "id": "bg_color", "label": "Fond de section", "default": "#FFFFFF" },
+    { "type": "color", "id": "eyebrow_color", "label": "Couleur sur-titre", "default": "#000000" },
+    { "type": "color", "id": "heading_color", "label": "Couleur titre & nom", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Couleur texte secondaire", "default": "#000000" },
+    { "type": "color", "id": "hover_overlay_color", "label": "Couleur overlay au survol", "default": "#40221E" },
+    { "type": "color", "id": "badge_new_bg", "label": "Fond badge nouveauté", "default": "#40221E" },
+    { "type": "color", "id": "badge_shipping_bg", "label": "Fond badge livraison", "default": "#3D4030" },
+    { "type": "color", "id": "badge_text_color", "label": "Texte des badges", "default": "#FFFFFF" }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection Shopify" },
+        { "type": "image_picker", "id": "custom_image", "label": "Image personnalisée (optionnel)", "info": "Remplace l'image par défaut de la collection. Recommandé en haute qualité (1600px+)." },
+        { "type": "text", "id": "custom_name", "label": "Nom affiché (optionnel)", "info": "Remplace le titre de la collection." },
+        { "type": "text", "id": "custom_tag", "label": "Accroche (optionnel)", "info": "Court texte sous le nom. Ex : L'élégance japonaise, revisitée" },
+        { "type": "header", "content": "Badges" },
+        { "type": "checkbox", "id": "badge_new", "label": "Badge Nouveauté", "default": false },
+        { "type": "checkbox", "id": "badge_shipping", "label": "Badge Livraison offerte", "default": false },
+        { "type": "text", "id": "custom_badge", "label": "Badge personnalisé (optionnel)" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Collections signatures",
+      "category": "Collection",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

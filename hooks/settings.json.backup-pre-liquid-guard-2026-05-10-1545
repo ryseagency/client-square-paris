@@ -1,0 +1,36 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/pre-edit-protect.sh && .claude/hooks/pre-edit-protect.sh || true'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/post-edit-quality.sh && .claude/hooks/post-edit-quality.sh || true'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/stop-verification.sh && .claude/hooks/stop-verification.sh || true'"
+          }
+        ]
+      }
+    ]
+  }
+}

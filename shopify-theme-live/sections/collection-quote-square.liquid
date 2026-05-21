@@ -1,0 +1,160 @@
+{%- liquid
+  assign section_id = 'cqs-' | append: section.id
+  assign noir = '#1A1A1A'
+-%}
+
+{%- capture section_css -%}
+#{{ section_id }} {
+  background: rgba(245,243,238,{{ section.settings.bg_opacity | divided_by: 100.0 }});
+  padding: {{ section.settings.padding_mobile }}px 16px;
+  margin: {{ section.settings.outer_margin_mobile }}px 0;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} {
+    padding: {{ section.settings.padding_desktop }}px 24px;
+    margin: {{ section.settings.outer_margin_desktop }}px 0;
+  }
+}
+@media (min-width: 1280px) {
+  #{{ section_id }} { padding-left: 32px; padding-right: 32px; }
+}
+#{{ section_id }} .cqs__inner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+#{{ section_id }} .cqs__kicker {
+  display: block;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 10.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.5);
+  margin-bottom: 20px;
+}
+#{{ section_id }} .cqs__quote {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  color: {{ noir }};
+  line-height: 1.4;
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 30px);
+}
+#{{ section_id }} .cqs__signature {
+  display: block;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.45);
+  margin-top: 24px;
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<section id="{{ section_id }}">
+  <div class="cqs__inner">
+    {%- if section.settings.kicker != blank -%}
+      <span class="cqs__kicker">{{ section.settings.kicker }}</span>
+    {%- endif -%}
+    {%- if section.settings.quote != blank -%}
+      <p class="cqs__quote">« {{ section.settings.quote }} »</p>
+    {%- endif -%}
+    {%- if section.settings.signature != blank -%}
+      <span class="cqs__signature">— {{ section.settings.signature }}</span>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection — Citation",
+  "tag": "section",
+  "class": "section-collection-quote-square",
+  "settings": [
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sur-titre",
+      "default": "Façonné en France"
+    },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Citation",
+      "default": "Nous ne dessinons pas pour la saison. Nous dessinons pour la décennie."
+    },
+    {
+      "type": "text",
+      "id": "signature",
+      "label": "Signature",
+      "default": "Atelier SQUARE, Paris"
+    },
+    {
+      "type": "range",
+      "id": "bg_opacity",
+      "label": "Opacité fond crème (%)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Espacements — mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_mobile",
+      "label": "Padding vertical",
+      "min": 24,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "outer_margin_mobile",
+      "label": "Marge extérieure",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Espacements — desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "label": "Padding vertical",
+      "min": 24,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 128
+    },
+    {
+      "type": "range",
+      "id": "outer_margin_desktop",
+      "label": "Marge extérieure",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection — Citation"
+    }
+  ]
+}
+{% endschema %}

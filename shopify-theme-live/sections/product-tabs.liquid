@@ -1,0 +1,910 @@
+{%- liquid
+  assign noir = '#1A1A1A'
+  assign creme = '#F5F3EE'
+  assign section_id = 'ptabs-' | append: section.id
+  assign use_mock_tab_data = true
+  assign mock_tab_items_count = 30
+-%}
+
+{%- capture section_css -%}
+/* ── Section margins ── */
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+/* ── Tabs wrapper ── */
+#{{ section_id }} {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Tab bar ── */
+#{{ section_id }} .ptabs__bar {
+  display: flex;
+  border-top: 1px solid rgba(26,26,26,0.08);
+  border-bottom: 1px solid rgba(26,26,26,0.08);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#{{ section_id }} .ptabs__bar::-webkit-scrollbar {
+  height: 3px;
+}
+#{{ section_id }} .ptabs__bar::-webkit-scrollbar-track {
+  background: rgba(26,26,26,0.04);
+}
+#{{ section_id }} .ptabs__bar::-webkit-scrollbar-thumb {
+  background: {{ noir }};
+  border-radius: 2px;
+}
+#{{ section_id }} .ptabs__btn {
+  flex: 0 0 auto;
+  padding: 20px 20px;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  border-right: 1px solid rgba(26,26,26,0.08);
+  cursor: pointer;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.3);
+  transition: background 0.25s ease, color 0.25s ease;
+  text-align: center;
+  -webkit-appearance: none;
+  position: relative;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .ptabs__bar {
+    overflow-x: visible;
+  }
+  #{{ section_id }} .ptabs__bar::-webkit-scrollbar { display: none; }
+  #{{ section_id }} .ptabs__btn {
+    flex: 1;
+  }
+}
+#{{ section_id }} .ptabs__btn:last-child {
+  border-right: none;
+}
+#{{ section_id }} .ptabs__btn:hover {
+  background: {{ creme }};
+}
+#{{ section_id }} .ptabs__btn.is-active {
+  background: transparent;
+  color: {{ noir }};
+  font-weight: 600;
+  box-shadow: inset 0 0 0 2px {{ noir }};
+  z-index: 1;
+}
+
+/* ── Tab panels ── */
+#{{ section_id }} .ptabs__panel {
+  display: none;
+  padding: 48px 20px;
+  overflow-x: hidden;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .ptabs__panel { padding: 48px 64px; }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} .ptabs__panel { padding: 48px 80px; }
+}
+#{{ section_id }} .ptabs__panel.is-active {
+  display: block;
+}
+
+#{{ section_id }} .ptabs__carousel {
+  width: 100%;
+  overflow: hidden;
+}
+#{{ section_id }} .ptabs__carousel--desktop {
+  display: none;
+}
+#{{ section_id }} .ptabs__carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#{{ section_id }} .ptabs__carousel-track::-webkit-scrollbar {
+  display: none;
+}
+#{{ section_id }} .ptabs__carousel-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  scroll-snap-align: start;
+}
+#{{ section_id }} .ptabs__carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+#{{ section_id }} .ptabs__carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: rgba(26,26,26,0.15);
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+#{{ section_id }} .ptabs__carousel-dot.is-active {
+  background: {{ noir }};
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .ptabs__carousel--mobile {
+    display: none;
+  }
+  #{{ section_id }} .ptabs__carousel--desktop {
+    display: block;
+  }
+}
+
+/* ── Tab 1 — Caractéristiques ── */
+#{{ section_id }} .ptabs__specs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .ptabs__specs {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 64px;
+  }
+}
+#{{ section_id }} .ptabs__spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(26,26,26,0.06);
+}
+#{{ section_id }} .ptabs__spec-label {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+}
+#{{ section_id }} .ptabs__spec-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: {{ noir }};
+  text-align: right;
+}
+
+/* ── Tab 2 — Dimensions ── */
+#{{ section_id }} .ptabs__dim-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 22px;
+  background: {{ creme }};
+  border-left: 3px solid rgba(26,26,26,0.15);
+  margin-bottom: 36px;
+}
+#{{ section_id }} .ptabs__dim-notice svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: rgba(26,26,26,0.4);
+}
+#{{ section_id }} .ptabs__dim-notice p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: rgba(26,26,26,0.55);
+  line-height: 1.7;
+  margin: 0;
+}
+#{{ section_id }} .ptabs__dim-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .ptabs__dim-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 64px;
+  }
+}
+#{{ section_id }} .ptabs__dim-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(26,26,26,0.06);
+}
+#{{ section_id }} .ptabs__dim-label {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+}
+#{{ section_id }} .ptabs__dim-right {
+  text-align: right;
+}
+#{{ section_id }} .ptabs__dim-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: {{ noir }};
+}
+#{{ section_id }} .ptabs__dim-detail {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: rgba(26,26,26,0.4);
+  margin-top: 2px;
+}
+
+/* ── Tab 3 — Livraison ── */
+#{{ section_id }} .ptabs__shipping-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .ptabs__shipping-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+}
+#{{ section_id }} .ptabs__shipping-card {
+  padding: 0;
+}
+#{{ section_id }} .ptabs__shipping-name {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: {{ noir }};
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#{{ section_id }} .ptabs__shipping-badge {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  text-transform: uppercase;
+  background: {{ noir }};
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+#{{ section_id }} .ptabs__shipping-price {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: {{ noir }};
+  margin-bottom: 12px;
+}
+#{{ section_id }} .ptabs__shipping-desc {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: rgba(26,26,26,0.5);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+#{{ section_id }} .ptabs__shipping-delay {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: rgba(26,26,26,0.35);
+  font-style: italic;
+}
+#{{ section_id }} .ptabs__shipping-note {
+  margin-top: 40px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: rgba(26,26,26,0.35);
+  font-style: italic;
+}
+
+/* ── Tab 4 — Description ── */
+#{{ section_id }} .ptabs__description p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.8;
+  color: {{ noir }};
+  margin: 0 0 16px;
+}
+
+/* ── Tab 5 — Installation ── */
+#{{ section_id }} .ptabs__install-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .ptabs__install-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+}
+#{{ section_id }} .ptabs__install-step-num {
+  font-family: 'Poppins', sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  color: rgba(26,26,26,0.08);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+#{{ section_id }} .ptabs__install-step-title {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: {{ noir }};
+  margin-bottom: 8px;
+}
+#{{ section_id }} .ptabs__install-step-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: rgba(26,26,26,0.5);
+  line-height: 1.6;
+}
+#{{ section_id }} .ptabs__install-download {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  background: none;
+  text-decoration: none;
+  color: {{ noir }};
+  transition: opacity 0.25s ease;
+}
+#{{ section_id }} .ptabs__install-download:hover { opacity: 0.8; }
+#{{ section_id }} .ptabs__install-download-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0;
+  background: {{ creme }};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+#{{ section_id }} .ptabs__install-download-icon svg {
+  width: 18px;
+  height: 18px;
+}
+#{{ section_id }} .ptabs__install-download-title {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+#{{ section_id }} .ptabs__install-download-meta {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: rgba(26,26,26,0.4);
+  margin-top: 2px;
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<div id="{{ section_id }}">
+
+  {%- comment -%} ══ Tab bar ══ {%- endcomment -%}
+  <div class="ptabs__bar" role="tablist">
+    {%- assign tab_index = 0 -%}
+    {%- for block in section.blocks -%}
+      <button
+        class="ptabs__btn{% if tab_index == 0 %} is-active{% endif %}"
+        role="tab"
+        aria-selected="{% if tab_index == 0 %}true{% else %}false{% endif %}"
+        aria-controls="ptab-panel-{{ section.id }}-{{ tab_index }}"
+        data-ptab-btn="{{ tab_index }}"
+        {{ block.shopify_attributes }}
+      >
+        {{ block.settings.tab_title | default: block.type | replace: '_', ' ' }}
+      </button>
+      {%- assign tab_index = tab_index | plus: 1 -%}
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} ══ Tab panels ══ {%- endcomment -%}
+  {%- assign tab_index = 0 -%}
+  {%- for block in section.blocks -%}
+    <div
+      class="ptabs__panel{% if tab_index == 0 %} is-active{% endif %}"
+      id="ptab-panel-{{ section.id }}-{{ tab_index }}"
+      role="tabpanel"
+      data-ptab-panel="{{ tab_index }}"
+    >
+      {%- case block.type -%}
+
+        {%- when 'caracteristiques' -%}
+          {%- assign specs = product.metafields.custom.tab_caracteristique.value -%}
+          {%- if use_mock_tab_data -%}
+            {%- assign specs_count = mock_tab_items_count -%}
+          {%- elsif specs != blank -%}
+            {%- assign specs_count = specs | size -%}
+          {%- else -%}
+            {%- assign specs_count = 0 -%}
+          {%- endif -%}
+
+          {%- if specs_count > 0 -%}
+            {%- assign specs_mobile_pages = specs_count | plus: 4 | divided_by: 5 -%}
+            {%- assign specs_desktop_pages = specs_count | plus: 9 | divided_by: 10 -%}
+
+            <div class="ptabs__carousel ptabs__carousel--mobile" data-ptabs-carousel>
+              <div class="ptabs__carousel-track" data-ptabs-track>
+                {%- for page in (1..specs_mobile_pages) -%}
+                  {%- assign page_offset = forloop.index0 | times: 5 -%}
+                  <div class="ptabs__carousel-slide">
+                    <div class="ptabs__specs">
+                      {%- if use_mock_tab_data -%}
+                        {%- for slot in (1..5) -%}
+                          {%- assign spec_number = page_offset | plus: forloop.index -%}
+                          {%- if spec_number <= specs_count -%}
+                            {%- assign spec_number_label = spec_number | prepend: '00' | slice: -2, 2 -%}
+                            <div class="ptabs__spec-row">
+                              <span class="ptabs__spec-label">Caractéristique {{ spec_number_label }}</span>
+                              <span class="ptabs__spec-value">Valeur mock {{ spec_number_label }}</span>
+                            </div>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- else -%}
+                        {%- for spec in specs limit: 5 offset: page_offset -%}
+                          <div class="ptabs__spec-row">
+                            <span class="ptabs__spec-label">{{ spec.label.value | default: spec.label }}</span>
+                            <span class="ptabs__spec-value">{{ spec.valeur.value | default: spec.valeur }}</span>
+                          </div>
+                        {%- endfor -%}
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+
+              {%- if specs_mobile_pages > 1 -%}
+                <div class="ptabs__carousel-dots">
+                  {%- for page in (1..specs_mobile_pages) -%}
+                    <button class="ptabs__carousel-dot{% if forloop.first %} is-active{% endif %}" type="button" data-ptabs-dot="{{ forloop.index0 }}" aria-label="Page {{ forloop.index }}"></button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="ptabs__carousel ptabs__carousel--desktop" data-ptabs-carousel>
+              <div class="ptabs__carousel-track" data-ptabs-track>
+                {%- for page in (1..specs_desktop_pages) -%}
+                  {%- assign page_offset = forloop.index0 | times: 10 -%}
+                  <div class="ptabs__carousel-slide">
+                    <div class="ptabs__specs">
+                      {%- if use_mock_tab_data -%}
+                        {%- for slot in (1..10) -%}
+                          {%- assign spec_number = page_offset | plus: forloop.index -%}
+                          {%- if spec_number <= specs_count -%}
+                            {%- assign spec_number_label = spec_number | prepend: '00' | slice: -2, 2 -%}
+                            <div class="ptabs__spec-row">
+                              <span class="ptabs__spec-label">Caractéristique {{ spec_number_label }}</span>
+                              <span class="ptabs__spec-value">Valeur mock {{ spec_number_label }}</span>
+                            </div>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- else -%}
+                        {%- for spec in specs limit: 10 offset: page_offset -%}
+                          <div class="ptabs__spec-row">
+                            <span class="ptabs__spec-label">{{ spec.label.value | default: spec.label }}</span>
+                            <span class="ptabs__spec-value">{{ spec.valeur.value | default: spec.valeur }}</span>
+                          </div>
+                        {%- endfor -%}
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+
+              {%- if specs_desktop_pages > 1 -%}
+                <div class="ptabs__carousel-dots">
+                  {%- for page in (1..specs_desktop_pages) -%}
+                    <button class="ptabs__carousel-dot{% if forloop.first %} is-active{% endif %}" type="button" data-ptabs-dot="{{ forloop.index0 }}" aria-label="Page {{ forloop.index }}"></button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- else -%}
+            <p style="color: rgba(26,26,26,0.35); font-size: 12px;">Aucune caractéristique configurée.</p>
+          {%- endif -%}
+
+        {%- when 'dimensions' -%}
+          {%- if block.settings.warning_text != blank -%}
+            <div class="ptabs__dim-notice">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M10 9v4"/><circle cx="10" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+              <p>{{ block.settings.warning_text }}</p>
+            </div>
+          {%- endif -%}
+
+          {%- assign dims = product.metafields.custom.tab_dimensions.value -%}
+          {%- if use_mock_tab_data -%}
+            {%- assign dims_count = mock_tab_items_count -%}
+          {%- elsif dims != blank -%}
+            {%- assign dims_count = dims | size -%}
+          {%- else -%}
+            {%- assign dims_count = 0 -%}
+          {%- endif -%}
+
+          {%- if dims_count > 0 -%}
+            {%- assign dims_mobile_pages = dims_count | plus: 4 | divided_by: 5 -%}
+            {%- assign dims_desktop_pages = dims_count | plus: 9 | divided_by: 10 -%}
+
+            <div class="ptabs__carousel ptabs__carousel--mobile" data-ptabs-carousel>
+              <div class="ptabs__carousel-track" data-ptabs-track>
+                {%- for page in (1..dims_mobile_pages) -%}
+                  {%- assign page_offset = forloop.index0 | times: 5 -%}
+                  <div class="ptabs__carousel-slide">
+                    <div class="ptabs__dim-list">
+                      {%- if use_mock_tab_data -%}
+                        {%- for slot in (1..5) -%}
+                          {%- assign dim_number = page_offset | plus: forloop.index -%}
+                          {%- if dim_number <= dims_count -%}
+                            {%- assign dim_number_label = dim_number | prepend: '00' | slice: -2, 2 -%}
+                            {%- assign dim_value = dim_number | times: 7 | plus: 80 -%}
+                            <div class="ptabs__dim-row">
+                              <span class="ptabs__dim-label">Dimension {{ dim_number_label }}</span>
+                              <div class="ptabs__dim-right">
+                                <div class="ptabs__dim-value">{{ dim_value }} cm</div>
+                                <div class="ptabs__dim-detail">Détail mock {{ dim_number_label }}</div>
+                              </div>
+                            </div>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- else -%}
+                        {%- for dim in dims limit: 5 offset: page_offset -%}
+                          <div class="ptabs__dim-row">
+                            <span class="ptabs__dim-label">{{ dim.label.value | default: dim.label }}</span>
+                            <div class="ptabs__dim-right">
+                              <div class="ptabs__dim-value">{{ dim.valeur.value | default: dim.valeur }}</div>
+                              {%- assign dim_detail = dim.detail.value | default: dim.detail -%}
+                              {%- if dim_detail != blank -%}
+                                <div class="ptabs__dim-detail">{{ dim_detail }}</div>
+                              {%- endif -%}
+                            </div>
+                          </div>
+                        {%- endfor -%}
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+
+              {%- if dims_mobile_pages > 1 -%}
+                <div class="ptabs__carousel-dots">
+                  {%- for page in (1..dims_mobile_pages) -%}
+                    <button class="ptabs__carousel-dot{% if forloop.first %} is-active{% endif %}" type="button" data-ptabs-dot="{{ forloop.index0 }}" aria-label="Page {{ forloop.index }}"></button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="ptabs__carousel ptabs__carousel--desktop" data-ptabs-carousel>
+              <div class="ptabs__carousel-track" data-ptabs-track>
+                {%- for page in (1..dims_desktop_pages) -%}
+                  {%- assign page_offset = forloop.index0 | times: 10 -%}
+                  <div class="ptabs__carousel-slide">
+                    <div class="ptabs__dim-list">
+                      {%- if use_mock_tab_data -%}
+                        {%- for slot in (1..10) -%}
+                          {%- assign dim_number = page_offset | plus: forloop.index -%}
+                          {%- if dim_number <= dims_count -%}
+                            {%- assign dim_number_label = dim_number | prepend: '00' | slice: -2, 2 -%}
+                            {%- assign dim_value = dim_number | times: 7 | plus: 80 -%}
+                            <div class="ptabs__dim-row">
+                              <span class="ptabs__dim-label">Dimension {{ dim_number_label }}</span>
+                              <div class="ptabs__dim-right">
+                                <div class="ptabs__dim-value">{{ dim_value }} cm</div>
+                                <div class="ptabs__dim-detail">Détail mock {{ dim_number_label }}</div>
+                              </div>
+                            </div>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- else -%}
+                        {%- for dim in dims limit: 10 offset: page_offset -%}
+                          <div class="ptabs__dim-row">
+                            <span class="ptabs__dim-label">{{ dim.label.value | default: dim.label }}</span>
+                            <div class="ptabs__dim-right">
+                              <div class="ptabs__dim-value">{{ dim.valeur.value | default: dim.valeur }}</div>
+                              {%- assign dim_detail = dim.detail.value | default: dim.detail -%}
+                              {%- if dim_detail != blank -%}
+                                <div class="ptabs__dim-detail">{{ dim_detail }}</div>
+                              {%- endif -%}
+                            </div>
+                          </div>
+                        {%- endfor -%}
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+
+              {%- if dims_desktop_pages > 1 -%}
+                <div class="ptabs__carousel-dots">
+                  {%- for page in (1..dims_desktop_pages) -%}
+                    <button class="ptabs__carousel-dot{% if forloop.first %} is-active{% endif %}" type="button" data-ptabs-dot="{{ forloop.index0 }}" aria-label="Page {{ forloop.index }}"></button>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- else -%}
+            <p style="color: rgba(26,26,26,0.35); font-size: 12px;">Aucune dimension configurée.</p>
+          {%- endif -%}
+
+        {%- when 'livraison' -%}
+          <div class="ptabs__shipping-grid">
+            {%- for i in (1..3) -%}
+              {%- assign sn = 'shipping_name_' | append: i -%}
+              {%- assign sp = 'shipping_price_' | append: i -%}
+              {%- assign sd = 'shipping_desc_' | append: i -%}
+              {%- assign sdy = 'shipping_delay_' | append: i -%}
+              {%- assign sb = 'shipping_badge_' | append: i -%}
+              {%- if block.settings[sn] != blank -%}
+                <div class="ptabs__shipping-card">
+                  <div class="ptabs__shipping-name">
+                    {{ block.settings[sn] }}
+                    {%- if block.settings[sb] != blank -%}
+                      <span class="ptabs__shipping-badge">{{ block.settings[sb] }}</span>
+                    {%- endif -%}
+                  </div>
+                  {%- if block.settings[sp] != blank -%}
+                    <div class="ptabs__shipping-price">{{ block.settings[sp] }}</div>
+                  {%- endif -%}
+                  {%- if block.settings[sd] != blank -%}
+                    <div class="ptabs__shipping-desc">{{ block.settings[sd] }}</div>
+                  {%- endif -%}
+                  {%- if block.settings[sdy] != blank -%}
+                    <div class="ptabs__shipping-delay">{{ block.settings[sdy] }}</div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          {%- if block.settings.shipping_note != blank -%}
+            <div class="ptabs__shipping-note">{{ block.settings.shipping_note }}</div>
+          {%- endif -%}
+
+        {%- when 'description_tab' -%}
+          <div class="ptabs__description">
+            {{ block.settings.description_text }}
+          </div>
+
+        {%- when 'installation' -%}
+          <div class="ptabs__install-grid">
+            {%- for i in (1..3) -%}
+              {%- assign st = 'step_title_' | append: i -%}
+              {%- assign sx = 'step_text_' | append: i -%}
+              {%- if block.settings[st] != blank -%}
+                <div class="ptabs__install-step">
+                  <div class="ptabs__install-step-num">{{ i | prepend: '0' | slice: -2, 2 }}</div>
+                  <div class="ptabs__install-step-title">{{ block.settings[st] }}</div>
+                  {%- if block.settings[sx] != blank -%}
+                    <div class="ptabs__install-step-text">{{ block.settings[sx] }}</div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          {%- if block.settings.pdf_url != blank -%}
+            <a href="{{ block.settings.pdf_url }}" class="ptabs__install-download" target="_blank" rel="noopener">
+              <div class="ptabs__install-download-icon">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M3 15v2h14v-2"/></svg>
+              </div>
+              <div>
+                <div class="ptabs__install-download-title">{{ block.settings.pdf_title | default: 'Télécharger la notice de montage' }}</div>
+                {%- if block.settings.pdf_meta != blank -%}
+                  <div class="ptabs__install-download-meta">{{ block.settings.pdf_meta }}</div>
+                {%- endif -%}
+              </div>
+            </a>
+          {%- endif -%}
+
+      {%- endcase -%}
+    </div>
+    {%- assign tab_index = tab_index | plus: 1 -%}
+  {%- endfor -%}
+
+</div>
+
+<script>
+(function(){
+  var wrap = document.getElementById('{{ section_id }}');
+  if (!wrap) return;
+  var btns = wrap.querySelectorAll('[data-ptab-btn]');
+  var panels = wrap.querySelectorAll('[data-ptab-panel]');
+
+  var initCarousel = function(carousel) {
+    var track = carousel.querySelector('[data-ptabs-track]');
+    var dots = carousel.querySelectorAll('[data-ptabs-dot]');
+    if (!track || !dots.length) return;
+
+    var ticking = false;
+    var updateDots = function() {
+      var pageWidth = Math.max(track.clientWidth, 1);
+      var index = Math.round(track.scrollLeft / pageWidth);
+      dots.forEach(function(dot, dotIndex) {
+        dot.classList.toggle('is-active', dotIndex === index);
+      });
+      ticking = false;
+    };
+
+    track.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(updateDots);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    dots.forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        var index = parseInt(dot.getAttribute('data-ptabs-dot'), 10);
+        track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
+      });
+    });
+  };
+
+  wrap.querySelectorAll('[data-ptabs-carousel]').forEach(initCarousel);
+
+  btns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btns.forEach(function(b){ b.classList.remove('is-active'); b.setAttribute('aria-selected','false'); });
+      panels.forEach(function(p){ p.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-selected','true');
+      var idx = btn.getAttribute('data-ptab-btn');
+      var panel = wrap.querySelector('[data-ptab-panel="'+idx+'"]');
+      if (panel) panel.classList.add('is-active');
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Tabs produit",
+  "class": "product-tabs-section",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge supérieure — mobile",
+      "min": -100,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge inférieure — mobile",
+      "min": -100,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge supérieure — desktop",
+      "min": -100,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge inférieure — desktop",
+      "min": -100,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "caracteristiques",
+      "name": "Caractéristiques",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Titre de l'onglet", "default": "caractéristiques" }
+      ]
+    },
+    {
+      "type": "dimensions",
+      "name": "Dimensions",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Titre de l'onglet", "default": "dimensions" },
+        { "type": "textarea", "id": "warning_text", "label": "Texte d'avertissement", "default": "Vérifiez que les dimensions correspondent à votre espace. Pensez à mesurer les accès (portes, couloirs, escaliers) avant de passer commande." }
+      ]
+    },
+    {
+      "type": "livraison",
+      "name": "Livraison",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Titre de l'onglet", "default": "livraison" },
+        { "type": "header", "content": "Option 1" },
+        { "type": "text", "id": "shipping_name_1", "label": "Nom", "default": "standard" },
+        { "type": "text", "id": "shipping_price_1", "label": "Prix", "default": "59,90 €" },
+        { "type": "textarea", "id": "shipping_desc_1", "label": "Description", "default": "Au pied de l'immeuble, sur rendez-vous." },
+        { "type": "text", "id": "shipping_delay_1", "label": "Délai", "default": "Délai : 4-6 semaines" },
+        { "type": "text", "id": "shipping_badge_1", "label": "Badge" },
+        { "type": "header", "content": "Option 2" },
+        { "type": "text", "id": "shipping_name_2", "label": "Nom", "default": "confort" },
+        { "type": "text", "id": "shipping_price_2", "label": "Prix", "default": "99,90 €" },
+        { "type": "textarea", "id": "shipping_desc_2", "label": "Description", "default": "Dans la pièce de votre choix. Déballage et reprise des emballages." },
+        { "type": "text", "id": "shipping_delay_2", "label": "Délai", "default": "Délai : 4-6 semaines" },
+        { "type": "text", "id": "shipping_badge_2", "label": "Badge", "default": "populaire" },
+        { "type": "header", "content": "Option 3" },
+        { "type": "text", "id": "shipping_name_3", "label": "Nom", "default": "premium" },
+        { "type": "text", "id": "shipping_price_3", "label": "Prix", "default": "149,90 €" },
+        { "type": "textarea", "id": "shipping_desc_3", "label": "Description", "default": "Installation complète et reprise de votre ancien canapé." },
+        { "type": "text", "id": "shipping_delay_3", "label": "Délai", "default": "Délai : 4-6 semaines" },
+        { "type": "text", "id": "shipping_badge_3", "label": "Badge" },
+        { "type": "textarea", "id": "shipping_note", "label": "Note de bas de page", "default": "Livraison offerte en France métropolitaine à partir de 3 000 € d'achat." }
+      ]
+    },
+    {
+      "type": "description_tab",
+      "name": "Description",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Titre de l'onglet", "default": "description" },
+        { "type": "richtext", "id": "description_text", "label": "Texte de description" }
+      ]
+    },
+    {
+      "type": "installation",
+      "name": "Installation",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Titre de l'onglet", "default": "installation" },
+        { "type": "header", "content": "Étape 1" },
+        { "type": "text", "id": "step_title_1", "label": "Titre", "default": "déballez" },
+        { "type": "textarea", "id": "step_text_1", "label": "Description", "default": "Ouvrez les colis et disposez les modules dans la pièce selon votre configuration." },
+        { "type": "header", "content": "Étape 2" },
+        { "type": "text", "id": "step_title_2", "label": "Titre", "default": "assemblez" },
+        { "type": "textarea", "id": "step_text_2", "label": "Description", "default": "Fixez les modules entre eux grâce aux clips intégrés. Aucun outil nécessaire." },
+        { "type": "header", "content": "Étape 3" },
+        { "type": "text", "id": "step_title_3", "label": "Titre", "default": "profitez" },
+        { "type": "textarea", "id": "step_text_3", "label": "Description", "default": "Ajustez la position et installez-vous. L'ensemble est prêt en moins de 15 minutes." },
+        { "type": "header", "content": "Téléchargement" },
+        { "type": "url", "id": "pdf_url", "label": "Lien du PDF" },
+        { "type": "text", "id": "pdf_title", "label": "Titre du lien", "default": "télécharger la notice de montage" },
+        { "type": "text", "id": "pdf_meta", "label": "Méta (ex: PDF — 2,4 Mo)", "default": "PDF — 2,4 Mo" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabs produit",
+      "blocks": [
+        { "type": "caracteristiques" },
+        { "type": "dimensions" },
+        { "type": "livraison" },
+        { "type": "description_tab" },
+        { "type": "installation" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,297 @@
+{%- liquid
+  assign section_id = 'newsletter-' | append: section.id
+  assign options = section.settings
+
+  assign eyebrow = options.eyebrow
+  assign heading = options.heading
+  assign subheading = options.subheading
+  assign heading_tag = options.heading_tag | default: 'h2'
+
+  assign input_placeholder = options.input_placeholder | default: 'Votre adresse e-mail'
+  assign button_label = options.button_label | default: "S'inscrire"
+  assign success_message = options.success_message | default: 'Merci, vous êtes inscrit(e) !'
+  assign legal_text = options.legal_text
+
+  assign bg_color = options.bg_color | default: '#FFFFFF'
+  assign eyebrow_color = options.eyebrow_color | default: '#000000'
+  assign heading_color = options.heading_color | default: '#000000'
+  assign text_color = options.text_color | default: '#000000'
+  assign button_color = options.button_color | default: '#000000'
+
+  assign heading_min = options.heading_size_min | default: 28
+  assign heading_vw = options.heading_size_vw | default: 4
+  assign heading_max = options.heading_size_max | default: 44
+-%}
+
+{%- capture section_css -%}
+  /* py-10 md:py-14 px-4 md:px-6 xl:px-8 */
+  #{{ section_id }} {
+    background-color: {{ bg_color }};
+    padding: 40px 16px;
+    margin-top: 0;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} { padding: 56px 24px; }
+  }
+  @media (min-width: 1280px) {
+    #{{ section_id }} { padding-left: 32px; padding-right: 32px; }
+  }
+
+  #{{ section_id }} .nl__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* Eyebrow : Poppins 400 10px tracking 0.25em noir/40 mb-4 */
+  #{{ section_id }} .nl__eyebrow {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: {{ eyebrow_color }};
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  #{{ section_id }} .nl__eyebrow * { margin: 0; color: inherit; font-family: inherit; }
+
+  /* Titre : ST Nova Sans leading-none clamp(28,4vw,44) mb-4 */
+  #{{ section_id }} .nl__heading {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    line-height: 1;
+    color: {{ heading_color }};
+    font-size: clamp({{ heading_min }}px, {{ heading_vw }}vw, {{ heading_max }}px);
+    text-align: center;
+    margin: 0 0 16px 0;
+  }
+  #{{ section_id }} .nl__heading * { font-family: inherit; font-weight: inherit; color: inherit; margin: 0; }
+
+  /* Sous-titre : Poppins 300 14px noir/50 max-w-md mb-8 */
+  #{{ section_id }} .nl__sub {
+    font-family: var(--font-body-family);
+    font-weight: var(--font-weight-body);
+    font-size: var(--fs-body-mobile);
+    line-height: var(--lh-body);
+    letter-spacing: var(--ls-body);
+    color: {{ text_color }};
+    max-width: 28rem;
+    margin: 0 auto 32px auto;
+  }
+  #{{ section_id }} .nl__sub * { margin: 0; color: inherit; font-family: inherit; }
+
+  /* Form wrapper */
+  #{{ section_id }} .nl__form-wrap {}
+
+  #{{ section_id }} .nl__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .nl__form {
+      flex-direction: row;
+      gap: 0;
+      align-items: stretch;
+    }
+  }
+
+  /* Input : bordure bottom, transparent, Poppins 300 14px */
+  #{{ section_id }} .nl__input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba({{ text_color | color_extract: 'red' }},{{ text_color | color_extract: 'green' }},{{ text_color | color_extract: 'blue' }},0.15);
+    color: {{ text_color }};
+    font-family: var(--font-body-family);
+    font-weight: var(--font-weight-body);
+    font-size: var(--fs-body-mobile);
+    letter-spacing: var(--ls-body);
+    padding: 12px 0;
+    outline: none;
+    transition: border-color 0.3s ease;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #{{ section_id }} .nl__input::placeholder {
+    color: {{ text_color }};
+    opacity: 0.25;
+  }
+  #{{ section_id }} .nl__input:focus,
+  #{{ section_id }} .nl__input:focus-visible {
+    border-bottom-color: rgba({{ text_color | color_extract: 'red' }},{{ text_color | color_extract: 'green' }},{{ text_color | color_extract: 'blue' }},0.4);
+  }
+
+  /* Bouton : Poppins 400 11px tracking 0.2em uppercase */
+  #{{ section_id }} .nl__btn {
+    flex-shrink: 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: {{ button_color }};
+    background: transparent;
+    border: 1px solid rgba({{ button_color | color_extract: 'red' }},{{ button_color | color_extract: 'green' }},{{ button_color | color_extract: 'blue' }},0.25);
+    padding: 14px 32px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+  }
+  @media (min-width: 768px) {
+    #{{ section_id }} .nl__btn { margin-left: 16px; }
+  }
+  #{{ section_id }} .nl__btn:hover,
+  #{{ section_id }} .nl__btn:focus-visible {
+    border-color: {{ button_color }};
+    background-color: {{ button_color }};
+    color: {{ bg_color }};
+  }
+
+  /* Legal : Poppins 400 10px noir/20 mt-3 */
+  #{{ section_id }} .nl__legal {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    color: {{ text_color }};
+    opacity: 0.2;
+    margin: 12px 0 0 0;
+    line-height: 1.5;
+  }
+  #{{ section_id }} .nl__legal * { margin: 0; color: inherit; font-family: inherit; }
+  #{{ section_id }} .nl__legal a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  /* Success / error messages */
+  #{{ section_id }} .nl__message {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    margin-top: 16px;
+    text-align: center;
+  }
+  #{{ section_id }} .nl__message--success { color: {{ heading_color }}; opacity: 0.7; }
+  #{{ section_id }} .nl__message--error { color: #C0392B; }
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+<section id="{{ section_id }}" class="nl" aria-labelledby="{{ section_id }}-heading">
+  <div class="nl__inner">
+    {%- if eyebrow != blank -%}
+      <span class="nl__eyebrow" data-reveal="fade-up" data-reveal-delay="0.1" data-reveal-opacity="0.4">{{ eyebrow }}</span>
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <{{ heading_tag }} id="{{ section_id }}-heading" class="nl__heading" data-reveal="words" data-reveal-stagger="0.06">{{ heading }}</{{ heading_tag }}>
+    {%- endif -%}
+
+    {%- if subheading != blank -%}
+      <div class="nl__sub" data-reveal="fade-up" data-reveal-delay="0.3" data-reveal-opacity="0.5">{{ subheading }}</div>
+    {%- endif -%}
+
+    <div class="nl__form-wrap" data-reveal="fade-up" data-reveal-delay="0.45">
+      {%- form 'customer', class: 'nl__form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <label for="NewsletterEmail--{{ section.id }}" class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Email</label>
+        <input
+          id="NewsletterEmail--{{ section.id }}"
+          type="email"
+          name="contact[email]"
+          class="nl__input"
+          value="{{ form.email }}"
+          placeholder="{{ input_placeholder | escape }}"
+          autocomplete="email"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          required
+        >
+        <button type="submit" class="nl__btn" aria-label="{{ button_label | escape }}">
+          {{ button_label }}
+        </button>
+
+        {%- if form.posted_successfully? -%}
+          <p class="nl__message nl__message--success" role="status">{{ success_message }}</p>
+        {%- elsif form.errors -%}
+          <p class="nl__message nl__message--error" role="alert">
+            {{- form.errors | default_errors -}}
+          </p>
+        {%- endif -%}
+      {%- endform -%}
+
+      {%- if legal_text != blank -%}
+        <div class="nl__legal">{{ legal_text }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{%- if heading != blank -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPageElement",
+  "name": {{ heading | strip_html | json }},
+  {% if subheading != blank %}"description": {{ subheading | strip_html | json }},{% endif %}
+  "potentialAction": {
+    "@type": "SubscribeAction",
+    "name": {{ button_label | json }},
+    "target": {{ request.origin | append: request.path | json }}
+  }
+}
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": "section",
+  "class": "section-newsletter",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    { "type": "header", "content": "Contenu", "info": "Les inscriptions sont automatiquement ajoutées à la liste clients Shopify avec le tag 'newsletter'." },
+    { "type": "richtext", "id": "eyebrow", "label": "Sur-titre", "default": "<p>Restons en contact</p>" },
+    { "type": "richtext", "id": "heading", "label": "Titre", "default": "<p>Rejoignez l'art de vivre Square.</p>" },
+    {
+      "type": "select", "id": "heading_tag", "label": "Balise HTML du titre",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h1", "label": "H1" }
+      ],
+      "default": "h2"
+    },
+    { "type": "richtext", "id": "subheading", "label": "Sous-titre", "default": "<p>Inscrivez-vous et bénéficiez de -10% sur votre première commande.</p>" },
+
+    { "type": "header", "content": "Formulaire" },
+    { "type": "text", "id": "input_placeholder", "label": "Placeholder du champ email", "default": "Votre adresse e-mail" },
+    { "type": "text", "id": "button_label", "label": "Texte du bouton", "default": "S'inscrire" },
+    { "type": "text", "id": "success_message", "label": "Message de confirmation", "default": "Merci, vous êtes inscrit(e) !" },
+    { "type": "richtext", "id": "legal_text", "label": "Mention légale", "default": "<p>En vous inscrivant, vous acceptez notre politique de confidentialité.</p>", "info": "Ajoutez un lien vers votre politique de confidentialité pour la conformité RGPD." },
+
+    { "type": "header", "content": "Typographie titre" },
+    { "type": "range", "id": "heading_size_min", "label": "Taille min (mobile)", "min": 18, "max": 60, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "heading_size_vw", "label": "Taille fluide", "min": 2, "max": 8, "step": 1, "unit": "vw", "default": 4 },
+    { "type": "range", "id": "heading_size_max", "label": "Taille max (desktop)", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 44 },
+
+    { "type": "header", "content": "Couleurs" },
+    { "type": "color", "id": "bg_color", "label": "Fond de section", "default": "#FFFFFF" },
+    { "type": "color", "id": "eyebrow_color", "label": "Couleur sur-titre", "default": "#000000" },
+    { "type": "color", "id": "heading_color", "label": "Couleur titre", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Couleur texte & input", "default": "#000000" },
+    { "type": "color", "id": "button_color", "label": "Couleur du bouton", "default": "#000000" }
+  ],
+  "presets": [
+    { "name": "Newsletter", "category": "Contact" }
+  ]
+}
+{% endschema %}

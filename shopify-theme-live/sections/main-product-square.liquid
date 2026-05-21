@@ -1,0 +1,3808 @@
+{%- liquid
+  assign section_id = 'mps-' | append: section.id
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_form_id = 'product-form-' | append: section.id
+  assign noir = '#1A1A1A'
+  assign creme = '#F5F3EE'
+-%}
+
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
+{{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
+{{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%} Masquer le bouton Wishlist injecté automatiquement par Swym sous le bouton "Ajouter au panier" {%- endcomment -%}
+<style>
+  #swym-wishlist-cta,
+  #swym-atw-pdp-button,
+  #swym-atw-button-container,
+  [id^="swym-atw-"],
+  [id^="swym-atw-pdp"],
+  [class*="swym-atw-pdp"],
+  [class*="swym-atw-button"],
+  .swym-add-to-wishlist-view-product,
+  .swym-button.swym-add-to-wishlist-view-product,
+  .product-form__buttons .swym-button,
+  product-form .swym-button:not(.mps__wishlist),
+  form[action*="/cart/add"] + .swym-button,
+  form[action*="/cart/add"] ~ .swym-button {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+</style>
+
+<script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- capture section_css -%}
+#shopify-section-{{ section.id }} { margin-top: {{ section.settings.margin_top_mobile }}px; }
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} { margin-top: {{ section.settings.margin_top_desktop }}px; }
+}
+#{{ section_id }} { background: #fff; }
+
+/* ── Grid ── */
+#{{ section_id }} .mps__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__grid {
+    grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+  }
+}
+
+/* ── Gallery column ── */
+#{{ section_id }} .mps__gallery-col {
+  display: flex;
+  flex-direction: column;
+  background: {{ creme }};
+  min-width: 0;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__gallery-col {
+    position: sticky;
+    top: 0;
+    height: 90vh;
+  }
+}
+
+#{{ section_id }} .mps__gallery {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+@media (max-width: 989px) {
+  #{{ section_id }} .mps__gallery {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+#{{ section_id }} .mps__gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__gallery-img {
+    object-fit: cover;
+  }
+}
+#{{ section_id }} .mps__gallery-img.is-active { opacity: 1; }
+
+/* Badge nouveauté */
+#{{ section_id }} .mps__badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 5;
+  background: #eeece5;
+  color: {{ noir }};
+  padding: 6px 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-style: italic;
+}
+@media (max-width: 989px) {
+  #{{ section_id }} .mps__badge {
+    top: 80px;
+  }
+}
+
+/* Counter 1/4 */
+#{{ section_id }} .mps__counter {
+  display: none;
+}
+
+/* Nav arrow */
+#{{ section_id }} .mps__gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  cursor: pointer;
+  color: {{ noir }};
+  transition: background 0.3s ease;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .mps__gallery-nav:hover { background: rgba(255,255,255,0.9); }
+#{{ section_id }} .mps__gallery-nav--prev { left: 12px; }
+#{{ section_id }} .mps__gallery-nav--next { right: 12px; }
+#{{ section_id }} .mps__gallery-nav svg { width: 16px; height: 16px; }
+@media (max-width: 989px) {
+  #{{ section_id }} .mps__gallery-nav { display: none; }
+}
+
+/* Ambiance button */
+#{{ section_id }} .mps__ambiance {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: {{ noir }};
+  transition: box-shadow 0.3s ease;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .mps__ambiance:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+#{{ section_id }} .mps__ambiance svg { width: 14px; height: 14px; }
+
+/* Thumbnails */
+#{{ section_id }} .mps__thumbs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 12px;
+  background: #fff;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__thumbs {
+    gap: 2px;
+    padding: 0;
+    background: none;
+  }
+}
+#{{ section_id }} .mps__thumbs::-webkit-scrollbar { display: none; }
+
+#{{ section_id }} .mps__thumb {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0.5;
+  transition: opacity 0.3s ease, border-color 0.3s ease;
+  -webkit-appearance: none;
+  background: none;
+  scroll-snap-align: start;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__thumb {
+    height: 140px;
+    width: calc((100% - 8px) / 5);
+    flex: 0 0 calc((100% - 8px) / 5);
+    border: none;
+  }
+}
+#{{ section_id }} .mps__thumb.is-active { opacity: 1; border-color: {{ noir }}; }
+#{{ section_id }} .mps__thumb:hover { opacity: 0.85; }
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__thumb.is-active { border-color: transparent; }
+}
+#{{ section_id }} .mps__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Info panel ── */
+#{{ section_id }} .mps__info {
+  padding: 24px 24px 40px;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .mps__info { padding: 32px 48px 48px; }
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__info { padding: 36px 56px 56px; }
+}
+
+/* Breadcrumb */
+#{{ section_id }} .mps__breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  color: rgba(26,26,26,0.35);
+  margin-bottom: 20px;
+}
+#{{ section_id }} .mps__breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+#{{ section_id }} .mps__breadcrumb a:hover { color: {{ noir }}; }
+#{{ section_id }} .mps__breadcrumb-sep {
+  margin: 0 6px;
+  font-size: 10px;
+}
+#{{ section_id }} .mps__breadcrumb-current {
+  color: rgba(26,26,26,0.5);
+}
+
+/* Title row */
+#{{ section_id }} .mps__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+#{{ section_id }} .mps__title {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 600;
+  font-size: clamp(28px, 4vw, 38px);
+  text-transform: uppercase;
+  color: {{ noir }};
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Rating */
+#{{ section_id }} .mps__rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-top: 6px;
+  text-decoration: none;
+  cursor: pointer;
+}
+#{{ section_id }} .mps__star {
+  width: 14px;
+  height: 14px;
+}
+#{{ section_id }} .mps__star--filled { color: {{ noir }}; }
+#{{ section_id }} .mps__star--empty { color: rgba(26,26,26,0.2); }
+#{{ section_id }} .mps__rating-count {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: rgba(26,26,26,0.35);
+  margin-left: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+/* Subtitle */
+#{{ section_id }} .mps__subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(26,26,26,0.55);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+/* Divider */
+#{{ section_id }} .mps__divider {
+  border: none;
+  height: 1px;
+  background: rgba(26,26,26,0.06);
+  margin: 12px 0;
+}
+
+/* Dimensions */
+#{{ section_id }} .mps__dimensions {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 20px;
+  width: fit-content;
+  max-width: 100%;
+}
+#{{ section_id }} .mps__dim-col {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 18px;
+  border: none;
+}
+#{{ section_id }} .mps__dim-col:first-child {
+  padding-left: 0;
+}
+#{{ section_id }} .mps__dim-col:last-child {
+  padding-right: 0;
+}
+#{{ section_id }} .mps__dim-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+#{{ section_id }} .mps__dim-icon {
+  width: 14px;
+  height: 14px;
+  color: rgba(26,26,26,0.28);
+  flex-shrink: 0;
+}
+#{{ section_id }} .mps__dim-label {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+  margin: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+#{{ section_id }} .mps__dim-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: {{ noir }};
+  line-height: 1;
+  white-space: nowrap;
+}
+#{{ section_id }} .mps__dim-unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(26,26,26,0.4);
+  margin-left: 2px;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__dimensions {
+    margin: 0 auto 18px;
+  }
+  #{{ section_id }} .mps__dim-col {
+    padding: 0 12px;
+  }
+  #{{ section_id }} .mps__dim-meta {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  #{{ section_id }} .mps__dim-icon {
+    width: 12px;
+    height: 12px;
+  }
+  #{{ section_id }} .mps__dim-label {
+    font-size: 8px;
+  }
+  #{{ section_id }} .mps__dim-value {
+    font-size: 16px;
+  }
+  #{{ section_id }} .mps__dim-unit {
+    font-size: 11px;
+  }
+}
+
+/* ── Reassurance badges ── */
+#{{ section_id }} .mps__reassurance {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid rgba(26,26,26,0.08);
+  margin-bottom: 24px;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance {
+    grid-template-columns: repeat(4, 1fr);
+    margin-left: -1px;
+    margin-right: -1px;
+  }
+}
+#{{ section_id }} .mps__reassurance-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 8px;
+  text-align: center;
+  border-right: 1px solid rgba(26,26,26,0.08);
+}
+#{{ section_id }} .mps__reassurance-item:last-child { border-right: none; }
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance-item {
+    padding: 10px 4px;
+  }
+}
+#{{ section_id }} .mps__reassurance-icon {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 8px;
+  object-fit: contain;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance-icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+  }
+}
+#{{ section_id }} .mps__reassurance-title {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  text-transform: lowercase;
+  color: {{ noir }};
+  margin-bottom: 2px;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance-title {
+    font-size: 8px;
+  }
+}
+#{{ section_id }} .mps__reassurance-sub {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  color: rgba(26,26,26,0.55);
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance-sub {
+    font-size: 8px;
+  }
+}
+
+/* ── Reassurance V2 : liste éditoriale premium ── */
+#{{ section_id }} .mps__reassurance2 {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+  border-top: 1px solid rgba(26,26,26,0.08);
+  border-bottom: 1px solid rgba(26,26,26,0.08);
+}
+#{{ section_id }} .mps__reassurance2-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  border-bottom: 1px solid rgba(26,26,26,0.06);
+}
+#{{ section_id }} .mps__reassurance2-item:last-child { border-bottom: none; }
+#{{ section_id }} .mps__reassurance2-ico {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(26,26,26,0.04);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: {{ noir }};
+}
+#{{ section_id }} .mps__reassurance2-ico img,
+#{{ section_id }} .mps__reassurance2-ico svg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+#{{ section_id }} .mps__reassurance2-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+#{{ section_id }} .mps__reassurance2-title {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+  color: {{ noir }};
+  line-height: 1.2;
+}
+#{{ section_id }} .mps__reassurance2-sub {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(26,26,26,0.6);
+  line-height: 1.4;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance2-item {
+    gap: 12px;
+    padding: 12px 2px;
+  }
+  #{{ section_id }} .mps__reassurance2-ico {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+  #{{ section_id }} .mps__reassurance2-ico img,
+  #{{ section_id }} .mps__reassurance2-ico svg {
+    width: 18px;
+    height: 18px;
+  }
+  #{{ section_id }} .mps__reassurance2-title { font-size: 13px; }
+  #{{ section_id }} .mps__reassurance2-sub { font-size: 11px; }
+}
+/* Variante compact / 2 colonnes */
+#{{ section_id }} .mps__reassurance2.is-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 20px;
+  border-top: none;
+  border-bottom: none;
+}
+#{{ section_id }} .mps__reassurance2.is-grid .mps__reassurance2-item {
+  border-bottom: 1px solid rgba(26,26,26,0.06);
+  padding: 12px 0;
+}
+#{{ section_id }} .mps__reassurance2.is-grid .mps__reassurance2-item:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance2.is-grid {
+    grid-template-columns: 1fr;
+  }
+  #{{ section_id }} .mps__reassurance2.is-grid .mps__reassurance2-item:nth-last-child(-n+2) {
+    border-bottom: 1px solid rgba(26,26,26,0.06);
+  }
+  #{{ section_id }} .mps__reassurance2.is-grid .mps__reassurance2-item:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Variante "inline" : ligne horizontale minimaliste premium */
+#{{ section_id }} .mps__reassurance2.is-inline {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0;
+  padding: 18px 0;
+  border-top: 1px solid rgba(26,26,26,0.1);
+  border-bottom: 1px solid rgba(26,26,26,0.1);
+}
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-item {
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 4px 10px;
+  border-bottom: none;
+  border-right: 1px solid rgba(26,26,26,0.08);
+  text-align: center;
+  min-width: 0;
+}
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-item:last-child {
+  border-right: none;
+}
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-ico {
+  width: 26px;
+  height: 26px;
+  border-radius: 0;
+  background: transparent;
+  color: {{ noir }};
+  opacity: 0.85;
+}
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-ico img,
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-ico svg {
+  width: 24px;
+  height: 24px;
+}
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-text {
+  align-items: center;
+  gap: 3px;
+}
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: {{ noir }};
+  line-height: 1.25;
+}
+#{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-sub {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  color: rgba(26,26,26,0.5);
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance2.is-inline {
+    padding: 12px 0;
+  }
+  #{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-item {
+    padding: 2px 6px;
+    gap: 6px;
+  }
+  #{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-ico {
+    width: 22px;
+    height: 22px;
+  }
+  #{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-ico img,
+  #{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-ico svg {
+    width: 20px;
+    height: 20px;
+  }
+  #{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-title {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+  #{{ section_id }} .mps__reassurance2.is-inline .mps__reassurance2-sub {
+    font-size: 9px;
+  }
+}
+
+/* Mobile : slider horizontal (1 item visible à la fois, scroll snap) pour tous les layouts V2 */
+#{{ section_id }} .mps__reassurance2-wrap {
+  margin-bottom: 24px;
+}
+#{{ section_id }} .mps__reassurance2-dots {
+  display: none;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance2-wrap {
+    margin-bottom: 20px;
+  }
+  #{{ section_id }} .mps__reassurance2-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  #{{ section_id }} .mps__reassurance2-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(26,26,26,0.2);
+    transition: background 0.2s ease, width 0.2s ease;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  #{{ section_id }} .mps__reassurance2-dot.is-active {
+    background: {{ noir }};
+    width: 16px;
+    border-radius: 3px;
+  }
+}
+/* Mobile : slider horizontal (1 item visible à la fois, scroll snap) */
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__reassurance2-wrap .mps__reassurance2 {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+    padding: 14px 0;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-top: 1px solid rgba(26,26,26,0.1);
+    border-bottom: 1px solid rgba(26,26,26,0.1);
+    grid-template-columns: none;
+  }
+  #{{ section_id }} .mps__reassurance2::-webkit-scrollbar {
+    display: none;
+  }
+  #{{ section_id }} .mps__reassurance2 .mps__reassurance2-item {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 4px 12px;
+    border: none !important;
+    text-align: left;
+  }
+  #{{ section_id }} .mps__reassurance2 .mps__reassurance2-ico {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(26,26,26,0.04);
+    flex: 0 0 34px;
+  }
+  #{{ section_id }} .mps__reassurance2 .mps__reassurance2-ico img,
+  #{{ section_id }} .mps__reassurance2 .mps__reassurance2-ico svg {
+    width: 18px;
+    height: 18px;
+  }
+  #{{ section_id }} .mps__reassurance2 .mps__reassurance2-text {
+    align-items: flex-start;
+    gap: 2px;
+  }
+  #{{ section_id }} .mps__reassurance2 .mps__reassurance2-title {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    text-transform: lowercase;
+    letter-spacing: 0.01em;
+  }
+  #{{ section_id }} .mps__reassurance2 .mps__reassurance2-sub {
+    font-size: 11px;
+  }
+}
+
+/* ── Variant overrides ── */
+#{{ section_id }} .mps__variants {
+  margin-bottom: 8px;
+}
+#{{ section_id }} .mps__variants .form__label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.45);
+  margin-bottom: 0;
+  white-space: nowrap;
+  float: left;
+  padding: 0;
+  line-height: 40px;
+  margin-right: 16px;
+}
+#{{ section_id }} .mps__variants .form__label span[data-selected-value] {
+  font-weight: 400;
+}
+#{{ section_id }} .mps__variants .product-form__input {
+  border: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+#{{ section_id }} .mps__variants .product-form__input--pill label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(26,26,26,0.15);
+  border-radius: 0;
+  padding: 10px 20px;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#{{ section_id }} .mps__variants .product-form__input--pill input:checked + label {
+  border-color: {{ noir }};
+  background: {{ noir }};
+  color: #fff;
+}
+
+/* Color-only pills: square swatch, no text */
+#{{ section_id }} .mps__variants .product-form__input--pill.mps__color-row label {
+  padding: 0;
+  border: 1px solid rgba(0,0,0,0.12);
+  width: 24px;
+  height: 24px;
+  border-radius: 0;
+  overflow: hidden;
+}
+#{{ section_id }} .mps__variants .product-form__input--pill.mps__color-row input:checked + label {
+  border-color: {{ noir }};
+  outline: 2px solid {{ noir }};
+  outline-offset: 2px;
+  background: transparent;
+}
+#{{ section_id }} .mps__variants .product-form__input--pill.mps__color-row .mps__color-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  margin: 0;
+}
+
+/* Angle icon inside pill */
+#{{ section_id }} .mps__variants .mps__angle-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Color dot (used inside color-only pills) */
+#{{ section_id }} .mps__variants .mps__color-dot {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 0;
+  border: 1px solid rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+
+/* Variant helper text — placé sous la rangée des pillules, aligné avec la 1ère pillule */
+#{{ section_id }} .mps__variant-helper {
+  flex: 0 0 100%;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-style: italic;
+  color: rgba(26,26,26,0.45);
+  margin: 4px 0 0;
+  padding: 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+/* Square color swatches */
+#{{ section_id }} .mps__variants .product-form__input--swatch {
+  --swatch-input--size: 36px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#{{ section_id }} .mps__variants .product-form__input--swatch .swatch-input__input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+#{{ section_id }} .mps__variants .product-form__input--swatch .swatch-input__label {
+  border-radius: 0;
+}
+#{{ section_id }} .mps__variants .product-form__input--swatch .swatch {
+  border-radius: 0;
+}
+#{{ section_id }} .mps__variants .product-form__input--swatch .swatch-input__input:checked + .swatch-input__label {
+  outline: 2px solid {{ noir }};
+  outline-offset: 3px;
+}
+
+/* ── Price ── */
+#{{ section_id }} .mps__price-row {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+/* Force installment line onto its own row, aligned left under the price */
+#{{ section_id }} .mps__installment-line {
+  flex-basis: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(26,26,26,0.65);
+  margin-top: 4px;
+}
+#{{ section_id }} .mps__installment-line .mps__alma-logo {
+  height: 14px;
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+#{{ section_id }} .mps__price-main {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+}
+#{{ section_id }} .mps__price {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: {{ noir }};
+}
+#{{ section_id }} .mps__compare-price {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: rgba(26,26,26,0.35);
+  text-decoration: line-through;
+  margin-left: 2px;
+}
+#{{ section_id }} .mps__discount-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  background: #1A1A1A;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 4px;
+  margin-left: 4px;
+  white-space: nowrap;
+  position: relative;
+  top: -2px;
+}
+#{{ section_id }} .mps__installment {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: rgba(26,26,26,0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#{{ section_id }} .mps__installment img {
+  width: auto;
+}
+
+/* ── Actions ── */
+#{{ section_id }} .mps__actions {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* Quantity selector */
+#{{ section_id }} .mps__qty {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(26,26,26,0.1);
+  flex-shrink: 0;
+}
+#{{ section_id }} .mps__qty button {
+  width: 36px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: {{ noir }};
+  -webkit-appearance: none;
+  transition: background 0.2s ease;
+}
+#{{ section_id }} .mps__qty button:hover {
+  background: rgba(26,26,26,0.04);
+}
+#{{ section_id }} .mps__qty input {
+  width: 28px;
+  height: 40px;
+  text-align: center;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: {{ noir }};
+  background: none;
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .mps__qty input::-webkit-inner-spin-button,
+#{{ section_id }} .mps__qty input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#{{ section_id }} .mps__wishlist {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  color: {{ noir }};
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 0 !important;
+}
+#{{ section_id }} .mps__wishlist:hover,
+#{{ section_id }} .mps__wishlist:focus,
+#{{ section_id }} .mps__wishlist:focus-visible,
+#{{ section_id }} .mps__wishlist:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+#{{ section_id }} .mps__wishlist:hover { transform: scale(1.08); }
+#{{ section_id }} .mps__wishlist::before,
+#{{ section_id }} .mps__wishlist::after {
+  display: none !important;
+  content: none !important;
+}
+#{{ section_id }} .mps__wishlist svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: {{ noir }};
+  transition: fill 0.25s ease;
+}
+/* État "ajouté" (Swym) — cœur plein noir */
+#{{ section_id }} .mps__wishlist.swym-added svg,
+#{{ section_id }} .mps__wishlist.swym-added svg path {
+  fill: {{ noir }} !important;
+  stroke: {{ noir }} !important;
+}
+
+#{{ section_id }} .mps__form-wrap { flex: 1; display: flex; }
+#{{ section_id }} .mps__form-wrap .form { flex: 1; display: flex; flex-direction: column; }
+#{{ section_id }} .mps__atc {
+  width: 100%;
+  height: 40px;
+  background: {{ noir }};
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  text-transform: lowercase;
+  transition: background 0.4s ease;
+  -webkit-appearance: none;
+  position: relative;
+}
+#{{ section_id }} .mps__atc:hover { background: rgba(26,26,26,0.88); }
+#{{ section_id }} .mps__atc:disabled {
+  background: rgba(26,26,26,0.12);
+  cursor: not-allowed;
+}
+#{{ section_id }} .mps__atc .loading__spinner { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; }
+#{{ section_id }} .mps__atc.loading .mps__atc-label { visibility: hidden; }
+#{{ section_id }} .mps__atc.loading .loading__spinner { display: flex; }
+
+/* Dynamic checkout */
+#{{ section_id }} .mps__dynamic-checkout { margin-bottom: 12px; }
+#{{ section_id }} .mps__dynamic-checkout .shopify-payment-button { margin-top: 8px; }
+#{{ section_id }} .mps__dynamic-checkout .shopify-payment-button__button {
+  border-radius: 0 !important;
+  min-height: 48px;
+}
+
+/* ── Delivery ── */
+#{{ section_id }} .mps__delivery {
+  margin-bottom: 24px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(26,26,26,0.8);
+}
+#{{ section_id }} .mps__delivery strong {
+  font-weight: 600;
+  color: {{ noir }};
+  text-decoration: none;
+}
+
+/* ── Accordion ── */
+#{{ section_id }} .mps__accordion {
+  border-top: 1px solid rgba(26,26,26,0.08);
+}
+#{{ section_id }} .mps__acc-item {
+  border-bottom: 1px solid rgba(26,26,26,0.08);
+}
+#{{ section_id }} .mps__acc-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .mps__acc-btn:hover .mps__acc-title { color: {{ noir }}; }
+#{{ section_id }} .mps__acc-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.7);
+  transition: color 0.3s ease;
+}
+#{{ section_id }} .mps__acc-chevron {
+  width: 16px;
+  height: 16px;
+  color: rgba(26,26,26,0.2);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+#{{ section_id }} .mps__acc-btn[aria-expanded="true"] .mps__acc-chevron {
+  transform: rotate(180deg);
+}
+#{{ section_id }} .mps__acc-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s cubic-bezier(0.25,0.1,0,1), padding 0.4s ease;
+  padding: 0;
+}
+#{{ section_id }} .mps__acc-body.is-open {
+  max-height: 600px;
+  padding: 0 0 20px;
+}
+#{{ section_id }} .mps__acc-content {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.9;
+  color: rgba(26,26,26,0.5);
+}
+#{{ section_id }} .mps__acc-content p { margin: 0 0 12px; }
+#{{ section_id }} .mps__acc-content p:last-child { margin-bottom: 0; }
+
+/* ── Story ── */
+#{{ section_id }} .mps__story {
+  padding: 40px 20px 48px;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__story {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0;
+  }
+}
+#{{ section_id }} .mps__story-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__story-text { padding: 48px 64px; }
+}
+#{{ section_id }} .mps__story-kicker {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 9px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.25);
+  margin: 0 0 8px;
+}
+#{{ section_id }} .mps__story-heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: clamp(22px, 3vw, 36px);
+  line-height: 1.15;
+  color: {{ noir }};
+  margin: 0 0 16px;
+}
+#{{ section_id }} .mps__story-body {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.85;
+  color: rgba(26,26,26,0.5);
+  margin: 0 0 16px;
+  max-width: 400px;
+}
+#{{ section_id }} .mps__story-quote {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.8;
+  font-style: italic;
+  color: rgba(26,26,26,0.35);
+  margin: 0;
+  max-width: 400px;
+}
+#{{ section_id }} .mps__story-img { overflow: hidden; }
+@media (max-width: 989px) {
+  #{{ section_id }} .mps__story-img { margin-top: 24px; }
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mps__story-img { max-height: 450px; }
+}
+#{{ section_id }} .mps__story-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Cross-sell (list layout) ── */
+#{{ section_id }} .mps__cross { padding: 0; margin-top: 24px; overflow: hidden; min-width: 0; }
+#{{ section_id }} .mps__cross-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 14px;
+}
+#{{ section_id }} .mps__cross-title {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: {{ noir }};
+  margin: 0;
+}
+#{{ section_id }} .mps__cross-subhead {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  color: rgba(26,26,26,0.5);
+  margin: 0;
+}
+#{{ section_id }} .mps__cross-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(26,26,26,0.12);
+}
+#{{ section_id }} .mps__cross-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(26,26,26,0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.25s ease;
+}
+#{{ section_id }} .mps__cross-row:hover {
+  background: rgba(26,26,26,0.015);
+}
+#{{ section_id }} .mps__cross-thumb {
+  width: 56px;
+  height: 56px;
+  background: {{ creme }};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+#{{ section_id }} .mps__cross-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+#{{ section_id }} .mps__cross-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+#{{ section_id }} .mps__cross-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: {{ noir }};
+  line-height: 1.25;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#{{ section_id }} .mps__cross-sub {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(26,26,26,0.5);
+  line-height: 1.3;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#{{ section_id }} .mps__cross-price {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: {{ noir }};
+  white-space: nowrap;
+}
+#{{ section_id }} .mps__cross-add {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(26,26,26,0.2);
+  background: #fff;
+  color: {{ noir }};
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .mps__cross-add:hover {
+  background: {{ noir }};
+  border-color: {{ noir }};
+  color: #fff;
+}
+#{{ section_id }} .mps__cross-add svg {
+  width: 12px;
+  height: 12px;
+}
+@media (max-width: 600px) {
+  #{{ section_id }} .mps__cross-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  #{{ section_id }} .mps__cross-row {
+    grid-template-columns: 48px 1fr auto auto;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  #{{ section_id }} .mps__cross-thumb {
+    width: 48px;
+    height: 48px;
+  }
+  #{{ section_id }} .mps__cross-name { font-size: 12px; }
+  #{{ section_id }} .mps__cross-sub { font-size: 11px; }
+  #{{ section_id }} .mps__cross-price { font-size: 12px; }
+}
+
+/* ── Lightbox ── */
+#{{ section_id }} .mps__gallery-img.is-active { cursor: zoom-in; pointer-events: auto; }
+#{{ section_id }}-lightbox.no-zoom .lb__viewport,
+#{{ section_id }}-lightbox.no-zoom .lb__img { cursor: default; }
+@media (max-width: 749px) {
+  #{{ section_id }}-lightbox.zoom-desktop-only .lb__viewport,
+  #{{ section_id }}-lightbox.zoom-desktop-only .lb__img { cursor: default; }
+}
+#{{ section_id }}-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#{{ section_id }}-lightbox.is-open { display: flex; }
+#{{ section_id }}-lightbox .lb__close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(0,0,0,0.18);
+  cursor: pointer;
+  color: #000;
+  transition: border-color 0.25s ease, background 0.25s ease;
+  -webkit-appearance: none;
+}
+#{{ section_id }}-lightbox .lb__close:hover {
+  border-color: rgba(0,0,0,0.45);
+  background: rgba(255,255,255,1);
+}
+#{{ section_id }}-lightbox .lb__close svg { width: 18px; height: 18px; }
+#{{ section_id }}-lightbox .lb__viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: grab;
+}
+#{{ section_id }}-lightbox .lb__viewport:active { cursor: grabbing; }
+#{{ section_id }}-lightbox .lb__viewport.is-zoomed { cursor: grab; }
+#{{ section_id }}-lightbox .lb__viewport.is-zoomed.is-dragging { cursor: grabbing; }
+#{{ section_id }}-lightbox .lb__img {
+  max-width: 90vw;
+  max-height: 100vh;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+#{{ section_id }}-lightbox .lb__viewport.is-zoomed .lb__img {
+  max-width: none;
+  max-height: none;
+  transition: none;
+}
+#{{ section_id }}-lightbox .lb__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(0,0,0,0.18);
+  cursor: pointer;
+  color: #000;
+  transition: border-color 0.25s ease, background 0.25s ease;
+  -webkit-appearance: none;
+}
+#{{ section_id }}-lightbox .lb__nav:hover {
+  border-color: rgba(0,0,0,0.45);
+  background: rgba(255,255,255,1);
+}
+#{{ section_id }}-lightbox .lb__nav--prev { left: 18px; }
+#{{ section_id }}-lightbox .lb__nav--next { right: 18px; }
+#{{ section_id }}-lightbox .lb__nav svg { width: 16px; height: 16px; }
+#{{ section_id }}-lightbox .lb__counter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
+}
+
+/* Option schema: image lightbox plein ecran, sans bandes noires */
+#{{ section_id }}-lightbox.is-fullscreen-image {
+  background: transparent;
+}
+#{{ section_id }}-lightbox.is-fullscreen-image .lb__img {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+}
+
+@media (max-width: 749px) {
+  #{{ section_id }}-lightbox .lb__img {
+    width: auto;
+    height: auto;
+    max-width: 100vw;
+    max-height: 100dvh;
+    object-fit: contain;
+  }
+  #{{ section_id }}-lightbox .lb__nav {
+    width: 38px;
+    height: 38px;
+  }
+  #{{ section_id }}-lightbox .lb__nav--prev { left: 10px; }
+  #{{ section_id }}-lightbox .lb__nav--next { right: 10px; }
+  #{{ section_id }}-lightbox .lb__close {
+    top: 10px;
+    right: 10px;
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 749px) {
+  #{{ section_id }}-lightbox.is-fullscreen-image .lb__img {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+  }
+  /* Option : lightbox 100% activée uniquement sur desktop → revenir au comportement standard sur mobile */
+  #{{ section_id }}-lightbox.is-fullscreen-image.is-fullscreen-desktop-only {
+    background: rgba(0,0,0,0.92);
+  }
+  #{{ section_id }}-lightbox.is-fullscreen-image.is-fullscreen-desktop-only .lb__img {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    object-fit: contain;
+  }
+}
+
+/* ══ Personnalisation block ══ */
+#{{ section_id }} .mps__custom {
+  margin: 4px 0 10px;
+}
+#{{ section_id }} .mps__custom-trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #000;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+#{{ section_id }} .mps__custom-trigger:hover,
+#{{ section_id }} .mps__custom-trigger:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#{{ section_id }} .mps__custom-trigger svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* Modal (placed inside section but visually overlay) */
+#{{ section_id }} .mps__custom-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+#{{ section_id }} .mps__custom-modal.is-open {
+  display: flex;
+  opacity: 1;
+}
+#{{ section_id }} .mps__custom-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 15, 12, 0.55);
+  backdrop-filter: blur(2px);
+}
+#{{ section_id }} .mps__custom-dialog {
+  position: relative;
+  background: #fff;
+  border-radius: 4px;
+  max-width: 480px;
+  width: 100%;
+  padding: 36px 32px 32px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  transform: translateY(10px);
+  transition: transform 0.25s ease;
+}
+#{{ section_id }} .mps__custom-modal.is-open .mps__custom-dialog {
+  transform: translateY(0);
+}
+#{{ section_id }} .mps__custom-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: {{ section.settings.text_color | default: '#511F17' }};
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+#{{ section_id }} .mps__custom-close:hover { background: rgba(0,0,0,0.06); }
+#{{ section_id }} .mps__custom-close svg { width: 16px; height: 16px; }
+#{{ section_id }} .mps__custom-heading {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #000000;
+  margin: 0 0 6px;
+}
+#{{ section_id }} .mps__custom-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(0,0,0,0.65);
+  margin: 0 0 22px;
+}
+#{{ section_id }} .mps__custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+#{{ section_id }} .mps__custom-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#{{ section_id }} .mps__custom-field label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.55);
+}
+#{{ section_id }} .mps__custom-field input,
+#{{ section_id }} .mps__custom-field textarea {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: {{ section.settings.text_color | default: '#511F17' }};
+  background: #fafafa;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 2px;
+  padding: 10px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+#{{ section_id }} .mps__custom-field input:focus,
+#{{ section_id }} .mps__custom-field textarea:focus {
+  outline: none;
+  border-color: {{ section.settings.text_color | default: '#511F17' }};
+  background: #fff;
+}
+#{{ section_id }} .mps__custom-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+#{{ section_id }} .mps__custom-submit {
+  margin-top: 6px;
+  padding: 14px 20px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+#{{ section_id }} .mps__custom-submit:hover { opacity: 0.85; }
+#{{ section_id }} .mps__custom-success {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #f2f7f0;
+  border: 1px solid #c8dcc0;
+  border-radius: 2px;
+  color: #2c5a1e;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+}
+body.mps__custom-open { overflow: hidden; }
+
+@media (max-width: 749px) {
+  #{{ section_id }} .mps__custom-dialog { padding: 30px 22px 24px; }
+  #{{ section_id }} .mps__custom-heading { font-size: 19px; }
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<product-info
+  id="{{ section_id }}"
+  data-section="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  data-update-url="true"
+  data-url="{{ product.url }}"
+>
+  <section class="mps__grid">
+
+    {%- comment -%} ══ Gallery column ══ {%- endcomment -%}
+    <div class="mps__gallery-col">
+      <div class="mps__gallery" data-mps-gallery>
+
+        {%- assign badge_text = product.metafields.custom.badge.value -%}
+        {%- if badge_text != blank -%}
+          <span class="mps__badge">{{ badge_text }}</span>
+        {%- endif -%}
+
+        {%- assign img_index = 0 -%}
+        {%- for media in product.media -%}
+          {%- if media.media_type == 'image' -%}
+            {%- assign focal_x = 50 -%}
+            {%- assign focal_y = 50 -%}
+            {%- if media.presentation.focal_point -%}
+              {%- assign focal_x = media.presentation.focal_point.x -%}
+              {%- assign focal_y = media.presentation.focal_point.y -%}
+            {%- endif -%}
+            <img
+              src="{{ media | image_url: width: 1400 }}"
+              srcset="{{ media | image_url: width: 600 }} 600w, {{ media | image_url: width: 1000 }} 1000w, {{ media | image_url: width: 1400 }} 1400w, {{ media | image_url: width: 1800 }} 1800w"
+              sizes="(min-width: 990px) 55vw, 100vw"
+              alt="{{ media.alt | escape | default: product.title | escape }}"
+              width="{{ media.width }}"
+              height="{{ media.height }}"
+              class="mps__gallery-img{% if img_index == 0 %} is-active{% endif %}"
+              loading="{% if img_index == 0 %}eager{% else %}lazy{% endif %}"
+              data-mps-slide="{{ img_index }}"
+              style="object-position: {{ focal_x }}% {{ focal_y }}%;"
+            >
+            {%- assign img_index = img_index | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if img_index > 1 -%}
+          <span class="mps__counter" data-mps-counter>1 / {{ img_index }}</span>
+
+          <button class="mps__gallery-nav mps__gallery-nav--prev" data-mps-prev aria-label="Image précédente">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 15l-5-5 5-5"/></svg>
+          </button>
+          <button class="mps__gallery-nav mps__gallery-nav--next" data-mps-next aria-label="Image suivante">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5l5 5-5 5"/></svg>
+          </button>
+        {%- endif -%}
+
+        {%- assign ambiance_block = section.blocks | where: 'type', 'gallery_settings' | first -%}
+        {%- if ambiance_block and ambiance_block.settings.show_ambiance -%}
+          <button class="mps__ambiance" data-mps-ambiance aria-label="Voir l'ambiance">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M7 3v8M3 7h8"/></svg>
+            <span>Voir l'ambiance</span>
+          </button>
+        {%- endif -%}
+      </div>
+
+      {%- if img_index > 1 -%}
+        <div class="mps__thumbs" data-mps-thumbs>
+          {%- assign thumb_idx = 0 -%}
+          {%- for media in product.media -%}
+            {%- if media.media_type == 'image' -%}
+              <button class="mps__thumb{% if thumb_idx == 0 %} is-active{% endif %}" data-mps-thumb="{{ thumb_idx }}" aria-label="Image {{ thumb_idx | plus: 1 }}">
+                <img
+                  src="{{ media | image_url: width: 200 }}"
+                  alt="{{ media.alt | escape | default: product.title | escape }}"
+                  width="200"
+                  height="160"
+                  loading="lazy"
+                >
+              </button>
+              {%- assign thumb_idx = thumb_idx | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ══ Lightbox fullscreen ══ {%- endcomment -%}
+    <div id="{{ section_id }}-lightbox" class="{% if section.settings.lightbox_fullscreen_image %}is-fullscreen-image{% if section.settings.lightbox_fullscreen_desktop_only %} is-fullscreen-desktop-only{% endif %}{% endif %}{% unless section.settings.lightbox_zoom_enabled %} no-zoom{% endunless %}{% if section.settings.lightbox_zoom_desktop_only %} zoom-desktop-only{% endif %}" data-lb-zoom-level="{{ section.settings.lightbox_zoom_level }}" aria-hidden="true">
+      <button class="lb__close" data-lb-close aria-label="Fermer">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+      </button>
+      <div class="lb__viewport" data-lb-viewport>
+        <img
+          class="lb__img"
+          data-lb-img
+          src="{{ 'icon-zoom.svg' | asset_url }}"
+          alt="{{ product.title | escape }}"
+          width="{% if product.featured_image %}{{ product.featured_image.width }}{% else %}1400{% endif %}"
+          height="{% if product.featured_image %}{{ product.featured_image.height }}{% else %}1400{% endif %}"
+        >
+      </div>
+      {%- if img_index > 1 -%}
+        <button class="lb__nav lb__nav--prev" data-lb-prev aria-label="Image précédente">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 15l-5-5 5-5"/></svg>
+        </button>
+        <button class="lb__nav lb__nav--next" data-lb-next aria-label="Image suivante">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5l5 5-5 5"/></svg>
+        </button>
+        <span class="lb__counter" data-lb-counter></span>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ══ Info panel ══ {%- endcomment -%}
+    <div class="mps__info" id="ProductInfo-{{ section.id }}">
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+
+          {%- when 'title' -%}
+            <div {{ block.shopify_attributes }}>
+              <nav class="mps__breadcrumb" aria-label="Fil d'Ariane">
+                <a href="{{ routes.root_url }}">Accueil</a>
+                {%- if product.collections.size > 0 -%}
+                  {%- assign col = product.collections | first -%}
+                  <span class="mps__breadcrumb-sep">›</span>
+                  <a href="{{ col.url }}">{{ col.title }}</a>
+                {%- endif -%}
+                <span class="mps__breadcrumb-sep">›</span>
+                <span class="mps__breadcrumb-current">{{ product.title }}</span>
+              </nav>
+
+              <div class="mps__title-row">
+                <h1 class="mps__title">{{ product.title }}</h1>
+                {%- if block.settings.show_rating -%}
+                  {%- if product.metafields.reviews.rating.value != blank -%}
+                    {%- assign rating_val = product.metafields.reviews.rating.value.rating | round -%}
+                    {%- assign rating_count = product.metafields.reviews.rating_count.value | default: 0 -%}
+                  {%- else -%}
+                    {%- assign rating_val = block.settings.rating_value -%}
+                    {%- assign rating_count = block.settings.rating_count -%}
+                  {%- endif -%}
+                  <a href="#product-reviews" class="mps__rating" data-scroll-to-reviews>
+                    {%- for i in (1..5) -%}
+                      {%- if i <= rating_val -%}
+                        <svg class="mps__star mps__star--filled" viewBox="0 0 16 16"><path d="M8 0l2.47 5.01L16 5.81l-4 3.9.94 5.49L8 12.49 3.06 15.2 4 9.71 0 5.81l5.53-.8z" fill="currentColor"/></svg>
+                      {%- else -%}
+                        <svg class="mps__star mps__star--empty" viewBox="0 0 16 16"><path d="M8 0l2.47 5.01L16 5.81l-4 3.9.94 5.49L8 12.49 3.06 15.2 4 9.71 0 5.81l5.53-.8z" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+                      {%- endif -%}
+                    {%- endfor -%}
+                    <span class="mps__rating-count">{{ rating_count }} Avis</span>
+                  </a>
+                {%- endif -%}
+              </div>
+
+              {%- if product.type != blank -%}
+                <p class="mps__subtitle">{{ product.type }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.show_vendor and product.vendor != blank -%}
+                <p class="mps__subtitle" style="font-size:11px;color:rgba(26,26,26,0.3);text-transform:uppercase;margin-bottom:4px;">{{ product.vendor }}</p>
+              {%- endif -%}
+            </div>
+
+          {%- when 'subtitle' -%}
+            {%- if block.settings.text != blank -%}
+              <p class="mps__subtitle mps__subtitle--{{ block.id }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</p>
+              <style>
+                #{{ section_id }} .mps__subtitle--{{ block.id }} {
+                  font-size: {{ block.settings.text_size_mobile }}px;
+                }
+                @media (min-width: 990px) {
+                  #{{ section_id }} .mps__subtitle--{{ block.id }} {
+                    font-size: {{ block.settings.text_size_desktop }}px;
+                  }
+                }
+              </style>
+            {%- endif -%}
+
+          {%- when 'dimensions' -%}
+            {%- if block.settings.dim_h != blank or block.settings.dim_l != blank or block.settings.dim_p != blank -%}
+              <div class="mps__dimensions" {{ block.shopify_attributes }}>
+                {%- if block.settings.dim_l != blank -%}
+                  <div class="mps__dim-col">
+                    <div class="mps__dim-meta">
+                      <svg class="mps__dim-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7h10"/><path d="M4.2 4.8 2 7l2.2 2.2"/><path d="M9.8 4.8 12 7l-2.2 2.2"/></svg>
+                      <span class="mps__dim-label">Largeur</span>
+                    </div>
+                    <span class="mps__dim-value">{{ block.settings.dim_l }}<span class="mps__dim-unit">cm</span></span>
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.dim_p != blank -%}
+                  <div class="mps__dim-col">
+                    <div class="mps__dim-meta">
+                      <svg class="mps__dim-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10V4h8"/><path d="M7.8 1.8 10 4 7.8 6.2"/><path d="M4.2 7.8 2 10l2.2 2.2"/></svg>
+                      <span class="mps__dim-label">Profondeur</span>
+                    </div>
+                    <span class="mps__dim-value">{{ block.settings.dim_p }}<span class="mps__dim-unit">cm</span></span>
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.dim_h != blank -%}
+                  <div class="mps__dim-col">
+                    <div class="mps__dim-meta">
+                      <svg class="mps__dim-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2v10"/><path d="M4.8 4.2 7 2l2.2 2.2"/><path d="M4.8 9.8 7 12l2.2-2.2"/></svg>
+                      <span class="mps__dim-label">Hauteur</span>
+                    </div>
+                    <span class="mps__dim-value">{{ block.settings.dim_h }}<span class="mps__dim-unit">cm</span></span>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+          {%- when 'reassurance' -%}
+            <div class="mps__reassurance" {{ block.shopify_attributes }}>
+              {%- for i in (1..4) -%}
+                {%- assign title_key = 'title_' | append: i -%}
+                {%- assign sub_key = 'subtitle_' | append: i -%}
+                {%- assign icon_key = 'icon_' | append: i -%}
+                {%- if block.settings[title_key] != blank -%}
+                  <div class="mps__reassurance-item">
+                    {%- if block.settings[icon_key] != blank -%}
+                      <img class="mps__reassurance-icon" src="{{ block.settings[icon_key] | image_url: width: 56 }}" alt="" width="28" height="28" loading="lazy">
+                    {%- endif -%}
+                    <span class="mps__reassurance-title">{{ block.settings[title_key] }}</span>
+                    {%- if block.settings[sub_key] != blank -%}
+                      <span class="mps__reassurance-sub">{{ block.settings[sub_key] }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+
+          {%- when 'reassurance_v2' -%}
+            {%- liquid
+              assign layout_class = ''
+              case block.settings.layout
+                when 'grid'
+                  assign layout_class = ' is-grid'
+                when 'inline'
+                  assign layout_class = ' is-inline'
+              endcase
+            -%}
+            <div class="mps__reassurance2-wrap" data-mps-reassurance2 {{ block.shopify_attributes }}>
+              <div class="mps__reassurance2{{ layout_class }}" data-mps-reassurance2-track>
+                {%- for i in (1..4) -%}
+                  {%- assign title_key = 'title_' | append: i -%}
+                  {%- assign sub_key = 'subtitle_' | append: i -%}
+                  {%- assign icon_key = 'icon_' | append: i -%}
+                  {%- if block.settings[title_key] != blank -%}
+                    <div class="mps__reassurance2-item">
+                      <span class="mps__reassurance2-ico">
+                        {%- if block.settings[icon_key] != blank -%}
+                          <img src="{{ block.settings[icon_key] | image_url: width: 60 }}" alt="" width="22" height="22" loading="lazy">
+                        {%- else -%}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                        {%- endif -%}
+                      </span>
+                      <span class="mps__reassurance2-text">
+                        <span class="mps__reassurance2-title">{{ block.settings[title_key] }}</span>
+                        {%- if block.settings[sub_key] != blank -%}
+                          <span class="mps__reassurance2-sub">{{ block.settings[sub_key] }}</span>
+                        {%- endif -%}
+                      </span>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              <div class="mps__reassurance2-dots" data-mps-reassurance2-dots aria-hidden="true"></div>
+            </div>
+
+          {%- when 'variant_picker' -%}
+            <div class="mps__variants"
+              {{ block.shopify_attributes }}
+              {%- if block.settings.helper_text != blank %} data-mps-helper="{{ block.settings.helper_text | escape }}"{% endif -%}
+              {%- if block.settings.color_map != blank %} data-mps-colors="{{ block.settings.color_map | escape }}"{% endif -%}
+              {%- if block.settings.hide_color_label %} data-mps-hide-color-label{% endif -%}
+            >
+              {%- unless product.has_only_default_variant -%}
+                {%- render 'product-variant-picker',
+                  product: product,
+                  block: block,
+                  product_form_id: product_form_id
+                -%}
+              {%- endunless -%}
+            </div>
+            <style>
+              #{{ section_id }} .mps__variants { margin-top: {{ block.settings.margin_top_mobile }}px; margin-bottom: {{ block.settings.margin_bottom_mobile }}px; }
+              #{{ section_id }} .mps__variants .product-form__input { margin-bottom: {{ block.settings.gap_variants }}px; }
+              #{{ section_id }} .mps__variants .product-form__input:last-child { margin-bottom: {{ block.settings.last_row_margin_bottom_mobile }}px; }
+              #{{ section_id }} .mps__variants .product-form__input--pill.mps__color-row { gap: {{ block.settings.gap_color_swatches }}px; }
+              @media (min-width: 990px) {
+                #{{ section_id }} .mps__variants { margin-top: {{ block.settings.margin_top_desktop }}px; margin-bottom: {{ block.settings.margin_bottom_desktop }}px; }
+                #{{ section_id }} .mps__variants .product-form__input:last-child { margin-bottom: {{ block.settings.last_row_margin_bottom_desktop }}px; }
+              }
+            </style>
+
+          {%- when 'price' -%}
+            {%- liquid
+              assign price_cents = current_variant.price
+              assign price_rounded = price_cents | divided_by: 100
+              assign price_remainder = price_cents | modulo: 100
+              if price_remainder == 0
+                assign price_display = price_rounded | append: ' €'
+              else
+                assign price_display = current_variant.price | money
+              endif
+
+              assign compare_cents = current_variant.compare_at_price
+              assign discount_percent = 0
+              if compare_cents and compare_cents > price_cents
+                assign compare_remainder = compare_cents | modulo: 100
+                if compare_remainder == 0
+                  assign compare_rounded = compare_cents | divided_by: 100
+                  assign compare_display = compare_rounded | append: ' €'
+                else
+                  assign compare_display = current_variant.compare_at_price | money
+                endif
+                assign discount_diff = compare_cents | minus: price_cents
+                assign discount_percent = discount_diff | times: 100 | divided_by: compare_cents
+              endif
+
+              assign nb = block.settings.nb_installments
+              if nb == null or nb == 0
+                assign nb = 3
+              endif
+              assign installment_cents = price_cents | divided_by: nb
+              assign installment_remainder = installment_cents | modulo: 100
+              assign installment_euros = installment_cents | divided_by: 100
+              if installment_remainder == 0
+                assign installment_display = installment_euros | append: ' €'
+              else
+                assign installment_decimal = installment_remainder | prepend: '00' | slice: -2, 2
+                assign installment_display = installment_euros | append: ',' | append: installment_decimal | append: ' €'
+              endif
+            -%}
+            <div class="mps__price-row" id="price-{{ section.id }}" {{ block.shopify_attributes }}>
+              <span class="mps__price-main">
+                <span class="mps__price">{{ price_display }}</span>
+              </span>
+              {%- if compare_display -%}
+                <span class="mps__compare-price">{{ compare_display }}</span>
+                {%- if discount_percent > 0 -%}
+                  <span class="mps__discount-badge" data-discount>−{{ discount_percent }}%</span>
+                {%- endif -%}
+              {%- endif -%}
+              {%- if block.settings.nb_installments > 0 -%}
+                <span class="mps__installment-line">
+                  <span class="mps__installment-text">{{ nb }}x {{ installment_display }} sans frais avec</span>
+                  {%- if block.settings.alma_image != blank -%}
+                    <img src="{{ block.settings.alma_image | image_url: height: 80 }}" alt="Alma" width="{{ block.settings.alma_image.width }}" height="{{ block.settings.alma_image.height }}" loading="lazy" class="mps__alma-logo">
+                  {%- else -%}
+                    <span class="mps__installment-text">Alma</span>
+                  {%- endif -%}
+                </span>
+              {%- endif -%}
+            </div>
+            <style>
+              #price-{{ section.id }} .mps__alma-logo {
+                height: {{ block.settings.alma_height_mobile }}px;
+              }
+              #price-{{ section.id }} .mps__price {
+                font-size: {{ block.settings.price_size_mobile }}px;
+                font-weight: {{ block.settings.price_weight_mobile }};
+              }
+              @media (min-width: 990px) {
+                #price-{{ section.id }} .mps__alma-logo {
+                  height: {{ block.settings.alma_height_desktop }}px;
+                }
+                #price-{{ section.id }} .mps__price {
+                  font-size: {{ block.settings.price_size_desktop }}px;
+                  font-weight: {{ block.settings.price_weight_desktop }};
+                }
+              }
+            </style>
+
+          {%- when 'buy_buttons' -%}
+            <div {{ block.shopify_attributes }}>
+              <div class="mps__actions">
+                <div class="mps__qty">
+                  <button type="button" aria-label="Diminuer" data-mps-qty-minus>−</button>
+                  <input type="number" name="quantity" value="1" min="1" aria-label="Quantité" data-mps-qty-input>
+                  <button type="button" aria-label="Augmenter" data-mps-qty-plus>+</button>
+                </div>
+            <style>
+              #{{ section_id }} .mps__actions { margin-top: {{ block.settings.margin_top_mobile }}px; margin-bottom: {{ block.settings.margin_bottom_mobile }}px; }
+              @media (min-width: 990px) {
+                #{{ section_id }} .mps__actions { margin-top: {{ block.settings.margin_top_desktop }}px; margin-bottom: {{ block.settings.margin_bottom_desktop }}px; }
+              }
+            </style>
+
+                <product-form class="mps__form-wrap" data-section-id="{{ section.id }}">
+                  <div class="product-form__error-message-wrapper" role="alert" hidden>
+                    <span class="product-form__error-message"></span>
+                  </div>
+                  {%- form 'product', product, id: product_form_id, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+                    <input type="hidden" name="id" value="{{ current_variant.id }}" class="product-variant-id"
+                      {% unless current_variant.available %}disabled{% endunless %}
+                    >
+                    <input type="hidden" name="quantity" value="1" class="mps__qty-hidden">
+                    <button
+                      type="submit"
+                      name="add"
+                      id="ProductSubmitButton-{{ section.id }}"
+                      class="mps__atc"
+                      {% unless current_variant.available %}disabled{% endunless %}
+                    >
+                      <span class="mps__atc-label">
+                        {%- if current_variant.available -%}
+                          ajouter au panier
+                        {%- else -%}
+                          {{ 'products.product.sold_out' | t }}
+                        {%- endif -%}
+                      </span>
+                      {%- render 'loading-spinner' -%}
+                    </button>
+                    {%- if block.settings.show_dynamic_checkout -%}
+                      <div class="mps__dynamic-checkout">
+                        {{ form | payment_button }}
+                      </div>
+                    {%- endif -%}
+                  {%- endform -%}
+                </product-form>
+
+                {%- if block.settings.show_wishlist -%}
+                  <button
+                    class="mps__wishlist swym-button swym-add-to-wishlist"
+                    type="button"
+                    aria-label="Ajouter aux favoris"
+                    data-with-epi="true"
+                    data-swaction="addToWishlist"
+                    data-product-id="{{ product.id }}"
+                    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                    data-product-url="{{ shop.url }}{{ product.url }}"
+                  >
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17.5s-7-4.5-7-9a3.5 3.5 0 0 1 6.5-1.8L10 8l.5-1.3A3.5 3.5 0 0 1 17 8.5c0 4.5-7 9-7 9z"/></svg>
+                  </button>
+                {%- endif -%}
+              </div>
+            </div>
+
+          {%- when 'delivery' -%}
+            {%- liquid
+              assign weeks = product.metafields.custom.calculateur_livraison_estimee.value | default: 0
+              assign weeks = weeks | plus: 0
+            -%}
+            {%- if weeks > 0 -%}
+              {%- liquid
+                assign now_ts = 'now' | date: '%s' | plus: 0
+                assign start_seconds = weeks | times: 7 | times: 86400
+                assign start_ts = now_ts | plus: start_seconds
+                assign end_ts = start_ts | plus: 345600
+
+                assign start_day = start_ts | date: '%d'
+                assign start_month = start_ts | date: '%m'
+                assign end_day = end_ts | date: '%d'
+                assign end_month = end_ts | date: '%m'
+                assign end_year = end_ts | date: '%Y'
+
+                case start_month
+                  when '01'
+                    assign start_month_name = 'janvier'
+                  when '02'
+                    assign start_month_name = 'février'
+                  when '03'
+                    assign start_month_name = 'mars'
+                  when '04'
+                    assign start_month_name = 'avril'
+                  when '05'
+                    assign start_month_name = 'mai'
+                  when '06'
+                    assign start_month_name = 'juin'
+                  when '07'
+                    assign start_month_name = 'juillet'
+                  when '08'
+                    assign start_month_name = 'août'
+                  when '09'
+                    assign start_month_name = 'septembre'
+                  when '10'
+                    assign start_month_name = 'octobre'
+                  when '11'
+                    assign start_month_name = 'novembre'
+                  when '12'
+                    assign start_month_name = 'décembre'
+                endcase
+
+                case end_month
+                  when '01'
+                    assign end_month_name = 'janvier'
+                  when '02'
+                    assign end_month_name = 'février'
+                  when '03'
+                    assign end_month_name = 'mars'
+                  when '04'
+                    assign end_month_name = 'avril'
+                  when '05'
+                    assign end_month_name = 'mai'
+                  when '06'
+                    assign end_month_name = 'juin'
+                  when '07'
+                    assign end_month_name = 'juillet'
+                  when '08'
+                    assign end_month_name = 'août'
+                  when '09'
+                    assign end_month_name = 'septembre'
+                  when '10'
+                    assign end_month_name = 'octobre'
+                  when '11'
+                    assign end_month_name = 'novembre'
+                  when '12'
+                    assign end_month_name = 'décembre'
+                endcase
+              -%}
+              <div class="mps__delivery" id="delivery-{{ block.id }}" {{ block.shopify_attributes }}>
+                <strong>{{ block.settings.title }} :</strong>
+                Livraison estimée entre le {{ start_day }} {{ start_month_name }} et le {{ end_day }} {{ end_month_name }} {{ end_year }}
+                {%- if block.settings.suffix != blank -%}
+                  <br>{{ block.settings.suffix }}
+                {%- endif -%}
+              </div>
+            {%- elsif block.settings.title != blank -%}
+              <div class="mps__delivery" id="delivery-{{ block.id }}" {{ block.shopify_attributes }}>
+                <strong>{{ block.settings.title }}</strong>
+              </div>
+            {%- endif -%}
+            <style>
+              #delivery-{{ block.id }}.mps__delivery {
+                font-size: {{ block.settings.text_size_mobile }}px;
+              }
+              #delivery-{{ block.id }}.mps__delivery strong {
+                font-size: {{ block.settings.title_size_mobile }}px;
+                font-weight: {{ block.settings.title_weight }};
+              }
+              @media (min-width: 990px) {
+                #delivery-{{ block.id }}.mps__delivery {
+                  font-size: {{ block.settings.text_size_desktop }}px;
+                }
+                #delivery-{{ block.id }}.mps__delivery strong {
+                  font-size: {{ block.settings.title_size_desktop }}px;
+                }
+              }
+            </style>
+
+          {%- when 'description' -%}
+            {%- if product.description != blank -%}
+              <div class="mps__accordion" {{ block.shopify_attributes }}>
+                <div class="mps__acc-item">
+                  <button class="mps__acc-btn" aria-expanded="true" data-mps-acc-toggle>
+                    <span class="mps__acc-title">{{ 'products.product.description' | t }}</span>
+                    <svg class="mps__acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                  </button>
+                  <div class="mps__acc-body is-open" data-mps-acc-body>
+                    <div class="mps__acc-content">{{ product.description }}</div>
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+
+          {%- when 'customization' -%}
+            {%- if product.metafields.custom.personnalisation_disponible -%}
+            {%- assign cm_id = section_id | append: '-custom' -%}
+            {%- assign cm_size_desktop = block.settings.font_size_desktop | default: 12 -%}
+            {%- assign cm_size_mobile = block.settings.font_size_mobile | default: 11 -%}
+            {%- assign cm_margin_top = block.settings.margin_top | default: 4 -%}
+            {%- assign cm_margin_bottom = block.settings.margin_bottom | default: 10 -%}
+            <style>
+              #{{ section_id }} .mps__custom--{{ block.id }} { margin: {{ cm_margin_top }}px 0 {{ cm_margin_bottom }}px; }
+              #{{ section_id }} .mps__custom--{{ block.id }} .mps__custom-trigger { font-size: {{ cm_size_desktop }}px; }
+              @media (max-width: 749px) {
+                #{{ section_id }} .mps__custom--{{ block.id }} .mps__custom-trigger { font-size: {{ cm_size_mobile }}px; }
+              }
+            </style>
+            <div class="mps__custom mps__custom--{{ block.id }}" {{ block.shopify_attributes }}>
+              <button type="button" class="mps__custom-trigger" data-mps-custom-open aria-haspopup="dialog" aria-controls="{{ cm_id }}">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 2.5l2 2L5 13l-3 1 1-3 8.5-8.5z"/></svg>
+                <span>{{ block.settings.trigger_label | default: 'Personnaliser cet article' }}</span>
+              </button>
+
+              <div id="{{ cm_id }}" class="mps__custom-modal" data-mps-custom-modal role="dialog" aria-modal="true" aria-labelledby="{{ cm_id }}-title" hidden>
+                <div class="mps__custom-backdrop" data-mps-custom-close></div>
+                <div class="mps__custom-dialog" role="document">
+                  <button type="button" class="mps__custom-close" data-mps-custom-close aria-label="Fermer">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+                  </button>
+                  <h3 id="{{ cm_id }}-title" class="mps__custom-heading">{{ block.settings.modal_heading | default: 'Demande de personnalisation' }}</h3>
+                  {%- if block.settings.modal_subtitle != blank -%}
+                    <p class="mps__custom-subtitle">{{ block.settings.modal_subtitle }}</p>
+                  {%- endif -%}
+                  {%- form 'contact', class: 'mps__custom-form' -%}
+                    {%- if form.posted_successfully? -%}
+                      <div class="mps__custom-success">{{ block.settings.success_message | default: 'Merci ! Nous revenons vers vous très vite.' }}</div>
+                    {%- else -%}
+                      <input type="hidden" name="contact[subject]" value="Demande de personnalisation — {{ product.title | escape }}">
+                      <input type="hidden" name="contact[product]" value="{{ product.title | escape }}">
+                      <input type="hidden" name="contact[product_url]" value="{{ shop.url }}{{ product.url }}">
+                      {%- assign customer_full_name = '' -%}
+                      {%- if customer -%}
+                        {%- assign customer_full_name = customer.first_name | append: ' ' | append: customer.last_name | strip -%}
+                      {%- endif -%}
+                      <div class="mps__custom-field">
+                        <label for="{{ cm_id }}-name">Nom / Prénom</label>
+                        <input id="{{ cm_id }}-name" type="text" name="contact[name]" required aria-required="true" autocomplete="name" pattern=".*\S.*" title="Merci de renseigner votre nom et prénom" value="{{ customer_full_name | escape }}">
+                      </div>
+                      <div class="mps__custom-field">
+                        <label for="{{ cm_id }}-email">Email</label>
+                        <input id="{{ cm_id }}-email" type="email" name="contact[email]" required aria-required="true" autocomplete="email" value="{% if customer %}{{ customer.email }}{% endif %}">
+                      </div>
+                      <div class="mps__custom-field">
+                        <label for="{{ cm_id }}-phone">Numéro de téléphone</label>
+                        <input id="{{ cm_id }}-phone" type="tel" name="contact[phone]" required aria-required="true" autocomplete="tel" inputmode="tel" pattern="[0-9+()\s.-]{6,}" title="Merci de renseigner un numéro de téléphone valide">
+                      </div>
+                      <div class="mps__custom-field">
+                        <label for="{{ cm_id }}-message">Message</label>
+                        <textarea id="{{ cm_id }}-message" name="contact[body]" required placeholder="Décrivez votre demande de personnalisation…"></textarea>
+                      </div>
+                      <button type="submit" class="mps__custom-submit">{{ block.settings.submit_label | default: 'Envoyer' }}</button>
+                    {%- endif -%}
+                  {%- endform -%}
+                </div>
+              </div>
+            </div>
+            {%- endif -%}
+
+          {%- when 'collapsible_tab' -%}
+            <div class="mps__accordion" {{ block.shopify_attributes }}>
+              <div class="mps__acc-item">
+                <button class="mps__acc-btn" aria-expanded="false" data-mps-acc-toggle>
+                  <span class="mps__acc-title">{{ block.settings.heading | default: block.settings.page.title | default: 'Tab' }}</span>
+                  <svg class="mps__acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+                </button>
+                <div class="mps__acc-body" data-mps-acc-body>
+                  <div class="mps__acc-content">
+                    {%- if block.settings.content != blank -%}
+                      {{ block.settings.content }}
+                    {%- elsif block.settings.page != blank -%}
+                      {{ block.settings.page.content }}
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          {%- when 'divider' -%}
+            <hr class="mps__divider" {{ block.shopify_attributes }}>
+
+          {%- when 'cross_sell' -%}
+            {%- assign cross_products = product.metafields.custom.produits_complementaires.value -%}
+            {%- unless cross_products and cross_products.size > 0 -%}
+              {%- assign cross_collection = collections[block.settings.collection] -%}
+              {%- if cross_collection -%}
+                {%- assign cross_products = cross_collection.products -%}
+              {%- endif -%}
+            {%- endunless -%}
+            {%- if cross_products and cross_products.size > 0 -%}
+              <div class="mps__cross" {{ block.shopify_attributes }}>
+                <div class="mps__cross-head">
+                  <h2 class="mps__cross-title">{{ block.settings.heading | default: 'complétez votre intérieur' }}</h2>
+                  {%- if block.settings.subheading != blank -%}
+                    <p class="mps__cross-subhead">{{ block.settings.subheading }}</p>
+                  {%- endif -%}
+                </div>
+                <div class="mps__cross-list">
+                  {%- assign cross_limit = block.settings.limit | default: 4 -%}
+                  {%- assign cross_count = 0 -%}
+                  {%- for p in cross_products -%}
+                    {%- if p.id != product.id and cross_count < cross_limit -%}
+                      {%- assign cross_variant = p.selected_or_first_available_variant -%}
+                      {%- assign cross_sub = p.metafields.custom.caracteristique.value -%}
+                      {%- if cross_sub == blank -%}
+                        {%- assign cross_sub = p.metafields.custom.subtitle | default: p.metafields.custom.sous_titre -%}
+                      {%- endif -%}
+                      {%- if cross_sub == blank -%}{%- assign cross_sub = p.type -%}{%- endif -%}
+                      <a href="{{ p.url }}" class="mps__cross-row">
+                        <span class="mps__cross-thumb">
+                          {%- if p.featured_image -%}
+                            <img
+                              src="{{ p.featured_image | image_url: width: 200 }}"
+                              alt="{{ p.title | escape }}"
+                              width="{{ p.featured_image.width }}"
+                              height="{{ p.featured_image.height }}"
+                              loading="lazy"
+                            >
+                          {%- endif -%}
+                        </span>
+                        <span class="mps__cross-text">
+                          <span class="mps__cross-name">{{ p.title }}</span>
+                          {%- if cross_sub != blank -%}
+                            <span class="mps__cross-sub">{{ cross_sub }}</span>
+                          {%- endif -%}
+                        </span>
+                        <span class="mps__cross-price">{{ p.price | money_without_trailing_zeros }}</span>
+                        <span
+                          class="mps__cross-add"
+                          role="button"
+                          tabindex="0"
+                          data-mps-cross-add
+                          data-variant-id="{{ cross_variant.id }}"
+                          aria-label="{{ 'products.product.add_to_cart' | t | default: 'Ajouter' }}"
+                        >
+                          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M6 1V11M1 6H11" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
+                          </svg>
+                        </span>
+                      </a>
+                      {%- assign cross_count = cross_count | plus: 1 -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </section>
+
+  {%- assign story_block = section.blocks | where: 'type', 'story' | first -%}
+  {%- if story_block -%}
+    <section class="mps__story">
+      <div class="mps__story-text">
+        {%- if story_block.settings.kicker != blank -%}
+          <p class="mps__story-kicker">{{ story_block.settings.kicker }}</p>
+        {%- endif -%}
+        {%- if story_block.settings.heading != blank -%}
+          <h3 class="mps__story-heading">{{ story_block.settings.heading }}</h3>
+        {%- endif -%}
+        {%- if story_block.settings.body != blank -%}
+          <p class="mps__story-body">{{ story_block.settings.body }}</p>
+        {%- endif -%}
+        {%- if story_block.settings.quote != blank -%}
+          <p class="mps__story-quote">« {{ story_block.settings.quote }} »</p>
+        {%- endif -%}
+      </div>
+      {%- if story_block.settings.image != blank -%}
+        <div class="mps__story-img">
+          <img
+            src="{{ story_block.settings.image | image_url: width: 1200 }}"
+            srcset="{{ story_block.settings.image | image_url: width: 600 }} 600w, {{ story_block.settings.image | image_url: width: 900 }} 900w, {{ story_block.settings.image | image_url: width: 1200 }} 1200w"
+            sizes="(min-width: 990px) 50vw, 100vw"
+            alt="{{ story_block.settings.heading | escape | default: product.title | escape }}"
+            width="{{ story_block.settings.image.width }}"
+            height="{{ story_block.settings.image.height }}"
+            loading="lazy"
+          >
+        </div>
+      {%- endif -%}
+    </section>
+  {%- endif -%}
+
+</product-info>
+
+<script>
+(function(){
+  var section = document.getElementById('{{ section_id }}');
+  if (!section) return;
+
+  var gallery = section.querySelector('[data-mps-gallery]');
+  if (gallery) {
+    var slides = gallery.querySelectorAll('[data-mps-slide]');
+    var thumbs = section.querySelectorAll('[data-mps-thumb]');
+    var counter = gallery.querySelector('[data-mps-counter]');
+    var current = 0;
+    var total = slides.length;
+
+    function goTo(idx) {
+      if (idx < 0) idx = total - 1;
+      if (idx >= total) idx = 0;
+      slides.forEach(function(s){ s.classList.remove('is-active'); });
+      thumbs.forEach(function(t){ t.classList.remove('is-active'); });
+      slides[idx].classList.add('is-active');
+      if (thumbs[idx]) {
+        thumbs[idx].classList.add('is-active');
+        thumbs[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+      if (counter) counter.textContent = (idx + 1) + ' / ' + total;
+      current = idx;
+    }
+
+    var prevBtn = gallery.querySelector('[data-mps-prev]');
+    var nextBtn = gallery.querySelector('[data-mps-next]');
+    if (prevBtn) prevBtn.addEventListener('click', function(){ goTo(current - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ goTo(current + 1); });
+
+    thumbs.forEach(function(thumb){
+      thumb.addEventListener('click', function(){ goTo(parseInt(this.dataset.mpsThumb)); });
+    });
+
+    var startX = 0;
+    gallery.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, { passive: true });
+    gallery.addEventListener('touchend', function(e){
+      var diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+    }, { passive: true });
+
+    /* ── Lightbox ── */
+    var lb = document.getElementById('{{ section_id }}-lightbox');
+    if (lb) {
+      var lbImg = lb.querySelector('[data-lb-img]');
+      var lbViewport = lb.querySelector('[data-lb-viewport]');
+      var lbCounter = lb.querySelector('[data-lb-counter]');
+      var lbCurrent = 0;
+      var isZoomed = false;
+      var dragState = { active: false, startX: 0, startY: 0, scrollX: 0, scrollY: 0, moved: false };
+      var swipeState = { active: false, startX: 0, dx: 0 };
+      var lbZoomLevel = lb.getAttribute('data-lb-zoom-level') || '2';
+      var lbZoomDisabled = lb.classList.contains('no-zoom');
+      var lbZoomDesktopOnly = lb.classList.contains('zoom-desktop-only');
+      function lbZoomAllowed() {
+        if (lbZoomDisabled) return false;
+        if (lbZoomDesktopOnly && window.matchMedia('(max-width: 749px)').matches) return false;
+        return true;
+      }
+
+      /* Collect high-res URLs */
+      var lbSrcs = [];
+      slides.forEach(function(s) {
+        var srcset = s.getAttribute('srcset');
+        if (srcset) {
+          var parts = srcset.split(',');
+          lbSrcs.push(parts[parts.length - 1].trim().split(' ')[0]);
+        } else {
+          lbSrcs.push(s.src);
+        }
+      });
+
+      function lbOpen(idx) {
+        lbCurrent = idx;
+        lbImg.src = lbSrcs[idx];
+        lbImg.alt = slides[idx].alt;
+        if (lbCounter) lbCounter.textContent = (idx + 1) + ' / ' + total;
+        lbResetZoom();
+        lb.classList.add('is-open');
+        lb.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+      function lbClose() {
+        lb.classList.remove('is-open');
+        lb.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        lbResetZoom();
+      }
+      function lbGoTo(idx) {
+        if (idx < 0) idx = total - 1;
+        if (idx >= total) idx = 0;
+        lbCurrent = idx;
+        lbImg.src = lbSrcs[idx];
+        lbImg.alt = slides[idx].alt;
+        if (lbCounter) lbCounter.textContent = (idx + 1) + ' / ' + total;
+        lbResetZoom();
+      }
+      function lbResetZoom() {
+        isZoomed = false;
+        lbViewport.classList.remove('is-zoomed', 'is-dragging');
+        lbImg.style.transform = '';
+        lbImg.style.width = '';
+        lbImg.style.height = '';
+        lbViewport.scrollLeft = 0;
+        lbViewport.scrollTop = 0;
+        lbViewport.style.overflow = 'hidden';
+      }
+      function lbToggleZoom(e) {
+        if (!lbZoomAllowed()) return;
+        if (isZoomed) {
+          lbResetZoom();
+        } else {
+          isZoomed = true;
+          lbViewport.classList.add('is-zoomed');
+          lbViewport.style.overflow = 'auto';
+          var targetW, targetH;
+          if (lbZoomLevel === 'native') {
+            targetW = lbImg.naturalWidth;
+            targetH = lbImg.naturalHeight;
+          } else {
+            var factor = parseFloat(lbZoomLevel) || 2;
+            var rect0 = lbImg.getBoundingClientRect();
+            targetW = rect0.width * factor;
+            targetH = rect0.height * factor;
+          }
+          lbImg.style.width = targetW + 'px';
+          lbImg.style.height = targetH + 'px';
+          lbImg.style.maxWidth = 'none';
+          lbImg.style.maxHeight = 'none';
+          /* Center on click point */
+          requestAnimationFrame(function() {
+            var rect = lbViewport.getBoundingClientRect();
+            var ratioX = (e.clientX - rect.left) / rect.width;
+            var ratioY = (e.clientY - rect.top) / rect.height;
+            lbViewport.scrollLeft = (lbImg.offsetWidth - rect.width) * ratioX;
+            lbViewport.scrollTop = (lbImg.offsetHeight - rect.height) * ratioY;
+          });
+        }
+      }
+
+      /* Click on gallery image → open lightbox */
+      slides.forEach(function(s, i) {
+        s.addEventListener('click', function(e) {
+          if (s.classList.contains('is-active')) {
+            e.stopPropagation();
+            lbOpen(i);
+          }
+        });
+      });
+
+      /* Close */
+      lb.querySelector('[data-lb-close]').addEventListener('click', lbClose);
+      lb.addEventListener('click', function(e) {
+        if (e.target === lb) lbClose();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (!lb.classList.contains('is-open')) return;
+        if (e.key === 'Escape') lbClose();
+        if (e.key === 'ArrowLeft') lbGoTo(lbCurrent - 1);
+        if (e.key === 'ArrowRight') lbGoTo(lbCurrent + 1);
+      });
+
+      /* Lightbox nav */
+      var lbPrev = lb.querySelector('[data-lb-prev]');
+      var lbNext = lb.querySelector('[data-lb-next]');
+      if (lbPrev) lbPrev.addEventListener('click', function(e){ e.stopPropagation(); lbGoTo(lbCurrent - 1); });
+      if (lbNext) lbNext.addEventListener('click', function(e){ e.stopPropagation(); lbGoTo(lbCurrent + 1); });
+
+      /* Zoom toggle on click */
+      lbViewport.addEventListener('click', function(e) {
+        if (dragState.moved) { dragState.moved = false; return; }
+        if (e.target === lbImg || e.target === lbViewport) lbToggleZoom(e);
+      });
+
+      /* Drag to pan when zoomed */
+      lbViewport.addEventListener('mousedown', function(e) {
+        if (!isZoomed) {
+          /* Mouse swipe (desktop) when NOT zoomed: navigate prev/next */
+          if (total <= 1) return;
+          swipeState.active = true;
+          swipeState.startX = e.clientX;
+          swipeState.dx = 0;
+          dragState.moved = false;
+          e.preventDefault();
+          return;
+        }
+        dragState.active = true;
+        dragState.moved = false;
+        dragState.startX = e.clientX;
+        dragState.startY = e.clientY;
+        dragState.scrollX = lbViewport.scrollLeft;
+        dragState.scrollY = lbViewport.scrollTop;
+        lbViewport.classList.add('is-dragging');
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove', function(e) {
+        if (swipeState.active) {
+          swipeState.dx = e.clientX - swipeState.startX;
+          if (Math.abs(swipeState.dx) > 3) dragState.moved = true;
+          return;
+        }
+        if (!dragState.active) return;
+        var dx = e.clientX - dragState.startX;
+        var dy = e.clientY - dragState.startY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragState.moved = true;
+        lbViewport.scrollLeft = dragState.scrollX - dx;
+        lbViewport.scrollTop = dragState.scrollY - dy;
+      });
+      document.addEventListener('mouseup', function() {
+        if (swipeState.active) {
+          if (Math.abs(swipeState.dx) > 50) {
+            lbGoTo(swipeState.dx < 0 ? lbCurrent + 1 : lbCurrent - 1);
+          }
+          swipeState.active = false;
+          return;
+        }
+        if (!dragState.active) return;
+        dragState.active = false;
+        lbViewport.classList.remove('is-dragging');
+      });
+
+      /* Touch swipe in lightbox */
+      var lbStartX = 0;
+      lbViewport.addEventListener('touchstart', function(e) {
+        if (!isZoomed) lbStartX = e.touches[0].clientX;
+      }, { passive: true });
+      lbViewport.addEventListener('touchend', function(e) {
+        if (isZoomed) return;
+        var diff = lbStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) lbGoTo(diff > 0 ? lbCurrent + 1 : lbCurrent - 1);
+      }, { passive: true });
+    }
+  }
+
+  var accToggles = section.querySelectorAll('[data-mps-acc-toggle]');
+  accToggles.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var expanded = this.getAttribute('aria-expanded') === 'true';
+      var body = this.nextElementSibling;
+      if (!body) return;
+      this.setAttribute('aria-expanded', String(!expanded));
+      body.classList.toggle('is-open', !expanded);
+    });
+  });
+
+  /* Quantity selector */
+  var qtyWrap = section.querySelector('.mps__qty');
+  if (qtyWrap) {
+    var qtyInput = qtyWrap.querySelector('[data-mps-qty-input]');
+    var qtyHidden = section.querySelector('.mps__qty-hidden');
+    var minus = qtyWrap.querySelector('[data-mps-qty-minus]');
+    var plus = qtyWrap.querySelector('[data-mps-qty-plus]');
+    function syncQty() {
+      var v = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+      qtyInput.value = v;
+      if (qtyHidden) qtyHidden.value = v;
+    }
+    minus.addEventListener('click', function(){ qtyInput.value = Math.max(1, parseInt(qtyInput.value, 10) - 1); syncQty(); });
+    plus.addEventListener('click', function(){ qtyInput.value = parseInt(qtyInput.value, 10) + 1; syncQty(); });
+    qtyInput.addEventListener('change', syncQty);
+  }
+
+  /* Inject angle icons + helper text */
+  var ANGLE_ICONS = {
+    /* Angle droit vu de face : -|  (barre horizontale à gauche, verticale à droite) */
+    'droit': '<svg class="mps__angle-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3H13V14"/></svg>',
+    /* Angle gauche vu de face : |-  (verticale à gauche, horizontale à droite) */
+    'gauche': '<svg class="mps__angle-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14V3H15"/></svg>'
+  };
+
+  function injectExtras(target) {
+    target = target || section;
+    /* Angle icons: find fieldsets whose legend contains "angle" */
+    var fieldsets = target.querySelectorAll('.product-form__input--pill');
+    fieldsets.forEach(function(fs) {
+      var legend = fs.querySelector('.form__label');
+      if (!legend || legend.textContent.toLowerCase().indexOf('angle') === -1) return;
+      var labels = fs.querySelectorAll('label');
+      labels.forEach(function(lbl) {
+        if (lbl.querySelector('.mps__angle-icon')) return;
+        var input = lbl.previousElementSibling;
+        if (!input) return;
+        var val = (input.value || '').toLowerCase().trim();
+        var svg = ANGLE_ICONS[val];
+        if (svg) lbl.insertAdjacentHTML('afterbegin', svg);
+      });
+    });
+
+    /* Color swatches: read config from section (preserved across swaps) */
+    var variantsRoot = section.querySelector('.mps__variants[data-mps-colors]');
+    if (variantsRoot) {
+      var colorMap = {};
+      variantsRoot.getAttribute('data-mps-colors').split('\n').forEach(function(line) {
+        var parts = line.split('=');
+        if (parts.length === 2) {
+          colorMap[parts[0].trim().toLowerCase()] = parts[1].trim();
+        }
+      });
+      var hideColorLabel = variantsRoot.hasAttribute('data-mps-hide-color-label');
+      var allFieldsets = target.querySelectorAll('.product-form__input--pill');
+      allFieldsets.forEach(function(fs) {
+        var legend = fs.querySelector('.form__label');
+        if (!legend || legend.textContent.toLowerCase().indexOf('couleur') === -1) return;
+        fs.classList.add('mps__color-row');
+        if (hideColorLabel) {
+          legend.style.display = 'none';
+        }
+        var labels = fs.querySelectorAll('label');
+        labels.forEach(function(lbl) {
+          if (lbl.querySelector('.mps__color-dot')) return;
+          var input = lbl.previousElementSibling;
+          if (!input) return;
+          var val = (input.value || '').toLowerCase().trim();
+          var hex = colorMap[val];
+          if (hex) {
+            /* Remove text content, keep only color dot */
+            lbl.textContent = '';
+            var dot = document.createElement('span');
+            dot.className = 'mps__color-dot';
+            dot.style.background = hex;
+            lbl.appendChild(dot);
+          }
+        });
+      });
+    }
+
+    /* Helper text — inside the angle fieldset only */
+    var helperDiv = section.querySelector('.mps__variants[data-mps-helper]');
+    var helperText = helperDiv ? helperDiv.getAttribute('data-mps-helper') : '';
+    if (helperText) {
+      var helperFieldsets = target.querySelectorAll('.product-form__input--pill');
+      helperFieldsets.forEach(function(fs) {
+        var legend = fs.querySelector('.form__label');
+        if (!legend || legend.textContent.toLowerCase().indexOf('angle') === -1) return;
+        if (fs.querySelector('.mps__variant-helper')) return;
+        var helper = document.createElement('span');
+        helper.className = 'mps__variant-helper';
+        helper.textContent = helperText;
+        fs.appendChild(helper);
+
+        /* Aligner le helper sous la 1ère pillule (offset = largeur du legend + gap du flex) */
+        var alignHelper = function() {
+          var firstPill = fs.querySelector('label');
+          var isMobile = window.matchMedia('(max-width: 749px)').matches;
+          var offset = 0;
+
+          if (isMobile && firstPill) {
+            var fsRect = fs.getBoundingClientRect();
+            var pillRect = firstPill.getBoundingClientRect();
+            offset = Math.max(0, pillRect.left - fsRect.left);
+          } else {
+            var fsStyle = window.getComputedStyle(fs);
+            var gap = parseFloat(fsStyle.columnGap || fsStyle.gap || '0') || 0;
+            var legendRect = legend.getBoundingClientRect();
+            var legendMR = parseFloat(window.getComputedStyle(legend).marginRight) || 0;
+            offset = legendRect.width + Math.max(gap, legendMR) + 20;
+          }
+
+          helper.style.paddingLeft = offset + 'px';
+        };
+        alignHelper();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(alignHelper).catch(function(){});
+        }
+        window.addEventListener('resize', alignHelper);
+      });
+    }
+  }
+
+  injectExtras();
+
+  /* Pre-process incoming HTML (variant-selects swap) so dots/icons are in place BEFORE paint */
+  var productInfo = section.tagName && section.tagName.toLowerCase() === 'product-info' ? section : section.closest('product-info');
+  if (productInfo && typeof productInfo.addPreProcessCallback === 'function') {
+    productInfo.addPreProcessCallback(function(newContent) {
+      if (!newContent || !newContent.querySelectorAll) return;
+      try { injectExtras(newContent); } catch (e) {}
+    });
+  } else if (productInfo) {
+    /* product-info not yet upgraded — wait for it */
+    document.addEventListener('product-info:loaded', function once(e) {
+      if (e.target !== productInfo) return;
+      document.removeEventListener('product-info:loaded', once);
+      if (typeof productInfo.addPreProcessCallback === 'function') {
+        productInfo.addPreProcessCallback(function(newContent) {
+          if (!newContent || !newContent.querySelectorAll) return;
+          try { injectExtras(newContent); } catch (err) {}
+        });
+      }
+    });
+  }
+
+  /* Fallback: re-inject after Shopify re-renders variant-selects */
+  var _timer;
+  new MutationObserver(function() {
+    cancelAnimationFrame(_timer);
+    _timer = requestAnimationFrame(function() { injectExtras(); });
+  }).observe(section, { childList: true, subtree: true });
+
+  /* ── Reassurance V2 mobile slider dots ── */
+  (function initReassurance2Slider() {
+    var wraps = section.querySelectorAll('[data-mps-reassurance2]');
+    if (!wraps.length) return;
+
+    wraps.forEach(function(wrap) {
+      var track = wrap.querySelector('[data-mps-reassurance2-track]');
+      var dotsContainer = wrap.querySelector('[data-mps-reassurance2-dots]');
+      if (!track || !dotsContainer) return;
+      var items = track.querySelectorAll('.mps__reassurance2-item');
+      if (items.length < 2) return;
+
+      dotsContainer.innerHTML = '';
+      var dots = [];
+      items.forEach(function(_, idx) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mps__reassurance2-dot';
+        btn.setAttribute('aria-label', 'Aller à l\'élément ' + (idx + 1));
+        btn.addEventListener('click', function() {
+          track.scrollTo({ left: track.clientWidth * idx, behavior: 'smooth' });
+        });
+        dotsContainer.appendChild(btn);
+        dots.push(btn);
+      });
+
+      function setActive(idx) {
+        dots.forEach(function(d, i) {
+          d.classList.toggle('is-active', i === idx);
+        });
+      }
+      setActive(0);
+
+      var ticking = false;
+      function updateDots() {
+        var w = track.clientWidth;
+        if (!w) return;
+        var idx = Math.round(track.scrollLeft / w);
+        if (idx < 0) idx = 0;
+        if (idx >= items.length) idx = items.length - 1;
+        setActive(idx);
+      }
+      track.addEventListener('scroll', function() {
+        if (!ticking) {
+          window.requestAnimationFrame(function() {
+            updateDots();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+      window.addEventListener('resize', updateDots);
+    });
+  })();
+
+  /* ── Cross-sell mobile carousel ── */
+  var crossGrid = section.querySelector('.mps__cross-grid');
+  var crossDots = section.querySelectorAll('[data-mps-cross-dot]');
+  if (crossGrid && crossDots.length) {
+    var crossTicking = false;
+    function updateCrossDots() {
+      var pageW = crossGrid.offsetWidth + 12;
+      var idx = Math.round(crossGrid.scrollLeft / pageW);
+      crossDots.forEach(function(d, i) {
+        d.classList.toggle('is-active', i === idx);
+      });
+      crossTicking = false;
+    }
+    crossGrid.addEventListener('scroll', function() {
+      if (!crossTicking) {
+        requestAnimationFrame(updateCrossDots);
+        crossTicking = true;
+      }
+    }, { passive: true });
+    crossDots.forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        var idx = parseInt(dot.getAttribute('data-mps-cross-dot'), 10);
+        var pageW = crossGrid.offsetWidth + 12;
+        crossGrid.scrollTo({ left: idx * pageW, behavior: 'smooth' });
+      });
+    });
+  }
+
+  /* ── Cross-sell add to cart ( + ) ── */
+  var crossAddButtons = section.querySelectorAll('[data-mps-cross-add]');
+  if (crossAddButtons.length) {
+    var crossSellCart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+
+    function addCrossSellToCart(variantId, trigger) {
+      if (!variantId || !trigger) return;
+      if (trigger.getAttribute('aria-disabled') === 'true') return;
+
+      trigger.setAttribute('aria-disabled', 'true');
+
+      var config = fetchConfig('javascript');
+      config.headers['X-Requested-With'] = 'XMLHttpRequest';
+      delete config.headers['Content-Type'];
+
+      var formData = new FormData();
+      formData.append('id', variantId);
+      formData.append('quantity', '1');
+
+      if (crossSellCart && typeof crossSellCart.getSectionsToRender === 'function') {
+        formData.append(
+          'sections',
+          crossSellCart.getSectionsToRender().map(function(sectionToRender) { return sectionToRender.id; })
+        );
+        formData.append('sections_url', window.location.pathname);
+        if (typeof crossSellCart.setActiveElement === 'function') {
+          crossSellCart.setActiveElement(trigger);
+        }
+      }
+
+      config.body = formData;
+
+      fetch("".concat(routes.cart_add_url), config)
+        .then(function(response) { return response.json(); })
+        .then(function(response) {
+          if (response.status) return;
+
+          if (crossSellCart && typeof crossSellCart.renderContents === 'function') {
+            crossSellCart.renderContents(response);
+          } else {
+            window.location = window.routes.cart_url;
+          }
+        })
+        .catch(function(error) {
+          console.error(error);
+        })
+        .finally(function() {
+          trigger.removeAttribute('aria-disabled');
+        });
+    }
+
+    crossAddButtons.forEach(function(btn) {
+      btn.addEventListener('click', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        addCrossSellToCart(btn.getAttribute('data-variant-id'), btn);
+      });
+
+      btn.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        event.stopPropagation();
+        addCrossSellToCart(btn.getAttribute('data-variant-id'), btn);
+      });
+    });
+  }
+
+  /* ── Smooth scroll to reviews ── */
+  var reviewLink = section.querySelector('[data-scroll-to-reviews]');
+  if (reviewLink) {
+    reviewLink.addEventListener('click', function(e) {
+      var target = document.getElementById('product-reviews');
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+
+  /* ── Personnalisation modal ── */
+  var customTriggers = section.querySelectorAll('[data-mps-custom-open]');
+  var customModals = section.querySelectorAll('[data-mps-custom-modal]');
+  if (customTriggers.length && customModals.length) {
+    var openModal = function(modal) {
+      modal.hidden = false;
+      requestAnimationFrame(function(){ modal.classList.add('is-open'); });
+      document.body.classList.add('mps__custom-open');
+      var firstInput = modal.querySelector('input, textarea');
+      if (firstInput) setTimeout(function(){ firstInput.focus(); }, 50);
+    };
+    var closeModal = function(modal) {
+      modal.classList.remove('is-open');
+      document.body.classList.remove('mps__custom-open');
+      setTimeout(function(){ modal.hidden = true; }, 250);
+    };
+    customTriggers.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('aria-controls');
+        var modal = id ? document.getElementById(id) : null;
+        if (modal) openModal(modal);
+      });
+    });
+    customModals.forEach(function(modal){
+      modal.querySelectorAll('[data-mps-custom-close]').forEach(function(el){
+        el.addEventListener('click', function(){ closeModal(modal); });
+      });
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key !== 'Escape') return;
+      customModals.forEach(function(modal){
+        if (modal.classList.contains('is-open')) closeModal(modal);
+      });
+    });
+    /* Reopen modal after form submit redirect (hash #contact_form-<id> or ?contact_posted=true) */
+    customModals.forEach(function(modal){
+      if (modal.querySelector('.mps__custom-success')) openModal(modal);
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Produit Square",
+  "tag": "section",
+  "class": "section-main-product-square",
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Titre produit",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_vendor",
+          "label": "Afficher le fabricant",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "show_rating",
+          "label": "Afficher les avis",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "rating_value",
+          "label": "Note (étoiles)",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "info": "Utilisé si aucune app d'avis n'est installée"
+        },
+        {
+          "type": "number",
+          "id": "rating_count",
+          "label": "Nombre d'avis",
+          "default": 16,
+          "info": "Utilisé si aucune app d'avis n'est installée"
+        }
+      ]
+    },
+    {
+      "type": "subtitle",
+      "name": "Sous-titre",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texte",
+          "default": "Canapé d'angle modulable en tissu vert, 5-6 places"
+        },
+        {
+          "type": "range",
+          "id": "text_size_mobile",
+          "label": "Taille texte — mobile (px)",
+          "min": 10,
+          "max": 28,
+          "step": 1,
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "text_size_desktop",
+          "label": "Taille texte — desktop (px)",
+          "min": 10,
+          "max": 36,
+          "step": 1,
+          "default": 14
+        }
+      ]
+    },
+    {
+      "type": "dimensions",
+      "name": "Dimensions",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "dim_h",
+          "label": "Hauteur (cm)",
+          "default": "75"
+        },
+        {
+          "type": "text",
+          "id": "dim_l",
+          "label": "Largeur (cm)",
+          "default": "279"
+        },
+        {
+          "type": "text",
+          "id": "dim_p",
+          "label": "Profondeur (cm)",
+          "default": "247"
+        }
+      ]
+    },
+    {
+      "type": "reassurance",
+      "name": "Réassurance",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "icon_1", "label": "Icône 1" },
+        { "type": "text", "id": "title_1", "label": "Titre 1", "default": "oeko-tex®" },
+        { "type": "text", "id": "subtitle_1", "label": "Sous-titre 1", "default": "Tissu certifié" },
+        { "type": "image_picker", "id": "icon_2", "label": "Icône 2" },
+        { "type": "text", "id": "title_2", "label": "Titre 2", "default": "made in europe" },
+        { "type": "text", "id": "subtitle_2", "label": "Sous-titre 2", "default": "Atelier toscan" },
+        { "type": "image_picker", "id": "icon_3", "label": "Icône 3" },
+        { "type": "text", "id": "title_3", "label": "Titre 3", "default": "modulable" },
+        { "type": "text", "id": "subtitle_3", "label": "Sous-titre 3", "default": "Configurations libres" },
+        { "type": "image_picker", "id": "icon_4", "label": "Icône 4" },
+        { "type": "text", "id": "title_4", "label": "Titre 4", "default": "montage facile" },
+        { "type": "text", "id": "subtitle_4", "label": "Sous-titre 4", "default": "Assemblage discret" }
+      ]
+    },
+    {
+      "type": "reassurance_v2",
+      "name": "Réassurance V2 (liste)",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Disposition",
+          "options": [
+            { "value": "list", "label": "Liste pleine largeur" },
+            { "value": "grid", "label": "Grille 2 colonnes" },
+            { "value": "inline", "label": "Ligne minimaliste premium" }
+          ],
+          "default": "list"
+        },
+        { "type": "image_picker", "id": "icon_1", "label": "Icône 1" },
+        { "type": "text", "id": "title_1", "label": "Titre 1", "default": "oeko-tex®" },
+        { "type": "text", "id": "subtitle_1", "label": "Sous-titre 1", "default": "Tissu certifié sans substance nocive" },
+        { "type": "image_picker", "id": "icon_2", "label": "Icône 2" },
+        { "type": "text", "id": "title_2", "label": "Titre 2", "default": "made in europe" },
+        { "type": "text", "id": "subtitle_2", "label": "Sous-titre 2", "default": "Fabrication dans un atelier toscan" },
+        { "type": "image_picker", "id": "icon_3", "label": "Icône 3" },
+        { "type": "text", "id": "title_3", "label": "Titre 3", "default": "modulable" },
+        { "type": "text", "id": "subtitle_3", "label": "Sous-titre 3", "default": "Configurations libres et évolutives" },
+        { "type": "image_picker", "id": "icon_4", "label": "Icône 4" },
+        { "type": "text", "id": "title_4", "label": "Titre 4", "default": "montage facile" },
+        { "type": "text", "id": "subtitle_4", "label": "Sous-titre 4", "default": "Assemblage discret sans outils" }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "Sélecteur de variantes",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "picker_type",
+          "label": "Type de sélecteur",
+          "options": [
+            { "value": "button", "label": "Boutons" },
+            { "value": "dropdown", "label": "Menu déroulant" }
+          ],
+          "default": "button"
+        },
+        {
+          "type": "select",
+          "id": "swatch_shape",
+          "label": "Forme des échantillons",
+          "options": [
+            { "value": "none", "label": "Aucun" },
+            { "value": "circle", "label": "Cercle" },
+            { "value": "square", "label": "Carré" }
+          ],
+          "default": "square"
+        },
+        {
+          "type": "text",
+          "id": "helper_text",
+          "label": "Texte d'aide sous la première option",
+          "default": "Orientation vue de face"
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_color_label",
+          "label": "Masquer le titre de la variante Couleur",
+          "default": false
+        },
+        {
+          "type": "textarea",
+          "id": "color_map",
+          "label": "Couleurs des variantes (nom=hex par ligne)",
+          "info": "Ex: Beige=#D2B48C"
+        },
+        {
+          "type": "header",
+          "content": "Espacement"
+        },
+        {
+          "type": "range",
+          "id": "margin_top_mobile",
+          "label": "Marge haut — mobile (px)",
+          "min": 0, "max": 60, "step": 2, "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom_mobile",
+          "label": "Marge bas — mobile (px)",
+          "min": -40, "max": 60, "step": 2, "default": 8
+        },
+        {
+          "type": "range",
+          "id": "margin_top_desktop",
+          "label": "Marge haut — desktop (px)",
+          "min": 0, "max": 60, "step": 2, "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom_desktop",
+          "label": "Marge bas — desktop (px)",
+          "min": 0, "max": 60, "step": 2, "default": 8
+        },
+        {
+          "type": "range",
+          "id": "gap_variants",
+          "label": "Écart entre variantes (px)",
+          "min": 0, "max": 40, "step": 2, "default": 16
+        },
+        {
+          "type": "range",
+          "id": "last_row_margin_bottom_mobile",
+          "label": "Marge sous la dernière ligne — mobile (px, négatif autorisé)",
+          "min": -40, "max": 40, "step": 1, "default": 0
+        },
+        {
+          "type": "range",
+          "id": "last_row_margin_bottom_desktop",
+          "label": "Marge sous la dernière ligne — desktop (px)",
+          "min": 0, "max": 40, "step": 1, "default": 8
+        },
+        {
+          "type": "range",
+          "id": "gap_color_swatches",
+          "label": "Écart entre swatches couleur (px)",
+          "min": 0, "max": 30, "step": 1, "default": 16
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Prix",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "nb_installments",
+          "label": "Nombre de mensualités",
+          "min": 0,
+          "max": 12,
+          "step": 1,
+          "default": 3,
+          "info": "0 = masquer la ligne"
+        },
+        {
+          "type": "image_picker",
+          "id": "alma_image",
+          "label": "Logo Alma"
+        },
+        {
+          "type": "range",
+          "id": "alma_height_mobile",
+          "label": "Hauteur logo Alma — mobile (px)",
+          "min": 10,
+          "max": 60,
+          "step": 1,
+          "default": 18
+        },
+        {
+          "type": "range",
+          "id": "alma_height_desktop",
+          "label": "Hauteur logo Alma — desktop (px)",
+          "min": 10,
+          "max": 60,
+          "step": 1,
+          "default": 18
+        },
+        {
+          "type": "range",
+          "id": "price_size_mobile",
+          "label": "Taille prix — mobile (px)",
+          "min": 16,
+          "max": 48,
+          "step": 1,
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "price_weight_mobile",
+          "label": "Graisse prix — mobile",
+          "min": 300,
+          "max": 700,
+          "step": 100,
+          "default": 500
+        },
+        {
+          "type": "range",
+          "id": "price_size_desktop",
+          "label": "Taille prix — desktop (px)",
+          "min": 16,
+          "max": 60,
+          "step": 1,
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "price_weight_desktop",
+          "label": "Graisse prix — desktop",
+          "min": 300,
+          "max": 700,
+          "step": 100,
+          "default": 500
+        }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Bouton d'achat",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_wishlist",
+          "label": "Afficher le cœur favoris",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "label": "Afficher le paiement dynamique",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "Espacement"
+        },
+        {
+          "type": "range",
+          "id": "margin_top_mobile",
+          "label": "Marge haut — mobile (px)",
+          "min": 0, "max": 60, "step": 2, "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom_mobile",
+          "label": "Marge bas — mobile (px)",
+          "min": 0, "max": 60, "step": 2, "default": 16
+        },
+        {
+          "type": "range",
+          "id": "margin_top_desktop",
+          "label": "Marge haut — desktop (px)",
+          "min": 0, "max": 60, "step": 2, "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom_desktop",
+          "label": "Marge bas — desktop (px)",
+          "min": 0, "max": 60, "step": 2, "default": 16
+        }
+      ]
+    },
+    {
+      "type": "delivery",
+      "name": "Livraison",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titre",
+          "default": "Chez vous sous 6 semaines"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Texte après la date",
+          "default": "Sur rendez-vous",
+          "info": "Affiché après la date estimée (ex: Sur rendez-vous)"
+        },
+        { "type": "header", "content": "Titre" },
+        {
+          "type": "range",
+          "id": "title_size_mobile",
+          "label": "Taille titre (mobile)",
+          "min": 10, "max": 24, "step": 1, "unit": "px",
+          "default": 13
+        },
+        {
+          "type": "range",
+          "id": "title_size_desktop",
+          "label": "Taille titre (desktop)",
+          "min": 10, "max": 28, "step": 1, "unit": "px",
+          "default": 14
+        },
+        {
+          "type": "select",
+          "id": "title_weight",
+          "label": "Graisse titre",
+          "options": [
+            { "value": "400", "label": "Regular" },
+            { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semi-bold" },
+            { "value": "700", "label": "Bold" }
+          ],
+          "default": "600"
+        },
+        { "type": "header", "content": "Texte" },
+        {
+          "type": "range",
+          "id": "text_size_mobile",
+          "label": "Taille texte (mobile)",
+          "min": 10, "max": 20, "step": 1, "unit": "px",
+          "default": 13
+        },
+        {
+          "type": "range",
+          "id": "text_size_desktop",
+          "label": "Taille texte (desktop)",
+          "min": 10, "max": 24, "step": 1, "unit": "px",
+          "default": 13
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1,
+      "settings": []
+    },
+    {
+      "type": "customization",
+      "name": "Personnalisation",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "trigger_label",
+          "label": "Libellé du lien",
+          "default": "Personnaliser cet article"
+        },
+        {
+          "type": "range",
+          "id": "font_size_desktop",
+          "label": "Taille du texte — desktop",
+          "min": 8,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "font_size_mobile",
+          "label": "Taille du texte — mobile",
+          "min": 8,
+          "max": 22,
+          "step": 1,
+          "unit": "px",
+          "default": 11
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Marge supérieure",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Marge inférieure",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "default": 10
+        },
+        {
+          "type": "text",
+          "id": "modal_heading",
+          "label": "Titre du modal",
+          "default": "Demande de personnalisation"
+        },
+        {
+          "type": "textarea",
+          "id": "modal_subtitle",
+          "label": "Sous-titre du modal",
+          "default": "Laissez-nous vos coordonnées et décrivez votre projet — nous vous recontactons rapidement."
+        },
+        {
+          "type": "text",
+          "id": "submit_label",
+          "label": "Libellé du bouton",
+          "default": "Envoyer"
+        },
+        {
+          "type": "textarea",
+          "id": "success_message",
+          "label": "Message de confirmation",
+          "default": "Merci ! Nous revenons vers vous très vite."
+        }
+      ]
+    },
+    {
+      "type": "collapsible_tab",
+      "name": "Onglet dépliable",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Titre",
+          "default": "Caractéristiques"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Contenu"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Ou contenu depuis une page"
+        }
+      ]
+    },
+    {
+      "type": "gallery_settings",
+      "name": "Options galerie",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_ambiance",
+          "label": "Afficher bouton Voir l'ambiance",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Séparateur"
+    },
+    {
+      "type": "story",
+      "name": "Histoire produit",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "kicker",
+          "label": "Sur-titre",
+          "default": "L'histoire"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Titre",
+          "default": "Né d'une envie de liberté."
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Texte",
+          "default": "Le canapé YOKO se compose et se recompose à l'infini. Quatre modules indépendants, un angle et un repose-pieds."
+        },
+        {
+          "type": "text",
+          "id": "quote",
+          "label": "Citation",
+          "default": "Un canapé pensé pour la vie — pas pour le showroom."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "cross_sell",
+      "name": "Produits complémentaires",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Titre",
+          "default": "complétez votre intérieur"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Sur-titre droit",
+          "default": "Recommandés avec ce modèle"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection (fallback)",
+          "info": "Utilisée uniquement si le metafield produit custom.produits_complementaires est vide"
+        },
+        {
+          "type": "range",
+          "id": "limit",
+          "label": "Nombre de produits",
+          "min": 2,
+          "max": 8,
+          "step": 1,
+          "default": 4
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "lightbox_fullscreen_image",
+      "label": "Lightbox: image 100% plein ecran (sans noir autour)",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "lightbox_fullscreen_desktop_only",
+      "label": "Lightbox 100% : activer uniquement sur desktop",
+      "info": "Sur mobile, la lightbox revient au comportement standard (image contenue, fond noir).",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Zoom dans la lightbox"
+    },
+    {
+      "type": "checkbox",
+      "id": "lightbox_zoom_enabled",
+      "label": "Activer le zoom au clic",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "lightbox_zoom_desktop_only",
+      "label": "Zoom desktop uniquement",
+      "info": "Sur mobile, on s'appuie sur le pinch-to-zoom natif.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "lightbox_zoom_level",
+      "label": "Niveau de zoom",
+      "options": [
+        { "value": "1.5", "label": "1.5×" },
+        { "value": "2",   "label": "2×" },
+        { "value": "2.5", "label": "2.5×" },
+        { "value": "3",   "label": "3×" },
+        { "value": "native", "label": "Taille native (max)" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge supérieure — mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge supérieure — desktop",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Produit Square",
+      "blocks": [
+        { "type": "title" },
+        { "type": "subtitle" },
+        { "type": "dimensions" },
+        { "type": "reassurance" },
+        { "type": "variant_picker" },
+        { "type": "price" },
+        { "type": "buy_buttons" },
+        { "type": "delivery" },
+        { "type": "description" },
+        { "type": "customization" },
+        { "type": "collapsible_tab", "settings": { "heading": "Caractéristiques" } },
+        { "type": "collapsible_tab", "settings": { "heading": "Dimensions" } },
+        { "type": "collapsible_tab", "settings": { "heading": "Livraison" } },
+        { "type": "gallery_settings" }
+      ]
+    }
+  ]
+}
+{% endschema %}

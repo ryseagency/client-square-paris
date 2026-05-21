@@ -1,0 +1,330 @@
+{%- liquid
+  assign noir = '#1A1A1A'
+  assign creme = '#F5F3EE'
+  assign section_id = 'cprod-' | append: section.id
+
+  assign cross_products = product.metafields.custom.produits_complementaires.value
+  unless cross_products and cross_products.size > 0
+    assign cross_collection = collections[section.settings.collection]
+    if cross_collection
+      assign cross_products = cross_collection.products
+    endif
+  endunless
+-%}
+
+{%- if cross_products and cross_products.size > 0 -%}
+
+{%- capture section_css -%}
+/* ── Margins ── */
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+/* ── Container ── */
+#{{ section_id }} {
+  width: 100%;
+  padding: 0 20px;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} { padding: 0 64px; overflow: visible; }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} { padding: 0 80px; }
+}
+
+/* ── Header ── */
+#{{ section_id }} .cprod__subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+  margin-bottom: 12px;
+}
+#{{ section_id }} .cprod__title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: {{ noir }};
+  margin: 0 0 36px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cprod__title {
+    font-size: 36px;
+    margin-bottom: 48px;
+  }
+}
+
+/* ── Grid / Carousel ── */
+#{{ section_id }} .cprod__grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#{{ section_id }} .cprod__grid::-webkit-scrollbar { display: none; }
+@media (min-width: 768px) {
+  #{{ section_id }} .cprod__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    overflow: visible;
+  }
+}
+
+/* ── Card ── */
+#{{ section_id }} .cprod__card {
+  text-decoration: none;
+  color: inherit;
+  width: calc(100vw - 40px);
+  min-width: calc(100vw - 40px);
+  max-width: calc(100vw - 40px);
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  display: block;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cprod__card {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    flex-shrink: initial;
+  }
+}
+
+/* ── Dots ── */
+#{{ section_id }} .cprod__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cprod__dots { display: none; }
+}
+#{{ section_id }} .cprod__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.12);
+  transition: background-color 0.3s ease;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+#{{ section_id }} .cprod__dot.is-active { background-color: rgba(0,0,0,0.6); }
+#{{ section_id }} .cprod__card-img {
+  background: {{ creme }};
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 12px;
+  position: relative;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cprod__card-img {
+    aspect-ratio: 1 / 1;
+  }
+}
+#{{ section_id }} .cprod__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: {{ noir }};
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 3px;
+  z-index: 1;
+  text-transform: lowercase;
+}
+#{{ section_id }} .cprod__card-img img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  transition: transform 0.7s cubic-bezier(0.25,0.1,0,1);
+}
+#{{ section_id }} .cprod__card:hover .cprod__card-img img {
+  transform: scale(1.03);
+}
+#{{ section_id }} .cprod__card-info {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+#{{ section_id }} .cprod__card-name {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: {{ noir }};
+}
+#{{ section_id }} .cprod__card-price {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 420;
+  font-size: 13px;
+  color: {{ noir }};
+}
+#{{ section_id }} .cprod__card-type {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  color: rgba(26,26,26,0.35);
+  margin-top: 2px;
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<div id="{{ section_id }}">
+
+  {%- if section.settings.subtitle != blank -%}
+    <div class="cprod__subtitle">{{ section.settings.subtitle }}</div>
+  {%- endif -%}
+  {%- if section.settings.heading != blank -%}
+    <h2 class="cprod__title">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+  <div class="cprod__grid" data-cprod-scroll>
+    {%- assign cross_limit = section.settings.limit | default: 4 -%}
+    {%- assign cross_count = 0 -%}
+    {%- for p in cross_products -%}
+      {%- if p.id != product.id and cross_count < cross_limit -%}
+        <a href="{{ p.url }}" class="cprod__card">
+          <div class="cprod__card-img">
+            {%- if p.tags contains 'bundle' -%}
+              <span class="cprod__badge">bundle</span>
+            {%- endif -%}
+            {%- if p.featured_image -%}
+              <img
+                src="{{ p.featured_image | image_url: width: 600 }}"
+                alt="{{ p.title | escape }}"
+                width="{{ p.featured_image.width }}"
+                height="{{ p.featured_image.height }}"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </div>
+          <div class="cprod__card-info">
+            <span class="cprod__card-name">{{ p.title }}</span>
+            <span class="cprod__card-price">{{ p.price | money_without_trailing_zeros }}</span>
+          </div>
+          {%- assign p_carac = p.metafields.custom.caracteristique.value -%}
+          {%- if p_carac != blank -%}
+            <span class="cprod__card-type">{{ p_carac }}</span>
+          {%- endif -%}
+        </a>
+        {%- assign cross_count = cross_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- if cross_count > 1 -%}
+    <div class="cprod__dots" data-cprod-dots aria-hidden="true">
+      {%- for i in (1..cross_count) -%}
+        <button class="cprod__dot{% if forloop.first %} is-active{% endif %}" data-cprod-dot="{{ forloop.index0 }}" aria-label="Produit {{ forloop.index }}"></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+</div>
+
+<script>
+(function(){
+  var section = document.getElementById('{{ section_id }}');
+  if (!section) return;
+  var scroller = section.querySelector('[data-cprod-scroll]');
+  var dots = section.querySelectorAll('[data-cprod-dot]');
+  if (!scroller || dots.length === 0) return;
+  var cards = scroller.children;
+  var raf = null;
+  var update = function(){
+    var total = scroller.scrollWidth / cards.length;
+    if (total <= 0) return;
+    var idx = Math.round(scroller.scrollLeft / total);
+    if (idx < 0) idx = 0;
+    if (idx > cards.length - 1) idx = cards.length - 1;
+    for (var i = 0; i < dots.length; i++) {
+      if (i === idx) dots[i].classList.add('is-active');
+      else dots[i].classList.remove('is-active');
+    }
+    raf = null;
+  };
+  scroller.addEventListener('scroll', function(){
+    if (raf === null) raf = requestAnimationFrame(update);
+  }, { passive: true });
+
+  dots.forEach(function(dot){
+    dot.addEventListener('click', function(){
+      var idx = parseInt(dot.getAttribute('data-cprod-dot'), 10);
+      var card = cards[idx];
+      if (card) scroller.scrollTo({ left: card.offsetLeft - scroller.offsetLeft, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Produits complémentaires",
+  "class": "complementary-products-section",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Sous-titre", "default": "complétez votre intérieur" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "L'ensemble parfait." },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection (fallback)",
+      "info": "Utilisée uniquement si le metafield produit custom.produits_complementaires est vide"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Nombre de produits",
+      "min": 2, "max": 8, "step": 1, "default": 4
+    },
+    { "type": "header", "content": "Marges" },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge supérieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge inférieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge supérieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge inférieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Produits complémentaires"
+    }
+  ]
+}
+{% endschema %}

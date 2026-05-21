@@ -1,0 +1,113 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "collection_hero_square_JydCFh": {
+      "type": "collection-hero-square",
+      "name": "Collection — Hero",
+      "settings": {
+        "image": "shopify://shop_images/interior-paris-1.jpg",
+        "kicker": "Collection — Hiver 2026",
+        "title": "Les canapés signature.",
+        "overlay_opacity": 40,
+        "height_mobile": 52,
+        "min_height_mobile": 380,
+        "max_height_mobile": 560,
+        "height_desktop": 52,
+        "min_height_desktop": 380,
+        "max_height_desktop": 560
+      }
+    },
+    "subcollections": {
+      "type": "collection-subcollections-square",
+      "blocks": {
+        "b1": {
+          "type": "subcollection",
+          "settings": {
+            "collection": "yoko",
+            "url": "",
+            "label": "Yoko"
+          }
+        },
+        "b2": {
+          "type": "subcollection",
+          "settings": {
+            "collection": "",
+            "url": "",
+            "label": "eva",
+            "image": "shopify://shop_images/telechargement_2.jpg"
+          }
+        },
+        "b3": {
+          "type": "subcollection",
+          "settings": {
+            "collection": "",
+            "url": "",
+            "label": "mona",
+            "image": "shopify://shop_images/2.jpg"
+          }
+        },
+        "b4": {
+          "type": "subcollection",
+          "settings": {
+            "collection": "",
+            "url": "",
+            "label": "sora",
+            "image": "shopify://shop_images/4.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4"
+      ],
+      "settings": {
+        "padding_top_mobile": 16,
+        "padding_bottom_mobile": 4,
+        "padding_top_desktop": 24,
+        "padding_bottom_desktop": 8
+      }
+    },
+    "product-grid": {
+      "type": "collection-grid-square",
+      "settings": {
+        "products_per_page": 12,
+        "columns_desktop": 3,
+        "show_sort": false,
+        "show_quick_add": true,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 48,
+        "padding_top_desktop": 32,
+        "padding_bottom_desktop": 80
+      }
+    },
+    "quote": {
+      "type": "collection-quote-square",
+      "settings": {
+        "kicker": "Façonné en France",
+        "quote": "Nous ne dessinons pas pour la saison. Nous dessinons pour la décennie.",
+        "signature": "Atelier SQUARE, Paris",
+        "bg_opacity": 50,
+        "padding_mobile": 96,
+        "outer_margin_mobile": 32,
+        "padding_desktop": 128,
+        "outer_margin_desktop": 32
+      }
+    }
+  },
+  "order": [
+    "collection_hero_square_JydCFh",
+    "subcollections",
+    "product-grid",
+    "quote"
+  ]
+}

@@ -1,0 +1,442 @@
+{%- liquid
+  assign fond_dark = section.settings.bar_color | default: '#3d3f30'
+  assign blanc = '#F5F3EE'
+  assign muted = '#91928b'
+  assign noir = section.settings.text_color | default: '#000000'
+  assign section_id = 'cbn-' | append: section.id
+  assign h_size_mobile = section.settings.heading_size_mobile | default: 44
+  assign h_size_desktop = section.settings.heading_size_desktop | default: 76
+  assign h_size_xl = section.settings.heading_size_desktop | times: 1.26 | round
+  assign h_weight = section.settings.heading_weight | default: 600
+  assign content_bar_gap_mobile = section.settings.content_bar_gap_mobile | default: 48
+  assign content_bar_gap_desktop = section.settings.content_bar_gap_desktop | default: 72
+  assign content_bar_gap_xl = content_bar_gap_desktop | times: 1.27 | round
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+{%- capture section_css -%}
+/* ── Section margins ── */
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+/* ── Wrapper ── */
+#{{ section_id }} {
+  width: 100%;
+  background: {{ section.settings.bg_color | default: '#ffffff' }};
+  color: {{ noir }};
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+}
+#{{ section_id }} *,
+#{{ section_id }} *::before,
+#{{ section_id }} *::after { box-sizing: border-box; }
+
+/* ── Top (light) ── */
+#{{ section_id }} .cbn__top {
+  padding: 60px 20px {{ content_bar_gap_mobile }}px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cbn__top { padding: 90px 64px {{ content_bar_gap_desktop }}px; }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} .cbn__top { padding: 110px 80px {{ content_bar_gap_xl }}px; }
+}
+
+#{{ section_id }} .cbn__kicker {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: {{ noir }};
+  opacity: 0.55;
+  margin: 0 0 32px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cbn__kicker { font-size: 14px; margin-bottom: 48px; }
+}
+
+#{{ section_id }} .cbn__heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ h_weight }};
+  font-size: {{ h_size_mobile }}px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: {{ noir }};
+  margin: 0 0 28px;
+  max-width: 18ch;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cbn__heading { font-size: {{ h_size_desktop }}px; margin-bottom: 36px; }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} .cbn__heading { font-size: {{ h_size_xl }}px; }
+}
+
+#{{ section_id }} .cbn__body {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  color: {{ noir }};
+  opacity: 0.7;
+  max-width: 38ch;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cbn__body { font-size: 15px; }
+}
+
+/* ── Bottom dark bar ── */
+#{{ section_id }} .cbn__bar {
+  background: {{ fond_dark }};
+  color: {{ blanc }};
+  width: 100%;
+}
+#{{ section_id }} .cbn__bar-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cbn__bar-grid { grid-template-columns: repeat({{ section.blocks.size | at_least: 1 }}, 1fr); }
+}
+
+#{{ section_id }} .cbn__cell {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  text-decoration: none;
+  color: {{ muted }};
+  position: relative;
+  transition: background 0.25s ease;
+}
+#{{ section_id }} .cbn__cell:hover { background: rgba(255,255,255,0.04); }
+
+@media (min-width: 768px) {
+  #{{ section_id }} .cbn__cell { padding: 28px 36px; }
+  #{{ section_id }} .cbn__cell + .cbn__cell::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 1px;
+    background: rgba(245,243,238,0.16);
+  }
+}
+@media (max-width: 767px) {
+  #{{ section_id }} .cbn__cell + .cbn__cell {
+    border-top: 1px solid rgba(245,243,238,0.14);
+  }
+}
+
+#{{ section_id }} .cbn__icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: {{ muted }};
+  opacity: 1;
+}
+#{{ section_id }} .cbn__icon svg { width: 100%; height: 100%; }
+
+#{{ section_id }} .cbn__cell-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#{{ section_id }} .cbn__cell-kicker {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  opacity: 0.8;
+}
+#{{ section_id }} .cbn__cell-value {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.3;
+  color: {{ muted }};
+  word-break: break-word;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .cbn__cell-value { font-size: 15px; }
+}
+
+#{{ section_id }} .cbn__arrow {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: {{ muted }};
+  opacity: 0.85;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+#{{ section_id }} .cbn__cell:hover .cbn__arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+#{{ section_id }} .cbn__arrow svg { width: 100%; height: 100%; }
+
+{%- endcapture -%}
+<style>{{ section_css }}</style>
+
+<section id="{{ section_id }}" class="cbn">
+  <div class="cbn__top">
+    {%- if section.settings.kicker != blank -%}
+      <p class="cbn__kicker">{{ section.settings.kicker }}</p>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h2 class="cbn__heading">{{ section.settings.heading | newline_to_br }}</h2>
+    {%- endif -%}
+    {%- if section.settings.body != blank -%}
+      <p class="cbn__body">{{ section.settings.body }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- assign cells = section.blocks -%}
+  {%- if cells.size > 0 -%}
+    <div class="cbn__bar">
+      <div class="cbn__bar-grid">
+        {%- for block in cells -%}
+          {%- liquid
+            assign href = ''
+            case block.type
+              when 'phone'
+                assign sanitized_phone = block.settings.value | replace: ' ', '' | replace: '.', '' | replace: '-', ''
+                assign href = 'tel:' | append: sanitized_phone
+              when 'email'
+                assign href = 'mailto:' | append: block.settings.value
+              when 'address'
+                if block.settings.link != blank
+                  assign href = block.settings.link
+                endif
+            endcase
+          -%}
+          {%- if href != '' -%}
+            <a class="cbn__cell" href="{{ href }}" {{ block.shopify_attributes }}{% if block.type == 'address' %} target="_blank" rel="noopener"{% endif %}>
+          {%- else -%}
+            <div class="cbn__cell" {{ block.shopify_attributes }}>
+          {%- endif -%}
+            <span class="cbn__icon" aria-hidden="true">
+              {%- case block.type -%}
+                {%- when 'phone' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                {%- when 'email' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+                {%- when 'address' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {%- endcase -%}
+            </span>
+            <span class="cbn__cell-text">
+              {%- if block.settings.label != blank -%}
+                <span class="cbn__cell-kicker">{{ block.settings.label }}</span>
+              {%- endif -%}
+              {%- if block.settings.value != blank -%}
+                <span class="cbn__cell-value">{{ block.settings.value }}</span>
+              {%- endif -%}
+            </span>
+            <span class="cbn__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          {%- if href != '' -%}
+            </a>
+          {%- else -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Contact Banner",
+  "tag": "section",
+  "class": "section-contact-banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenu"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sur-titre",
+      "default": "service client"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Titre",
+      "info": "Utilisez la touche Entrée pour passer à la ligne.",
+      "default": "Parlons de\nvotre intérieur."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Texte",
+      "default": "Beytulah, votre conseiller dédié, répond personnellement à chaque demande sous 2h, du lundi au samedi."
+    },
+    {
+      "type": "header",
+      "content": "Espacement"
+    },
+    {
+      "type": "range",
+      "id": "content_bar_gap_mobile",
+      "label": "Espace contenu → barre — mobile",
+      "min": 0, "max": 180, "step": 2, "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "content_bar_gap_desktop",
+      "label": "Espace contenu → barre — desktop",
+      "min": 0, "max": 260, "step": 4, "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "header",
+      "content": "Typographie titre"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Taille du titre — mobile",
+      "min": 24, "max": 80, "step": 1, "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Taille du titre — desktop",
+      "min": 32, "max": 140, "step": 2, "unit": "px",
+      "default": 76
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Graisse du titre",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Fond (haut)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur du texte (haut)",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "bar_color",
+      "label": "Fond barre (bas)",
+      "default": "#3d3f30"
+    },
+    {
+      "type": "header",
+      "content": "Marges"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge haute — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge basse — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge haute — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge basse — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "phone",
+      "name": "Téléphone",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Sur-titre", "default": "téléphone" },
+        { "type": "text", "id": "value", "label": "Numéro", "default": "+33 6 12 34 56 78" }
+      ]
+    },
+    {
+      "type": "email",
+      "name": "Email",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Sur-titre", "default": "email" },
+        { "type": "text", "id": "value", "label": "Adresse email", "default": "contact@square-paris.fr" }
+      ]
+    },
+    {
+      "type": "address",
+      "name": "Adresse / Showroom",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Sur-titre", "default": "showroom" },
+        { "type": "text", "id": "value", "label": "Adresse", "default": "12 rue de Turenne, Paris 3e" },
+        { "type": "url", "id": "link", "label": "Lien (Google Maps)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Banner",
+      "blocks": [
+        { "type": "phone" },
+        { "type": "email" },
+        { "type": "address" }
+      ]
+    }
+  ]
+}
+{% endschema %}

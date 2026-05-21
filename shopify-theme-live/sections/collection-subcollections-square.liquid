@@ -1,0 +1,264 @@
+{%- liquid
+  assign section_id = 'csc-' | append: section.id
+  assign noir = '#1A1A1A'
+-%}
+
+{%- capture section_css -%}
+#shopify-section-{{ section.id }} { background: #fff; }
+#{{ section_id }} {
+  padding: {{ section.settings.padding_top_mobile }}px 16px {{ section.settings.padding_bottom_mobile }}px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} {
+    padding: {{ section.settings.padding_top_desktop }}px 24px {{ section.settings.padding_bottom_desktop }}px;
+  }
+}
+@media (min-width: 1280px) {
+  #{{ section_id }} { padding-left: 32px; padding-right: 32px; }
+}
+#{{ section_id }} .csc__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+#{{ section_id }} .csc__row {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .csc__row {
+    justify-content: center;
+    gap: 40px;
+    overflow-x: visible;
+  }
+}
+#{{ section_id }} .csc__row::-webkit-scrollbar { display: none; }
+#{{ section_id }} .csc__item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+#{{ section_id }} .csc__bubble {
+  position: relative;
+  display: block;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px rgba(26,26,26,0.1);
+  transition: box-shadow 0.5s ease;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .csc__bubble {
+    width: 88px;
+    height: 88px;
+  }
+}
+#{{ section_id }} .csc__item:hover .csc__bubble,
+#{{ section_id }} .csc__item:focus-visible .csc__bubble {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px rgba(26,26,26,0.4);
+}
+#{{ section_id }} .csc__item.is-active .csc__bubble {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px {{ noir }};
+}
+#{{ section_id }} .csc__bubble img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s cubic-bezier(0.25,0.1,0,1);
+}
+#{{ section_id }} .csc__item:hover .csc__bubble img {
+  transform: scale(1.06);
+}
+#{{ section_id }} .csc__label {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 400;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.55);
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+#{{ section_id }} .csc__item:hover .csc__label,
+#{{ section_id }} .csc__item.is-active .csc__label {
+  color: {{ noir }};
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+<section id="{{ section_id }}">
+  <div class="csc__inner">
+    <div class="csc__row" role="list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign target_handle = block.settings.collection
+          assign target_url = block.settings.url
+          assign target_collection = collections[target_handle]
+          if target_url == blank and target_collection != empty
+            assign target_url = target_collection.url
+          endif
+          assign label = block.settings.label
+          if label == blank and target_collection != empty
+            assign label = target_collection.title
+          endif
+          assign img = block.settings.image
+          if img == blank and target_collection != empty
+            if target_collection.image != blank
+              assign img = target_collection.image
+            elsif target_collection.products.first.featured_image != blank
+              assign img = target_collection.products.first.featured_image
+            endif
+          endif
+          assign is_active = false
+          if collection.handle != blank and target_handle != blank and collection.handle == target_handle
+            assign is_active = true
+          endif
+        -%}
+        {%- if target_url != blank -%}
+          <a
+            href="{{ target_url }}"
+            class="csc__item{% if is_active %} is-active{% endif %}"
+            role="listitem"
+            aria-label="{{ label | escape }}"
+            {{ block.shopify_attributes }}
+          >
+        {%- else -%}
+          <span class="csc__item" role="listitem" {{ block.shopify_attributes }}>
+        {%- endif -%}
+          <span class="csc__bubble">
+            {%- if img != blank -%}
+              <img
+                src="{{ img | image_url: width: 200 }}"
+                srcset="{{ img | image_url: width: 120 }} 120w, {{ img | image_url: width: 200 }} 200w, {{ img | image_url: width: 280 }} 280w"
+                sizes="88px"
+                alt="{{ label | escape }}"
+                width="200"
+                height="200"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </span>
+          <span class="csc__label">{{ label }}</span>
+        {%- if target_url != blank -%}
+          </a>
+        {%- else -%}
+          </span>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Sous-collections",
+  "tag": "section",
+  "class": "section-collection-subcollections-square",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Espacements — mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Marge haut",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Marge bas",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Espacements — desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Marge haut",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Marge bas",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subcollection",
+      "name": "Sous-collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection liée"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Lien manuel (optionnel)"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label (par défaut : titre de la collection)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image (par défaut : image de la collection)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sous-collections",
+      "blocks": [
+        { "type": "subcollection" },
+        { "type": "subcollection" },
+        { "type": "subcollection" },
+        { "type": "subcollection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

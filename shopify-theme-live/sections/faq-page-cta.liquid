@@ -1,0 +1,305 @@
+{%- liquid
+  assign section_id = 'fpcta-' | append: section.id
+  assign bg = section.settings.bg_color | default: '#3d3f30'
+  assign fg = section.settings.text_color | default: '#F5F3EE'
+  assign muted = section.settings.muted_color | default: '#91928b'
+  assign h_size_mobile = section.settings.heading_size_mobile | default: 28
+  assign h_size_desktop = section.settings.heading_size_desktop | default: 36
+  assign h_weight = section.settings.heading_weight | default: 600
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+{%- capture section_css -%}
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+#{{ section_id }} {
+  width: 100%;
+  background: {{ bg }};
+  color: {{ fg }};
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+}
+#{{ section_id }} *,
+#{{ section_id }} *::before,
+#{{ section_id }} *::after { box-sizing: border-box; }
+
+#{{ section_id }} .fpcta__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: center;
+  padding: 56px 20px;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .fpcta__inner {
+    grid-template-columns: minmax(0, 1fr) 1px auto;
+    gap: 64px;
+    padding: 80px 64px;
+  }
+}
+@media (min-width: 1280px) {
+  #{{ section_id }} .fpcta__inner {
+    gap: 96px;
+    padding: 96px 80px;
+  }
+}
+
+#{{ section_id }} .fpcta__kicker {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  margin: 0 0 18px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .fpcta__kicker { font-size: 14px; margin-bottom: 22px; }
+}
+
+#{{ section_id }} .fpcta__heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ h_weight }};
+  font-size: {{ h_size_mobile }}px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: {{ fg }};
+  margin: 0 0 14px;
+  max-width: 22ch;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .fpcta__heading {
+    font-size: {{ h_size_desktop }}px;
+    margin-bottom: 18px;
+  }
+}
+
+#{{ section_id }} .fpcta__body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  color: {{ muted }};
+  max-width: 38ch;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .fpcta__body { font-size: 14px; }
+}
+
+#{{ section_id }} .fpcta__divider {
+  display: none;
+  width: 1px;
+  height: 100%;
+  min-height: 120px;
+  background: {{ section.settings.divider_color | default: 'rgba(245,243,238,0.18)' }};
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .fpcta__divider { display: block; }
+}
+
+#{{ section_id }} .fpcta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 32px;
+  border: 1px solid {{ section.settings.divider_color | default: 'rgba(245,243,238,0.5)' }};
+  background: transparent;
+  color: {{ fg }};
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: lowercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  white-space: nowrap;
+}
+#{{ section_id }} .fpcta__btn:hover {
+  background: {{ fg }};
+  color: {{ bg }};
+  border-color: {{ fg }};
+}
+#{{ section_id }} .fpcta__btn-arrow { width: 14px; height: 14px; transition: transform 0.25s ease; }
+#{{ section_id }} .fpcta__btn:hover .fpcta__btn-arrow { transform: translateX(3px); }
+{%- endcapture -%}
+<style>{{ section_css }}</style>
+
+<section id="{{ section_id }}" class="fpcta">
+  <div class="fpcta__inner">
+    <div class="fpcta__text">
+      {%- if section.settings.kicker != blank -%}
+        <p class="fpcta__kicker">{{ section.settings.kicker }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="fpcta__heading">{{ section.settings.heading | newline_to_br }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <p class="fpcta__body">{{ section.settings.body }}</p>
+      {%- endif -%}
+    </div>
+    <div class="fpcta__divider" aria-hidden="true"></div>
+    {%- if section.settings.button_label != blank -%}
+      <a class="fpcta__btn" href="{{ section.settings.button_link | default: '#' }}">
+        <span>{{ section.settings.button_label }}</span>
+        <span class="fpcta__btn-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="100%" height="100%"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ page CTA",
+  "tag": "section",
+  "class": "section-faq-page-cta",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenu"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sur-titre",
+      "default": "besoin d'aide ?"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Titre",
+      "info": "Utilisez Entrée pour passer à la ligne.",
+      "default": "Vous n'avez pas trouvé\nvotre réponse ?"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Texte",
+      "default": "Beytulah, votre conseiller dédié, vous répond personnellement sous 2h."
+    },
+    {
+      "type": "header",
+      "content": "Bouton"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Libellé du bouton",
+      "default": "nous contacter"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Lien du bouton"
+    },
+    {
+      "type": "header",
+      "content": "Typographie titre"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Taille titre — mobile",
+      "min": 18, "max": 60, "step": 1, "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Taille titre — desktop",
+      "min": 22, "max": 100, "step": 2, "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Graisse titre",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Fond",
+      "default": "#3d3f30"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur titre",
+      "default": "#F5F3EE"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Couleur sur-titre / texte",
+      "default": "#91928b"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Couleur trait / bordure bouton",
+      "default": "#91928b"
+    },
+    {
+      "type": "header",
+      "content": "Marges"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge haute — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge basse — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge haute — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge basse — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    { "name": "FAQ page CTA" }
+  ]
+}
+{% endschema %}

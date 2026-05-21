@@ -1,0 +1,236 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "message_MW8axG": {
+          "type": "message",
+          "settings": {
+            "text": "LIVRAISON EN FRANCE / BELGIQUE / LUXEMBOURG / CORSE",
+            "link": ""
+          }
+        },
+        "message_Tq8E7m": {
+          "type": "message",
+          "settings": {
+            "text": "PAIEMENT EN 3×",
+            "link": ""
+          }
+        },
+        "message_QcdyNw": {
+          "type": "message",
+          "settings": {
+            "text": "GARANTIE 2 ANS",
+            "link": ""
+          }
+        },
+        "message_YWqmJW": {
+          "type": "message",
+          "settings": {
+            "text": "DESIGN FRANÇAIS",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "message_MW8axG",
+        "message_Tq8E7m",
+        "message_QcdyNw",
+        "message_YWqmJW"
+      ],
+      "settings": {
+        "bg_color": "#000000",
+        "text_color": "#ffffff",
+        "text_opacity": 80,
+        "height": 28,
+        "font_size": 10,
+        "rotation_interval": 3,
+        "timer_enabled": true,
+        "timer_label": "Fin des soldes dans",
+        "timer_start_date": "2026-05-07",
+        "timer_start_time": "17:35",
+        "timer_end_date": "2026-12-31",
+        "timer_end_time": "",
+        "timer_hide_on_expire": true,
+        "timer_format": "hms",
+        "timer_unit_days": "j",
+        "timer_unit_hours": "h",
+        "timer_unit_minutes": "m",
+        "timer_unit_seconds": "",
+        "timer_expired_text": "Offre expirée"
+      }
+    },
+    "header": {
+      "type": "header",
+      "blocks": {
+        "mc_nouveautes": {
+          "type": "mobile_category",
+          "settings": {
+            "label": "Nouveautés",
+            "url": "/collections/nouveautes",
+            "image_asset_url": "m-nouveautes.jpg",
+            "badge": "NEW"
+          }
+        },
+        "mc_canapes": {
+          "type": "mobile_category",
+          "settings": {
+            "label": "Canapés",
+            "url": "/collections/canapes",
+            "image_asset_url": "m-canapes.jpg",
+            "badge": ""
+          }
+        },
+        "mc_fauteuils": {
+          "type": "mobile_category",
+          "settings": {
+            "label": "Fauteuils & Poufs",
+            "url": "/collections/fauteuils-poufs",
+            "image_asset_url": "m-fauteuils.jpg",
+            "badge": ""
+          }
+        },
+        "mc_meubles": {
+          "type": "mobile_category",
+          "settings": {
+            "label": "Meubles",
+            "url": "/collections/meubles",
+            "image_asset_url": "m-meubles.jpg",
+            "badge": ""
+          }
+        },
+        "mc_chambre": {
+          "type": "mobile_category",
+          "settings": {
+            "label": "Chambre",
+            "url": "/collections/chambre",
+            "image_asset_url": "m-chambre.jpg",
+            "badge": ""
+          }
+        },
+        "mc_decoration": {
+          "type": "mobile_category",
+          "settings": {
+            "label": "Décoration",
+            "url": "/collections/decoration",
+            "image_asset_url": "m-decoration.jpg",
+            "badge": ""
+          }
+        },
+        "mc_jardin": {
+          "type": "mobile_category",
+          "settings": {
+            "label": "Jardin",
+            "url": "/collections/jardin",
+            "image_asset_url": "m-jardin.jpg",
+            "badge": ""
+          }
+        },
+        "mt_lookbook": {
+          "type": "mobile_tile",
+          "settings": {
+            "label": "Lookbook",
+            "url": "/pages/lookbook",
+            "image_asset_url": "m-canapes.jpg"
+          }
+        },
+        "mt_journal": {
+          "type": "mobile_tile",
+          "settings": {
+            "label": "Journal",
+            "url": "/blogs/journal",
+            "image_asset_url": "m-chambre.jpg"
+          }
+        },
+        "mf_compte": {
+          "type": "mobile_footer_item",
+          "settings": {
+            "icon": "user",
+            "label": "Compte",
+            "url": "/account"
+          }
+        },
+        "mf_aide": {
+          "type": "mobile_footer_item",
+          "settings": {
+            "icon": "help",
+            "label": "Aide",
+            "url": "/pages/faq"
+          }
+        },
+        "mf_contact": {
+          "type": "mobile_footer_item",
+          "settings": {
+            "icon": "mail",
+            "label": "Contact",
+            "url": "/pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "mc_nouveautes",
+        "mc_canapes",
+        "mc_fauteuils",
+        "mc_meubles",
+        "mc_chambre",
+        "mc_decoration",
+        "mc_jardin",
+        "mt_lookbook",
+        "mt_journal",
+        "mf_compte",
+        "mf_aide",
+        "mf_contact"
+      ],
+      "settings": {
+        "logo_default": "shopify://shop_images/NOIR_SANS_FOND.svg",
+        "logo_transparent": "shopify://shop_images/BLANC_SANS_FOND.svg",
+        "logo_height_desktop": 190,
+        "logo_height_mobile": 160,
+        "menu": "main-menu",
+        "show_search": true,
+        "search_logo": "shopify://shop_images/square_noir.png",
+        "search_logo_height_desktop": 40,
+        "search_logo_height_mobile": 30,
+        "popular_searches": "Canapé d'angle\nTable à manger\nFauteuil bouclette\nLit coffre\nTapis berbère",
+        "search_featured_collection": "collection-test",
+        "show_header_wishlist": true,
+        "height_desktop": 90,
+        "height_mobile": 70,
+        "max_width": 1760,
+        "enable_transparent_on_home": true,
+        "enable_transparent_on_collection": true,
+        "text_color_transparent": "#ffffff",
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "border_color": "#ffffff",
+        "cart_badge_bg": "#000000",
+        "cart_badge_color": "#ffffff",
+        "drawer_banner_eyebrow": "NOUVELLE COLLECTION",
+        "drawer_banner_title": "Essentiels 2026",
+        "drawer_banner_link": "",
+        "drawer_subtitle_1": "Notre vision du luxe",
+        "drawer_subtitle_2": "Pièces iconiques",
+        "drawer_subtitle_3": "Depuis Paris",
+        "drawer_subtitle_4": "Nous rencontrer",
+        "drawer_quick_links": "",
+        "drawer_address": "231 rue Saint-Honoré, Paris",
+        "drawer_email": "contact@squareparis.com"
+      }
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
+}

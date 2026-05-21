@@ -1,0 +1,1063 @@
+{% comment %}
+  Cart Drawer — Square (refonte éditoriale Lovable)
+  Conserve les hooks Dawn : <cart-drawer>, <cart-drawer-items>, cart-remove-button, quantity-input
+{% endcomment %}
+
+{{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign noir = '#1A1A1A'
+  assign vert = '#4A6B4A'
+
+  assign free_shipping_threshold_eur = settings.cart_free_shipping_threshold | default: 800
+  if free_shipping_threshold_eur == 0
+    assign free_shipping_threshold_eur = 800
+  endif
+  assign free_shipping_threshold_cents = free_shipping_threshold_eur | times: 100
+  assign remaining_cents = free_shipping_threshold_cents | minus: cart.total_price
+  if remaining_cents < 0
+    assign remaining_cents = 0
+  endif
+  assign progress_pct = cart.total_price | times: 100 | divided_by: free_shipping_threshold_cents
+  if progress_pct > 100
+    assign progress_pct = 100
+  endif
+  if progress_pct < 0
+    assign progress_pct = 0
+  endif
+
+  assign upsell_collection = settings.cart_drawer_collection
+
+  assign shipping_cents = 4900
+  if cart.total_price >= free_shipping_threshold_cents
+    assign shipping_cents = 0
+  endif
+
+  assign eco_total_cents = 0
+  for it in cart.items
+    assign raw_eco = it.product.metafields.custom.eco_taxe
+    if raw_eco != blank
+      assign eco_each_cents = raw_eco | times: 100 | round
+      assign eco_line_cents = eco_each_cents | times: it.quantity
+      assign eco_total_cents = eco_total_cents | plus: eco_line_cents
+    endif
+  endfor
+
+  assign grand_total_cents = cart.total_price | plus: shipping_cents
+
+  assign now_ts = 'now' | date: '%s' | plus: 0
+  assign delivery_start_ts = now_ts | plus: 2419200
+  assign delivery_end_ts = now_ts | plus: 3628800
+  assign months_fr = 'janvier,février,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre' | split: ','
+  assign delivery_start_day = delivery_start_ts | date: '%-d'
+  assign delivery_start_month_idx = delivery_start_ts | date: '%m' | plus: 0 | minus: 1
+  assign delivery_start_str = delivery_start_day | append: ' ' | append: months_fr[delivery_start_month_idx]
+  assign delivery_end_day = delivery_end_ts | date: '%-d'
+  assign delivery_end_month_idx = delivery_end_ts | date: '%m' | plus: 0 | minus: 1
+  assign delivery_end_str = delivery_end_day | append: ' ' | append: months_fr[delivery_end_month_idx]
+
+  assign suggested_count = 0
+  for i in (1..8)
+    case i
+      when 1
+        assign p_pick = settings.cart_suggest_product_1
+      when 2
+        assign p_pick = settings.cart_suggest_product_2
+      when 3
+        assign p_pick = settings.cart_suggest_product_3
+      when 4
+        assign p_pick = settings.cart_suggest_product_4
+      when 5
+        assign p_pick = settings.cart_suggest_product_5
+      when 6
+        assign p_pick = settings.cart_suggest_product_6
+      when 7
+        assign p_pick = settings.cart_suggest_product_7
+      when 8
+        assign p_pick = settings.cart_suggest_product_8
+    endcase
+    if p_pick != blank
+      assign suggested_count = suggested_count | plus: 1
+    endif
+  endfor
+-%}
+
+<style>
+  .cdrw { visibility: hidden; }
+  .cdrw[open], .cdrw.active { visibility: visible; }
+  .cdrw__overlay {
+    position: fixed; inset: 0; z-index: 70;
+    background: rgba(26,26,26,0.4);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .cdrw.active .cdrw__overlay { opacity: 1; pointer-events: auto; }
+  .cdrw__panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 71;
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.55s cubic-bezier(0.25,0.1,0,1);
+    font-family: 'Poppins', sans-serif;
+    color: {{ noir }};
+  }
+  .cdrw.active .cdrw__panel { transform: translateX(0); }
+
+  /* Override Dawn defaults that center empty cart content & hide header */
+  cart-drawer.is-empty .cdrw__panel,
+  cart-drawer.is-empty .drawer__inner {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-rows: none !important;
+    align-items: stretch !important;
+    padding: 0 !important;
+  }
+  cart-drawer.is-empty .cdrw__head { display: flex !important; }
+
+  .cdrw__head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(26,26,26,0.06);
+  }
+  .cdrw__head-title {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+  .cdrw__close {
+    background: none; border: none; cursor: pointer;
+    color: rgba(26,26,26,0.4);
+    padding: 4px;
+    transition: color 0.2s ease;
+  }
+  .cdrw__close:hover { color: {{ noir }}; }
+  .cdrw__close svg { width: 18px; height: 18px; display: block; }
+
+  .cdrw__shipping {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(26,26,26,0.06);
+  }
+  .cdrw__shipping-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .cdrw__shipping-row svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .cdrw__shipping-text {
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    color: rgba(26,26,26,0.6);
+    flex: 1;
+    line-height: 1.4;
+  }
+  .cdrw__shipping-text strong { color: {{ noir }}; font-weight: 500; }
+  .cdrw__shipping-text--ok { color: {{ vert }}; font-weight: 500; }
+  .cdrw__shipping-bar {
+    height: 2px; background: rgba(26,26,26,0.06);
+    position: relative; overflow: hidden;
+  }
+  .cdrw__shipping-fill {
+    position: absolute; inset: 0 auto 0 0;
+    background: {{ vert }};
+    transition: width 0.6s cubic-bezier(0.25,0.1,0,1);
+  }
+
+  /* Hide legacy progress bar in favor of delivery estimate block */
+  .cdrw__shipping { display: none; }
+
+  /* Livraison estimée */
+  .cdrw__delivery {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(26,26,26,0.06);
+  }
+  .cdrw__delivery-row { display: flex; align-items: flex-start; gap: 10px; }
+  .cdrw__delivery-icon { flex-shrink: 0; color: rgba(26,26,26,0.5); margin-top: 2px; }
+  .cdrw__delivery-icon svg { width: 13px; height: 13px; display: block; }
+  .cdrw__delivery-body { flex: 1; min-width: 0; }
+  .cdrw__delivery-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .cdrw__delivery-label {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(26,26,26,0.55);
+  }
+  .cdrw__delivery-fee { font-size: 10.5px; color: {{ noir }}; white-space: nowrap; }
+  .cdrw__delivery-fee--ok { color: {{ vert }}; font-weight: 500; }
+  .cdrw__delivery-range { font-size: 11.5px; color: {{ noir }}; margin: 4px 0 0; }
+  .cdrw__delivery-zones { font-size: 9.5px; color: rgba(26,26,26,0.45); margin: 2px 0 0; }
+
+  .cdrw__body {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  html.cdrw-locked, html.cdrw-locked body { overflow: hidden !important; }
+
+  .cdrw__body::-webkit-scrollbar { width: 4px; }
+  .cdrw__body::-webkit-scrollbar-thumb { background: rgba(26,26,26,0.2); border-radius: 2px; }
+  .cdrw__body::-webkit-scrollbar-track { background: transparent; }
+
+  /* Override Dawn flex-wrap on the form, force full width */
+  .cdrw__body #CartDrawer-Form { display: block; width: 100%; }
+  .cdrw__body #CartDrawer-CartItems { display: block; width: 100%; }
+
+  /* Empty state layout — fill height and center content */
+  .cdrw__body.is-empty { display: flex; flex-direction: column; }
+  .cdrw__body.is-empty #CartDrawer-Form {
+    display: flex; flex-direction: column; flex: 1; width: 100%;
+  }
+  .cdrw__body.is-empty #CartDrawer-CartItems {
+    display: flex; flex-direction: column; flex: 1; width: 100%;
+  }
+  .cdrw__body.is-empty .js-contents {
+    display: flex; flex-direction: column; flex: 1;
+  }
+
+  /* Items */
+  .cdrw__items {
+    list-style: none; margin: 0; padding: 0; width: 100%;
+  }
+  .cdrw__item {
+    display: flex; gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(26,26,26,0.06);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .cdrw__item-media {
+    width: 80px; height: 96px; flex-shrink: 0;
+    background: rgba(245,243,238,0.4);
+    overflow: hidden;
+  }
+  .cdrw__item-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cdrw__item-body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .cdrw__item-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .cdrw__item-name {
+    font-size: 13px; color: {{ noir }};
+    text-decoration: none; display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .cdrw__item-sub {
+    font-size: 10.5px; color: rgba(26,26,26,0.45);
+    margin-top: 2px; display: block;
+  }
+  .cdrw__item-remove {
+    background: none; border: none; cursor: pointer;
+    color: rgba(26,26,26,0.3); padding: 0;
+  }
+  .cdrw__item-remove:hover { color: {{ noir }}; }
+  .cdrw__item-remove svg { width: 14px; height: 14px; display: block; }
+  .cdrw__item-foot {
+    margin-top: auto; padding-top: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cdrw__qty {
+    display: inline-flex; align-items: center;
+    border: 1px solid rgba(26,26,26,0.15);
+    width: auto;
+    min-height: 0;
+    border-radius: 0;
+  }
+  .cdrw__qty.quantity { width: auto; min-height: 0; }
+  .cdrw__qty.quantity::before,
+  .cdrw__qty.quantity::after { display: none; content: none; }
+  .cdrw__qty button,
+  .cdrw__qty .quantity__button {
+    width: 28px; height: 28px;
+    background: none; border: none; cursor: pointer;
+    color: rgba(26,26,26,0.6);
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+    margin: 0;
+    font-size: inherit;
+    box-shadow: none;
+  }
+  .cdrw__qty button:hover,
+  .cdrw__qty .quantity__button:hover { color: {{ noir }}; background: none; }
+  .cdrw__qty button svg,
+  .cdrw__qty .quantity__button svg { width: 11px; height: 11px; display: block; pointer-events: none; }
+  .cdrw__qty button svg *,
+  .cdrw__qty .quantity__button svg * { pointer-events: none; }
+  .cdrw__qty input,
+  .cdrw__qty .quantity__input {
+    width: 32px; min-width: 32px; height: 28px;
+    border: none; background: transparent;
+    text-align: center;
+    font-family: inherit; font-size: 11px; color: {{ noir }};
+    -moz-appearance: textfield;
+    padding: 0;
+    opacity: 1;
+    flex-grow: 0;
+    box-shadow: none;
+  }
+  .cdrw__qty input::-webkit-outer-spin-button,
+  .cdrw__qty input::-webkit-inner-spin-button,
+  .cdrw__qty .quantity__input::-webkit-outer-spin-button,
+  .cdrw__qty .quantity__input::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+  }
+  .cdrw__item-price { font-size: 12.5px; color: {{ noir }}; white-space: nowrap; }
+  .cdrw__item-old { font-size: 10.5px; color: rgba(26,26,26,0.4); text-decoration: line-through; margin-right: 4px; }
+
+  /* Empty state */
+  .cdrw__empty {
+    flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 32px 24px;
+    width: 100%; box-sizing: border-box;
+  }
+  .cdrw__empty-kicker {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.4);
+    text-align: center;
+    display: block;
+    margin-bottom: 16px;
+  }
+  .cdrw__empty-title {
+    font-weight: 300;
+    font-size: clamp(20px, 2.6vw, 26px);
+    line-height: 1.2;
+    text-align: center;
+    margin: 0 0 12px;
+  }
+  .cdrw__empty-text {
+    font-size: 11.5px;
+    color: rgba(26,26,26,0.5);
+    line-height: 1.65;
+    max-width: 280px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .cdrw__empty-cta {
+    display: inline-flex; align-items: center; justify-content: center;
+    margin: 24px auto 0;
+    padding: 12px 24px;
+    background: {{ noir }}; color: #fff;
+    text-decoration: none;
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    transition: background 0.5s ease;
+  }
+  .cdrw__empty-cta:hover { background: {{ vert }}; }
+  .cdrw__empty-block { display: block; margin: 0 auto; width: max-content; }
+
+  /* Carousel signature */
+  .cdrw__carousel { margin-top: 36px; }
+  .cdrw__carousel-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 0 4px;
+    margin-bottom: 12px;
+  }
+  .cdrw__carousel-label {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.55);
+  }
+  .cdrw__carousel-link {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.4);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .cdrw__carousel-link:hover { color: {{ noir }}; }
+  .cdrw__carousel-track {
+    display: flex; gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .cdrw__carousel-track::-webkit-scrollbar { display: none; }
+  .cdrw__carousel-card {
+    flex-shrink: 0; width: 120px;
+    text-decoration: none; color: inherit;
+  }
+  .cdrw__carousel-media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: rgba(245,243,238,0.4);
+    overflow: hidden;
+  }
+  .cdrw__carousel-media img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.25,0.1,0,1);
+  }
+  .cdrw__carousel-card:hover .cdrw__carousel-media img { transform: scale(1.05); }
+  .cdrw__carousel-info { margin-top: 8px; padding: 0 2px; }
+  .cdrw__carousel-name { display: block; font-size: 11px; color: {{ noir }}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; }
+  .cdrw__carousel-name:hover { opacity: 0.6; }
+  .cdrw__carousel-price { display: block; font-size: 10.5px; color: rgba(26,26,26,0.5); margin-top: 2px; }
+  .cdrw__carousel-add {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    width: 28px; height: 28px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: {{ noir }};
+    transition: background 0.25s ease, color 0.25s ease;
+    padding: 0;
+  }
+  .cdrw__carousel-add:hover { background: {{ noir }}; color: #fff; }
+  .cdrw__carousel-add svg { width: 11px; height: 11px; pointer-events: none; }
+
+  /* Reassurance */
+  .cdrw__reassure {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    padding: 16px 4px 0;
+    margin-top: 32px;
+    border-top: 1px solid rgba(26,26,26,0.08);
+  }
+  .cdrw__reassure-item { display: flex; align-items: center; gap: 6px; color: rgba(26,26,26,0.55); }
+  .cdrw__reassure-item svg { width: 11px; height: 11px; }
+  .cdrw__reassure-item span {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Upsell (cart non vide) */
+  .cdrw__upsell { flex-shrink: 0; padding: 28px 24px 24px; border-top: 1px solid rgba(26,26,26,0.06); }
+  .cdrw__upsell-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .cdrw__upsell-title {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.7);
+  }
+  .cdrw__upsell-tag { font-size: 10px; color: rgba(26,26,26,0.35); }
+  .cdrw__upsell-list { list-style: none; margin: 0; padding: 0; }
+  .cdrw__upsell-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0;
+  }
+  .cdrw__upsell-thumb { width: 56px; height: 56px; flex-shrink: 0; background: rgba(245,243,238,0.4); overflow: hidden; }
+  .cdrw__upsell-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cdrw__upsell-info { flex: 1; min-width: 0; }
+  .cdrw__upsell-name {
+    display: block; font-size: 12px; color: {{ noir }};
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    text-decoration: none;
+  }
+  .cdrw__upsell-name:hover { opacity: 0.6; }
+  .cdrw__upsell-sub { display: block; font-size: 10.5px; color: rgba(26,26,26,0.45); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cdrw__upsell-price { font-size: 11.5px; color: {{ noir }}; white-space: nowrap; }
+  .cdrw__upsell-add {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(26,26,26,0.2);
+    background: transparent;
+    cursor: pointer;
+    color: {{ noir }};
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    padding: 0;
+  }
+  .cdrw__upsell-add:hover { background: {{ noir }}; color: #fff; border-color: {{ noir }}; }
+  .cdrw__upsell-add svg { width: 13px; height: 13px; }
+
+  /* Footer */
+  .cdrw__foot {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(26,26,26,0.06);
+    padding: 14px 24px 16px;
+    background: #fff;
+  }
+  .cdrw__foot-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-top: 4px;
+  }
+  .cdrw__foot-row:first-child { margin-top: 0; }
+  .cdrw__foot-row--sub-label {
+    font-size: 11px;
+    color: rgba(26,26,26,0.55);
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .cdrw__foot-row--sub-value { font-size: 12px; color: {{ noir }}; }
+  .cdrw__foot-row--sub-value-soft { font-size: 11px; color: rgba(26,26,26,0.55); }
+  .cdrw__foot-row--sub-value-soft em { color: rgba(26,26,26,0.4); font-style: italic; }
+  .cdrw__tip {
+    position: relative;
+    display: inline-flex;
+  }
+  .cdrw__tip-trigger {
+    width: 12px; height: 12px;
+    border: 1px solid rgba(26,26,26,0.25);
+    border-radius: 50%;
+    font-size: 8px;
+    color: rgba(26,26,26,0.45);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: help;
+    background: transparent;
+    line-height: 1;
+    padding: 0;
+  }
+  .cdrw__tip-bubble {
+    position: absolute;
+    left: 0; right: 0; bottom: calc(100% + 8px);
+    background: {{ noir }};
+    color: #fff;
+    padding: 12px;
+    font-size: 10px;
+    line-height: 1.5;
+    z-index: 10;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+    width: max-content;
+    max-width: 320px;
+  }
+  .cdrw__tip:hover .cdrw__tip-bubble { visibility: visible; opacity: 1; }
+  .cdrw__foot-divider {
+    border-top: 1px solid rgba(26,26,26,0.06);
+    margin-top: 8px; padding-top: 8px;
+  }
+  .cdrw__foot-label {
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(26,26,26,0.7);
+  }
+  .cdrw__foot-total { font-size: 14px; color: {{ noir }}; }
+  .cdrw__foot-note {
+    font-size: 9.5px;
+    color: rgba(26,26,26,0.4);
+    margin: 2px 0 10px;
+  }
+  .cdrw__foot-cta {
+    width: 100%;
+    background: {{ noir }}; color: #fff;
+    border: none;
+    padding: 14px 16px;
+    font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px;
+    transition: background 0.5s ease;
+  }
+  .cdrw__foot-cta:hover { background: {{ vert }}; }
+  .cdrw__foot-cta:disabled { opacity: 0.4; cursor: not-allowed; }
+  .cdrw__foot-cta svg { width: 12px; height: 12px; }
+
+  /* Hide Dawn defaults */
+  .cdrw .visually-hidden { position: absolute !important; overflow: hidden; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; }
+</style>
+
+{%- capture icon_x -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 6L18 18M6 18L18 6"/></svg>{%- endcapture -%}
+{%- capture icon_minus -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12H19"/></svg>{%- endcapture -%}
+{%- capture icon_plus -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5V19M5 12H19"/></svg>{%- endcapture -%}
+{%- capture icon_arrow -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12H19M13 6L19 12L13 18"/></svg>{%- endcapture -%}
+{%- capture icon_truck -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 3H15V16H1V3ZM15 8H19L22 11V16H15V8ZM6 19C7.1 19 8 18.1 8 17C8 15.9 7.1 15 6 15C4.9 15 4 15.9 4 17C4 18.1 4.9 19 6 19ZM18 19C19.1 19 20 18.1 20 17C20 15.9 19.1 15 18 15C16.9 15 16 15.9 16 17C16 18.1 16.9 19 18 19Z"/></svg>{%- endcapture -%}
+{%- capture icon_shield -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2L4 5V11C4 16 7.5 20.5 12 22C16.5 20.5 20 16 20 11V5L12 2ZM9 12L11 14L15 10"/></svg>{%- endcapture -%}
+{%- capture icon_rotate -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 12C2 7 6 3 11 3C14 3 17 4.5 19 7M22 4V9H17M22 12C22 17 18 21 13 21C10 21 7 19.5 5 17M2 20V15H7"/></svg>{%- endcapture -%}
+
+<cart-drawer class="cdrw drawer{% if cart == empty %} is-empty{% endif %}">
+  <div id="CartDrawer" class="cart-drawer">
+    <div id="CartDrawer-Overlay" class="cdrw__overlay"></div>
+    <div
+      class="cdrw__panel drawer__inner color-{{ settings.cart_color_scheme }}"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'sections.cart.title' | t }}"
+      tabindex="-1"
+    >
+      <!-- Header -->
+      <div class="cdrw__head">
+        <span class="cdrw__head-title">
+          Votre sélection ({{ cart.item_count }})
+        </span>
+        <button
+          type="button"
+          class="cdrw__close drawer__close"
+          onclick="this.closest('cart-drawer').close()"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          {{ icon_x }}
+        </button>
+      </div>
+
+      <!-- Free shipping bar -->
+      {%- if cart != empty -%}
+        <div class="cdrw__shipping">
+          <div class="cdrw__shipping-row">
+            <span style="color: {% if remaining_cents == 0 %}{{ vert }}{% else %}rgba(26,26,26,0.4){% endif %}">{{ icon_truck }}</span>
+            <p class="cdrw__shipping-text">
+              {%- if remaining_cents == 0 -%}
+                <span class="cdrw__shipping-text--ok">Livraison offerte débloquée — bravo.</span>
+              {%- else -%}
+                Plus que <strong>{{ remaining_cents | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</strong> pour la livraison offerte.
+              {%- endif -%}
+            </p>
+          </div>
+          <div class="cdrw__shipping-bar">
+            <span class="cdrw__shipping-fill" style="width: {{ progress_pct }}%;"></span>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {% comment %}
+        Variante « Livraison estimée » (désactivée — cassait l'affichage live).
+        À réactiver en supprimant ce comment et en commentant le bloc .cdrw__shipping ci-dessus.
+        Nécessite l'IIFE fillDelivery() (également commentée dans le <script> en bas).
+
+        {%- if cart != empty -%}
+          ...
+        {%- endif -%}
+      {% endcomment %}
+
+      <!-- Delivery estimate (pure Liquid, no JS) -->
+      {%- if cart != empty -%}
+        <div class="cdrw__delivery">
+          <div class="cdrw__delivery-row">
+            <span class="cdrw__delivery-icon">{{ icon_truck }}</span>
+            <div class="cdrw__delivery-body">
+              <div class="cdrw__delivery-head">
+                <span class="cdrw__delivery-label">Livraison estimée</span>
+                <span class="cdrw__delivery-fee{% if shipping_cents == 0 %} cdrw__delivery-fee--ok{% endif %}">
+                  {%- if shipping_cents == 0 -%}
+                    Offerte
+                  {%- else -%}
+                    {{ shipping_cents | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}
+                  {%- endif -%}
+                </span>
+              </div>
+              <p class="cdrw__delivery-range">{{ delivery_start_str }} – {{ delivery_end_str }}</p>
+              <p class="cdrw__delivery-zones">Livraison sur rendez-vous · France, Belgique, Luxembourg.</p>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      <!-- Body -->
+      <cart-drawer-items class="cdrw__body{% if cart == empty %} is-empty{% endif %}" data-lenis-prevent data-lenis-prevent-wheel data-lenis-prevent-touch>
+        <form
+          action="{{ routes.cart_url }}"
+          id="CartDrawer-Form"
+          class="cart__contents cart-drawer__form"
+          method="post"
+        >
+          <div id="CartDrawer-CartItems" class="js-contents">
+            {%- if cart == empty -%}
+              <div class="cdrw__empty">
+                <span class="cdrw__empty-kicker">Panier</span>
+                <h3 class="cdrw__empty-title">Votre sélection vous attend.</h3>
+                <p class="cdrw__empty-text">Chaque pièce, façonnée à la main dans nos ateliers européens.</p>
+
+                {%- if suggested_count > 0 -%}
+                  <div class="cdrw__carousel">
+                    <div class="cdrw__carousel-head">
+                      <span class="cdrw__carousel-label">Pièces signatures</span>
+                      {%- if upsell_collection != blank -%}
+                        <a href="{{ upsell_collection.url }}" class="cdrw__carousel-link" onclick="this.closest('cart-drawer').close()">Tout voir →</a>
+                      {%- else -%}
+                        <a href="{{ routes.all_products_collection_url }}" class="cdrw__carousel-link" onclick="this.closest('cart-drawer').close()">Tout voir →</a>
+                      {%- endif -%}
+                    </div>
+                    <div class="cdrw__carousel-track">
+                      {%- for i in (1..8) -%}
+                        {%- liquid
+                          case i
+                            when 1
+                              assign p = settings.cart_suggest_product_1
+                            when 2
+                              assign p = settings.cart_suggest_product_2
+                            when 3
+                              assign p = settings.cart_suggest_product_3
+                            when 4
+                              assign p = settings.cart_suggest_product_4
+                            when 5
+                              assign p = settings.cart_suggest_product_5
+                            when 6
+                              assign p = settings.cart_suggest_product_6
+                            when 7
+                              assign p = settings.cart_suggest_product_7
+                            when 8
+                              assign p = settings.cart_suggest_product_8
+                          endcase
+                        -%}
+                        {%- if p != blank -%}
+                          <div class="cdrw__carousel-card">
+                            <div class="cdrw__carousel-media">
+                              {%- if p.featured_image != blank -%}
+                                <img src="{{ p.featured_image | image_url: width: 300 }}" alt="{{ p.title | escape }}" loading="lazy" width="120" height="120">
+                              {%- endif -%}
+                              <button type="button" class="cdrw__carousel-add" data-cdrw-upsell-add data-variant-id="{{ p.selected_or_first_available_variant.id }}" aria-label="Ajouter {{ p.title | escape }}">{{ icon_plus }}</button>
+                            </div>
+                            <div class="cdrw__carousel-info">
+                              <a href="{{ p.url }}" class="cdrw__carousel-name" onclick="this.closest('cart-drawer').close()">{{ p.title }}</a>
+                              <span class="cdrw__carousel-price">{{ p.price | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</span>
+                            </div>
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                {%- elsif upsell_collection != blank and upsell_collection.products.size > 0 -%}
+                  <div class="cdrw__carousel">
+                    <div class="cdrw__carousel-head">
+                      <span class="cdrw__carousel-label">Pièces signatures</span>
+                      <a href="{{ upsell_collection.url }}" class="cdrw__carousel-link" onclick="this.closest('cart-drawer').close()">Tout voir →</a>
+                    </div>
+                    <div class="cdrw__carousel-track">
+                      {%- for p in upsell_collection.products limit: 8 -%}
+                        <div class="cdrw__carousel-card">
+                          <div class="cdrw__carousel-media">
+                            {%- if p.featured_image != blank -%}
+                              <img src="{{ p.featured_image | image_url: width: 300 }}" alt="{{ p.title | escape }}" loading="lazy" width="120" height="120">
+                            {%- endif -%}
+                            <button type="button" class="cdrw__carousel-add" data-cdrw-upsell-add data-variant-id="{{ p.selected_or_first_available_variant.id }}" aria-label="Ajouter {{ p.title | escape }}">{{ icon_plus }}</button>
+                          </div>
+                          <div class="cdrw__carousel-info">
+                            <a href="{{ p.url }}" class="cdrw__carousel-name" onclick="this.closest('cart-drawer').close()">{{ p.title }}</a>
+                            <span class="cdrw__carousel-price">{{ p.price | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</span>
+                          </div>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                {%- else -%}
+                  <span class="cdrw__empty-block">
+                    <a href="{{ routes.all_products_collection_url }}" class="cdrw__empty-cta">Découvrir →</a>
+                  </span>
+                {%- endif -%}
+
+                <div class="cdrw__reassure">
+                  <div class="cdrw__reassure-item">{{ icon_shield }}<span>Garantie 5 ans</span></div>
+                  <div class="cdrw__reassure-item">{{ icon_rotate }}<span>Retours 30 j.</span></div>
+                  <div class="cdrw__reassure-item">{{ icon_truck }}<span>Sur RDV</span></div>
+                </div>
+              </div>
+            {%- else -%}
+              <ul class="cdrw__items">
+                {%- for item in cart.items -%}
+                  <li class="cdrw__item" id="CartDrawer-Item-{{ item.index | plus: 1 }}">
+                    <a href="{{ item.url }}" class="cdrw__item-media" tabindex="-1" aria-hidden="true">
+                      {%- if item.image -%}
+                        <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.image.alt | escape }}" loading="lazy" width="80" height="96">
+                      {%- endif -%}
+                    </a>
+                    <div class="cdrw__item-body">
+                      <div class="cdrw__item-row">
+                        <div style="min-width:0;">
+                          <a href="{{ item.url }}" class="cdrw__item-name">{{ item.product.title | escape }}</a>
+                          {%- if item.product.has_only_default_variant == false -%}
+                            <span class="cdrw__item-sub">{{ item.variant.title }}</span>
+                          {%- elsif item.variant.title and item.variant.title != 'Default Title' -%}
+                            <span class="cdrw__item-sub">{{ item.variant.title }}</span>
+                          {%- endif -%}
+                        </div>
+                        <cart-remove-button id="CartDrawer-Remove-{{ item.index | plus: 1 }}" data-index="{{ item.index | plus: 1 }}">
+                          <button type="button" class="cdrw__item-remove" aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}" data-variant-id="{{ item.variant.id }}">
+                            {{ icon_x }}
+                          </button>
+                        </cart-remove-button>
+                      </div>
+                      <div class="cdrw__item-foot">
+                        <quantity-input class="cdrw__qty quantity cart-quantity">
+                          <button class="quantity__button" name="minus" type="button" aria-label="{{ 'products.product.quantity.decrease' | t: product: item.product.title | escape }}">{{ icon_minus }}</button>
+                          <input
+                            class="quantity__input"
+                            type="number"
+                            name="updates[]"
+                            value="{{ item.quantity }}"
+                            min="0"
+                            data-quantity-variant-id="{{ item.variant.id }}"
+                            data-cart-quantity="{{ cart | item_count_for_variant: item.variant.id }}"
+                            data-min="{{ item.variant.quantity_rule.min }}"
+                            {% if item.variant.quantity_rule.max != null %}max="{{ item.variant.quantity_rule.max }}"{% endif %}
+                            step="{{ item.variant.quantity_rule.increment }}"
+                            id="Drawer-quantity-{{ item.index | plus: 1 }}"
+                            data-index="{{ item.index | plus: 1 }}"
+                            aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
+                          >
+                          <button class="quantity__button" name="plus" type="button" aria-label="{{ 'products.product.quantity.increase' | t: product: item.product.title | escape }}">{{ icon_plus }}</button>
+                        </quantity-input>
+                        <span class="cdrw__item-price">
+                          {%- if item.original_line_price != item.final_line_price -%}
+                            <span class="cdrw__item-old">{{ item.original_line_price | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</span>
+                          {%- endif -%}
+                          {{ item.final_line_price | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}
+                        </span>
+                      </div>
+                      <div id="CartDrawer-LineItemError-{{ item.index | plus: 1 }}" class="cart-item__error" role="alert" style="display:none;">
+                        <small class="cart-item__error-text"></small>
+                      </div>
+                    </div>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+            <p id="CartDrawer-LiveRegionText" class="visually-hidden" role="status"></p>
+            <p id="CartDrawer-LineItemStatus" class="visually-hidden" aria-hidden="true" role="status">{{ 'accessibility.loading' | t }}</p>
+          </div>
+          <div id="CartDrawer-CartErrors" role="alert"></div>
+        </form>
+
+        <!-- Upsell (cart non vide) -->
+        {%- if cart != empty -%}
+          {%- assign cart_product_ids = '' -%}
+          {%- for it in cart.items -%}
+            {%- assign cart_product_ids = cart_product_ids | append: it.product.id | append: ',' -%}
+          {%- endfor -%}
+          {%- assign upsell_count = 0 -%}
+
+          {%- if suggested_count > 0 -%}
+            <div class="cdrw__upsell">
+              <div class="cdrw__upsell-head">
+                <span class="cdrw__upsell-title">Complétez votre intérieur</span>
+                <span class="cdrw__upsell-tag">Recommandés</span>
+              </div>
+              <ul class="cdrw__upsell-list">
+                {%- for i in (1..8) -%}
+                  {%- liquid
+                    case i
+                      when 1
+                        assign p = settings.cart_suggest_product_1
+                      when 2
+                        assign p = settings.cart_suggest_product_2
+                      when 3
+                        assign p = settings.cart_suggest_product_3
+                      when 4
+                        assign p = settings.cart_suggest_product_4
+                      when 5
+                        assign p = settings.cart_suggest_product_5
+                      when 6
+                        assign p = settings.cart_suggest_product_6
+                      when 7
+                        assign p = settings.cart_suggest_product_7
+                      when 8
+                        assign p = settings.cart_suggest_product_8
+                    endcase
+                  -%}
+                  {%- if p != blank and upsell_count < 3 -%}
+                    {%- assign pid_check = p.id | append: ',' -%}
+                    {%- unless cart_product_ids contains pid_check -%}
+                      <li class="cdrw__upsell-item">
+                        <a href="{{ p.url }}" class="cdrw__upsell-thumb" aria-hidden="true" tabindex="-1">
+                          {%- if p.featured_image -%}
+                            <img src="{{ p.featured_image | image_url: width: 150 }}" alt="{{ p.title | escape }}" loading="lazy" width="56" height="56">
+                          {%- endif -%}
+                        </a>
+                        <div class="cdrw__upsell-info">
+                          <a href="{{ p.url }}" class="cdrw__upsell-name">{{ p.title }}</a>
+                          {%- if p.metafields.custom.caracteristique != blank -%}
+                            <span class="cdrw__upsell-sub">{{ p.metafields.custom.caracteristique }}</span>
+                          {%- endif -%}
+                        </div>
+                        <span class="cdrw__upsell-price">{{ p.price | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</span>
+                        <button type="button" class="cdrw__upsell-add" data-cdrw-upsell-add data-variant-id="{{ p.selected_or_first_available_variant.id }}" aria-label="Ajouter {{ p.title | escape }}">{{ icon_plus }}</button>
+                      </li>
+                      {%- assign upsell_count = upsell_count | plus: 1 -%}
+                    {%- endunless -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- elsif upsell_collection != blank and upsell_collection.products.size > 0 -%}
+            <div class="cdrw__upsell">
+              <div class="cdrw__upsell-head">
+                <span class="cdrw__upsell-title">Complétez votre intérieur</span>
+                <span class="cdrw__upsell-tag">Recommandés</span>
+              </div>
+              <ul class="cdrw__upsell-list">
+                {%- for p in upsell_collection.products -%}
+                  {%- assign pid_check = p.id | append: ',' -%}
+                  {%- unless cart_product_ids contains pid_check -%}
+                    {%- if upsell_count < 3 -%}
+                      <li class="cdrw__upsell-item">
+                        <a href="{{ p.url }}" class="cdrw__upsell-thumb" aria-hidden="true" tabindex="-1">
+                          {%- if p.featured_image -%}
+                            <img src="{{ p.featured_image | image_url: width: 150 }}" alt="{{ p.title | escape }}" loading="lazy" width="56" height="56">
+                          {%- endif -%}
+                        </a>
+                        <div class="cdrw__upsell-info">
+                          <a href="{{ p.url }}" class="cdrw__upsell-name">{{ p.title }}</a>
+                          {%- if p.metafields.custom.caracteristique != blank -%}
+                            <span class="cdrw__upsell-sub">{{ p.metafields.custom.caracteristique }}</span>
+                          {%- endif -%}
+                        </div>
+                        <span class="cdrw__upsell-price">{{ p.price | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</span>
+                        <button type="button" class="cdrw__upsell-add" data-cdrw-upsell-add data-variant-id="{{ p.selected_or_first_available_variant.id }}" aria-label="Ajouter {{ p.title | escape }}">{{ icon_plus }}</button>
+                      </li>
+                      {%- assign upsell_count = upsell_count | plus: 1 -%}
+                    {%- endif -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      </cart-drawer-items>
+
+      <!-- Footer -->
+      {%- if cart != empty -%}
+        <div class="cdrw__foot drawer__footer">
+          <div class="cdrw__foot-row">
+            <span class="cdrw__foot-row--sub-label">Sous-total</span>
+            <span class="cdrw__foot-row--sub-value">{{ cart.total_price | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</span>
+          </div>
+          <div class="cdrw__foot-row">
+            <span class="cdrw__foot-row--sub-label cdrw__tip">
+              Frais d'envoi
+              <span class="cdrw__tip-trigger" aria-hidden="true">?</span>
+              <span class="cdrw__tip-bubble" role="tooltip">Livraison sur rendez-vous en France, Belgique et Luxembourg. Acheminement assuré par nos transporteurs partenaires spécialisés mobilier, avec mise en place dans la pièce de votre choix.</span>
+            </span>
+            <span class="cdrw__foot-row--sub-value">
+              {%- if shipping_cents == 0 -%}
+                <span style="color: {{ vert }};">Offerte</span>
+              {%- else -%}
+                {{ shipping_cents | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}
+              {%- endif -%}
+            </span>
+          </div>
+          {%- if eco_total_cents > 0 -%}
+            <div class="cdrw__foot-row">
+              <span class="cdrw__foot-row--sub-label cdrw__tip">
+                Éco-participation
+                <span class="cdrw__tip-trigger" aria-hidden="true">?</span>
+                <span class="cdrw__tip-bubble" role="tooltip">Contribution comprise dans le prix du produit, versée à chaque achat de mobilier depuis le 1er mai 2013. Le montant, défini par les pouvoirs publics, est reversé en intégralité à Eco-mobilier pour la collecte, le recyclage et la remise en état des meubles usagés.</span>
+              </span>
+              <span class="cdrw__foot-row--sub-value-soft">
+                {{ eco_total_cents | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }} <em>· incluse</em>
+              </span>
+            </div>
+          {%- endif -%}
+          <div class="cdrw__foot-row cdrw__foot-divider">
+            <span class="cdrw__foot-label">Total</span>
+            <span class="cdrw__foot-total">{{ grand_total_cents | money_without_trailing_zeros | replace: '.', ' ' | replace: '€', ' €' }}</span>
+          </div>
+          <p class="cdrw__foot-note">Taxes & éco-participation incluses.</p>
+          <button type="submit" id="CartDrawer-Checkout" name="checkout" form="CartDrawer-Form" class="cdrw__foot-cta cart__checkout-button">
+            Passer commande
+            {{ icon_arrow }}
+          </button>
+          <div class="cdrw__reassure" style="border-top:none; margin-top:12px; padding:0;">
+            <div class="cdrw__reassure-item">{{ icon_shield }}<span>Garantie 5 ans</span></div>
+            <div class="cdrw__reassure-item">{{ icon_rotate }}<span>Retours 30 j.</span></div>
+            <div class="cdrw__reassure-item">{{ icon_truck }}<span>Sur RDV</span></div>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</cart-drawer>
+
+<script>
+/* IIFE fillDelivery() désactivée (variante « Livraison estimée »).
+(function(){
+  function fillDelivery(root){
+    var nodes = (root || document).querySelectorAll('[data-cart-delivery-range]');
+    if (!nodes.length) return;
+    var fmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' });
+    var start = new Date(); start.setDate(start.getDate() + 28);
+    var end = new Date(); end.setDate(end.getDate() + 42);
+    var text = fmt.format(start) + ' \u2013 ' + fmt.format(end);
+    nodes.forEach(function(n){ n.textContent = text; });
+  }
+  fillDelivery();
+  var cd = document.querySelector('cart-drawer');
+  if (cd) {
+    new MutationObserver(function(){ fillDelivery(cd); }).observe(cd, { childList: true, subtree: true });
+  }
+})();
+*/
+(function(){
+  // Lock page scroll when cart drawer is active
+  var cd = document.querySelector('cart-drawer');
+  if (cd) {
+    var html = document.documentElement;
+    var sync = function(){
+      if (cd.classList.contains('active') || cd.classList.contains('animate')) {
+        html.classList.add('cdrw-locked');
+      } else {
+        html.classList.remove('cdrw-locked');
+      }
+    };
+    new MutationObserver(sync).observe(cd, { attributes: true, attributeFilter: ['class'] });
+    sync();
+  }
+})();
+(function(){
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-cdrw-upsell-add]');
+    if (!btn) return;
+    e.preventDefault();
+    if (btn.disabled) return;
+    var variantId = btn.getAttribute('data-variant-id');
+    if (!variantId) return;
+    btn.disabled = true;
+
+    var cartDrawer = document.querySelector('cart-drawer');
+    var cartItems = document.querySelector('cart-drawer-items');
+
+    var sectionNames = [];
+    if (cartItems && typeof cartItems.getSectionsToRender === 'function') {
+      sectionNames = cartItems.getSectionsToRender().map(function(s){ return s.section || s.id; }).filter(Boolean);
+    }
+    if (!sectionNames.length) sectionNames = ['cart-drawer', 'cart-icon-bubble'];
+
+    var data = new FormData();
+    data.append('id', variantId);
+    data.append('quantity', '1');
+    data.append('sections', sectionNames.join(','));
+    data.append('sections_url', window.location.pathname);
+
+    var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) ? window.Shopify.routes.root : '/';
+
+    fetch(root + 'cart/add.js', {
+      method: 'POST',
+      headers: { 'Accept': 'application/javascript', 'X-Requested-With': 'XMLHttpRequest' },
+      body: data
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res && res.status) {
+        btn.disabled = false;
+        return;
+      }
+      if (cartDrawer && res && res.sections) {
+        cartDrawer.renderContents(res);
+      } else {
+        fetch(root + '?sections=' + sectionNames.join(','))
+          .then(function(r){ return r.json(); })
+          .then(function(sections){
+            if (cartDrawer) {
+              cartDrawer.renderContents({ sections: sections });
+            } else {
+              window.location.reload();
+            }
+          });
+      }
+    })
+    .catch(function(){
+      btn.disabled = false;
+    });
+  });
+})();
+</script>

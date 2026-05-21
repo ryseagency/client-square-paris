@@ -1,0 +1,518 @@
+{%- liquid
+  assign noir = '#1A1A1A'
+  assign creme = '#F5F3EE'
+  assign section_id = 'temo-' | append: section.id
+-%}
+
+{%- capture section_css -%}
+/* ── Margins ── */
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+  padding-bottom: 0 !important;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* ── Container ── */
+#{{ section_id }} {
+  width: 100%;
+  padding: 0 20px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} { padding: 0 64px; }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} { padding: 0 80px; }
+}
+
+/* ── Header ── */
+#{{ section_id }} .temo__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .temo__header {
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 48px;
+    margin-bottom: 30px;
+  }
+}
+#{{ section_id }} .temo__header-left {
+  flex-shrink: 0;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .temo__header-left {
+    width: auto;
+    flex: 1;
+  }
+}
+#{{ section_id }} .temo__subtitle {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.35);
+  margin-bottom: 12px;
+}
+#{{ section_id }} .temo__title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: {{ noir }};
+  margin: 0;
+  line-height: 1.2;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .temo__title {
+    font-size: 36px;
+  }
+}
+
+/* ── Rating summary ── */
+#{{ section_id }} .temo__rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .temo__rating-summary {
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+}
+#{{ section_id }} .temo__rating-score {
+  font-family: 'Poppins', sans-serif;
+  font-size: 36px;
+  font-weight: 300;
+  color: rgba(26,26,26,0.2);
+  line-height: 1;
+}
+#{{ section_id }} .temo__rating-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+#{{ section_id }} .temo__stars {
+  display: flex;
+  gap: 2px;
+}
+#{{ section_id }} .temo__star {
+  width: 14px;
+  height: 14px;
+  color: {{ noir }};
+}
+#{{ section_id }} .temo__star--empty {
+  color: rgba(26,26,26,0.15);
+}
+#{{ section_id }} .temo__rating-count {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  color: rgba(26,26,26,0.35);
+}
+
+/* ── CTA button ── */
+#{{ section_id }} .temo__cta {
+  display: inline-block;
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: rgba(26,26,26,0.5);
+  border: 1px solid rgba(26,26,26,0.15);
+  background: none;
+  padding: 12px 24px;
+  text-decoration: none;
+  transition: color 0.25s ease, border-color 0.25s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: auto;
+  align-self: flex-end;
+}
+#{{ section_id }} .temo__cta:hover {
+  color: {{ noir }};
+  border-color: {{ noir }};
+}
+
+/* ── Grid / Slider ── */
+#{{ section_id }} .temo__grid {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 12px;
+  scrollbar-width: none;
+}
+#{{ section_id }} .temo__grid::-webkit-scrollbar { display: none; }
+@media (min-width: 768px) {
+  #{{ section_id }} .temo__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    overflow: visible;
+  }
+}
+
+/* ── Card ── */
+#{{ section_id }} .temo__card {
+  background: #fff;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 0 calc(100vw - 52px);
+  min-width: calc(100vw - 52px);
+  scroll-snap-align: start;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .temo__card {
+    flex: unset;
+    min-width: unset;
+  }
+}
+
+/* ── Dots ── */
+#{{ section_id }} .temo__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .temo__dots { display: none; }
+}
+#{{ section_id }} .temo__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(26,26,26,0.15);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+#{{ section_id }} .temo__dot.is-active {
+  background: #1A1A1A;
+}
+#{{ section_id }} .temo__card-quote {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 48px;
+  line-height: 1;
+  color: rgba(26,26,26,0.08);
+  margin-bottom: 8px;
+  user-select: none;
+}
+#{{ section_id }} .temo__card-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.9;
+  color: rgba(26,26,26,0.55);
+  margin-bottom: 28px;
+}
+#{{ section_id }} .temo__card-text p {
+  margin: 0;
+}
+#{{ section_id }} .temo__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(26,26,26,0.06);
+  padding-top: 20px;
+}
+#{{ section_id }} .temo__card-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#{{ section_id }} .temo__card-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 0;
+  background: rgba(26,26,26,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: {{ noir }};
+  flex-shrink: 0;
+}
+#{{ section_id }} .temo__card-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: {{ noir }};
+}
+#{{ section_id }} .temo__card-location {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  color: rgba(26,26,26,0.35);
+  margin-top: 2px;
+}
+#{{ section_id }} .temo__card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+#{{ section_id }} .temo__card-stars {
+  display: flex;
+  gap: 2px;
+}
+#{{ section_id }} .temo__card-star {
+  width: 12px;
+  height: 12px;
+  color: {{ noir }};
+}
+#{{ section_id }} .temo__card-star--empty {
+  color: rgba(26,26,26,0.15);
+}
+#{{ section_id }} .temo__card-date {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  color: rgba(26,26,26,0.3);
+}
+{%- endcapture -%}
+
+<style>{{ section_css }}</style>
+
+{%- capture star_svg -%}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>{%- endcapture -%}
+
+<div id="product-reviews" style="position:relative;"></div>
+<div id="{{ section_id }}">
+
+  {%- comment -%} ══ Header ══ {%- endcomment -%}
+  <div class="temo__header">
+    <div class="temo__header-left">
+      {%- if section.settings.subtitle != blank -%}
+        <div class="temo__subtitle">{{ section.settings.subtitle }}</div>
+      {%- endif -%}
+      {%- if section.settings.title != blank -%}
+        <h2 class="temo__title">{{ section.settings.title | newline_to_br }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.rating_score != blank -%}
+      <div class="temo__rating-summary">
+        <span class="temo__rating-score">{{ section.settings.rating_score }}</span>
+        <div class="temo__rating-detail">
+          <div class="temo__stars">
+            {%- assign rating_whole = section.settings.rating_stars | default: 5 -%}
+            {%- for i in (1..5) -%}
+              {%- if i <= rating_whole -%}
+                <span class="temo__star">{{ star_svg }}</span>
+              {%- else -%}
+                <span class="temo__star temo__star--empty">{{ star_svg }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          {%- if section.settings.rating_count != blank -%}
+            <span class="temo__rating-count">{{ section.settings.rating_count }}</span>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.cta_label != blank -%}
+      {%- if section.settings.cta_link != blank -%}
+        <a href="{{ section.settings.cta_link }}" class="temo__cta">{{ section.settings.cta_label }}</a>
+      {%- else -%}
+        <span class="temo__cta">{{ section.settings.cta_label }}</span>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} ══ Testimonials grid ══ {%- endcomment -%}
+  {%- if section.blocks.size > 0 -%}
+    <div class="temo__grid">
+      {%- for block in section.blocks -%}
+        <div class="temo__card" {{ block.shopify_attributes }}>
+          <div>
+            <div class="temo__card-quote">"</div>
+            {%- if block.settings.text != blank -%}
+              <div class="temo__card-text">"{{ block.settings.text }}"</div>
+            {%- endif -%}
+          </div>
+          <div class="temo__card-footer">
+            <div class="temo__card-author">
+              <div class="temo__card-avatar">{{ block.settings.name | slice: 0 | upcase }}</div>
+              <div>
+                <div class="temo__card-name">{{ block.settings.name }}</div>
+                {%- if block.settings.location != blank -%}
+                  <div class="temo__card-location">{{ block.settings.location }}</div>
+                {%- endif -%}
+              </div>
+            </div>
+            <div class="temo__card-meta">
+              <div class="temo__card-stars">
+                {%- assign block_stars = block.settings.stars | default: 5 -%}
+                {%- for i in (1..5) -%}
+                  {%- if i <= block_stars -%}
+                    <span class="temo__card-star">{{ star_svg }}</span>
+                  {%- else -%}
+                    <span class="temo__card-star temo__card-star--empty">{{ star_svg }}</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              {%- if block.settings.date != blank -%}
+                <span class="temo__card-date">{{ block.settings.date }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.blocks.size > 1 -%}
+      <div class="temo__dots">
+        {%- for block in section.blocks -%}
+          <button class="temo__dot{% if forloop.first %} is-active{% endif %}" data-temo-dot="{{ forloop.index0 }}" aria-label="Avis {{ forloop.index }}"></button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+</div>
+
+<script>
+(function(){
+  var wrap = document.getElementById('{{ section_id }}');
+  if (!wrap) return;
+  var grid = wrap.querySelector('.temo__grid');
+  var dots = wrap.querySelectorAll('[data-temo-dot]');
+  if (!grid || !dots.length) return;
+
+  function updateDots() {
+    var scrollLeft = grid.scrollLeft;
+    var cardWidth = grid.firstElementChild ? grid.firstElementChild.offsetWidth + 12 : 1;
+    var idx = Math.round(scrollLeft / cardWidth);
+    dots.forEach(function(d, i) {
+      d.classList.toggle('is-active', i === idx);
+    });
+  }
+
+  var ticking = false;
+  grid.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() { updateDots(); ticking = false; });
+      ticking = true;
+    }
+  });
+
+  dots.forEach(function(dot) {
+    dot.addEventListener('click', function() {
+      var idx = parseInt(dot.getAttribute('data-temo-dot'), 10);
+      var card = grid.children[idx];
+      if (card) grid.scrollTo({ left: card.offsetLeft - grid.offsetLeft, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Témoignages",
+  "class": "temoignages-section",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Sous-titre", "default": "témoignages" },
+    { "type": "textarea", "id": "title", "label": "Titre", "default": "La parole\nà nos clients." },
+    { "type": "header", "content": "Note moyenne" },
+    { "type": "text", "id": "rating_score", "label": "Note affichée", "default": "4.5" },
+    {
+      "type": "range",
+      "id": "rating_stars",
+      "label": "Étoiles header",
+      "min": 1, "max": 5, "step": 1, "default": 5
+    },
+    { "type": "text", "id": "rating_count", "label": "Texte sous les étoiles", "default": "2 avis vérifiés" },
+    { "type": "header", "content": "Bouton" },
+    { "type": "text", "id": "cta_label", "label": "Texte du bouton", "default": "écrire un avis" },
+    { "type": "url", "id": "cta_link", "label": "Lien du bouton" },
+    { "type": "header", "content": "Marges" },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge supérieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge inférieure — mobile",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge supérieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge inférieure — desktop",
+      "min": 0, "max": 100, "step": 2, "unit": "px", "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Avis",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Nom", "default": "Sophie M." },
+        { "type": "text", "id": "location", "label": "Ville", "default": "Paris 11e" },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Témoignage",
+          "default": "Le YOKO est exactement ce qu'on cherchait pour notre salon de 25m². La modularité est un vrai plus — on change la configuration selon les soirées."
+        },
+        {
+          "type": "range",
+          "id": "stars",
+          "label": "Étoiles",
+          "min": 1, "max": 5, "step": 1, "default": 5
+        },
+        { "type": "text", "id": "date", "label": "Date", "default": "Mars 2026" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Témoignages",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "Sophie M.",
+            "location": "Paris 11e",
+            "text": "Le YOKO est exactement ce qu'on cherchait pour notre salon de 25m². La modularité est un vrai plus — on change la configuration selon les soirées. Le tissu est doux et résistant, même avec notre chat.",
+            "stars": 5,
+            "date": "Mars 2026"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "Thomas & Léa",
+            "location": "Lyon 6e",
+            "text": "Très beau canapé, confortable dès la livraison. On a pris le coloris Mousse de Boulogne, magnifique en lumière naturelle. Seul bémol : le délai de livraison un peu long, mais ça vaut l'attente.",
+            "stars": 4,
+            "date": "Février 2026"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

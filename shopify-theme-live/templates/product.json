@@ -1,0 +1,552 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product-square",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {
+            "show_vendor": false,
+            "show_rating": true,
+            "rating_value": 4,
+            "rating_count": 2
+          }
+        },
+        "subtitle_HwdP7t": {
+          "type": "subtitle",
+          "settings": {
+            "text": "{{ product.metafields.custom.caracteristique.value }}",
+            "text_size_mobile": 12,
+            "text_size_desktop": 12
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "nb_installments": 3,
+            "alma_image": "shopify://shop_images/logo-alma-black.png",
+            "alma_height_mobile": 13,
+            "alma_height_desktop": 11,
+            "price_size_mobile": 24,
+            "price_weight_mobile": 500,
+            "price_size_desktop": 22,
+            "price_weight_desktop": 400
+          }
+        },
+        "divider_EXUWkL": {
+          "type": "divider",
+          "settings": {}
+        },
+        "dimensions": {
+          "type": "dimensions",
+          "settings": {
+            "dim_h": "75",
+            "dim_l": "279",
+            "dim_p": "247"
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "square",
+            "helper_text": "Orientation vue de face",
+            "hide_color_label": false,
+            "color_map": "Vert=#3d3f30\nRouge=#40221e\nBlanc=#eeece5\nNoir=#000000\nJaune=#c4a35a\nCrème=#eeede6\nMarron=#40231f\nDoré=#c4a25a",
+            "margin_top_mobile": 0,
+            "margin_bottom_mobile": 0,
+            "margin_top_desktop": 20,
+            "margin_bottom_desktop": 18,
+            "gap_variants": 16,
+            "last_row_margin_bottom_mobile": -40,
+            "last_row_margin_bottom_desktop": 8,
+            "gap_color_swatches": 4
+          }
+        },
+        "customization_dpTjmJ": {
+          "type": "customization",
+          "settings": {
+            "trigger_label": "Personnaliser cet article",
+            "font_size_desktop": 12,
+            "font_size_mobile": 10,
+            "margin_top": 0,
+            "margin_bottom": 10,
+            "modal_heading": "Demande de personnalisation",
+            "modal_subtitle": "Laissez-nous vos coordonnées et décrivez votre projet — nous vous recontactons rapidement.",
+            "submit_label": "Envoyer",
+            "success_message": "Merci ! Nous revenons vers vous très vite."
+          }
+        },
+        "buy_buttons_nEDVtD": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_wishlist": true,
+            "show_dynamic_checkout": false,
+            "margin_top_mobile": 0,
+            "margin_bottom_mobile": 16,
+            "margin_top_desktop": 0,
+            "margin_bottom_desktop": 20
+          }
+        },
+        "delivery": {
+          "type": "delivery",
+          "settings": {
+            "title": "Chez vous sous {{ product.metafields.custom.calculateur_livraison_estimee.value }} semaines",
+            "suffix": "Sur rendez-vous",
+            "title_size_mobile": 11,
+            "title_size_desktop": 11,
+            "title_weight": "600",
+            "text_size_mobile": 11,
+            "text_size_desktop": 11
+          }
+        },
+        "reassurance": {
+          "type": "reassurance",
+          "settings": {
+            "title_1": "oeko-tex®",
+            "subtitle_1": "Tissu certifié",
+            "title_2": "made in europe",
+            "subtitle_2": "Atelier toscan",
+            "title_3": "modulable",
+            "subtitle_3": "Configurations libres",
+            "title_4": "montage facile",
+            "subtitle_4": "Assemblage discret"
+          }
+        },
+        "cross_sell_cW4KNN": {
+          "type": "cross_sell",
+          "settings": {
+            "heading": "Complétez votre intérieur",
+            "subheading": "Recommandés avec ce modèle",
+            "collection": "",
+            "limit": 4
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "subtitle_HwdP7t",
+        "price",
+        "divider_EXUWkL",
+        "dimensions",
+        "variant_picker",
+        "customization_dpTjmJ",
+        "buy_buttons_nEDVtD",
+        "delivery",
+        "reassurance",
+        "cross_sell_cW4KNN"
+      ],
+      "settings": {
+        "lightbox_fullscreen_image": false,
+        "lightbox_fullscreen_desktop_only": false,
+        "margin_top_mobile": 0,
+        "margin_top_desktop": 100
+      }
+    },
+    "product_tabs_fNcDGq": {
+      "type": "product-tabs",
+      "blocks": {
+        "caracteristiques_NiU4EB": {
+          "type": "caracteristiques",
+          "settings": {
+            "tab_title": "caractéristiques"
+          }
+        },
+        "dimensions_cb3TwB": {
+          "type": "dimensions",
+          "settings": {
+            "tab_title": "dimensions",
+            "warning_text": "Assurez-vous que les dimensions correspondent à l'espace prévu. Mesurez l'emplacement et les accès (portes, couloirs, escaliers) avant de commander."
+          }
+        },
+        "livraison_8fctN3": {
+          "type": "livraison",
+          "settings": {
+            "tab_title": "livraison",
+            "shipping_name_1": "standard",
+            "shipping_price_1": "59,90 €",
+            "shipping_desc_1": "Au pied de l'immeuble, sur rendez-vous.",
+            "shipping_delay_1": "Délai : 4-6 semaines",
+            "shipping_badge_1": "",
+            "shipping_name_2": "confort",
+            "shipping_price_2": "99,90 €",
+            "shipping_desc_2": "Dans la pièce de votre choix. Déballage et reprise des emballages.",
+            "shipping_delay_2": "Délai : 4-6 semaines",
+            "shipping_badge_2": "populaire",
+            "shipping_name_3": "premium",
+            "shipping_price_3": "149,90 €",
+            "shipping_desc_3": "Installation complète et reprise de votre ancien canapé.",
+            "shipping_delay_3": "Délai : 4-6 semaines",
+            "shipping_badge_3": "",
+            "shipping_note": "Livraison offerte en France métropolitaine à partir de 3 000 € d'achat."
+          }
+        },
+        "description_tab_bV3QPX": {
+          "type": "description_tab",
+          "settings": {
+            "tab_title": "description",
+            "description_text": "{{ product.description }}"
+          }
+        },
+        "installation_XV86YR": {
+          "type": "installation",
+          "settings": {
+            "tab_title": "installation",
+            "step_title_1": "déballez",
+            "step_text_1": "Ouvrez les colis et disposez les modules dans la pièce selon votre configuration.",
+            "step_title_2": "assemblez",
+            "step_text_2": "Fixez les modules entre eux grâce aux clips intégrés. Aucun outil nécessaire.",
+            "step_title_3": "profitez",
+            "step_text_3": "Ajustez la position et installez-vous. L'ensemble est prêt en moins de 15 minutes.",
+            "pdf_url": "#",
+            "pdf_title": "télécharger la notice de montage",
+            "pdf_meta": "PDF — 2,4 Mo"
+          }
+        }
+      },
+      "block_order": [
+        "caracteristiques_NiU4EB",
+        "dimensions_cb3TwB",
+        "livraison_8fctN3",
+        "description_tab_bV3QPX",
+        "installation_XV86YR"
+      ],
+      "name": "Tabs produit",
+      "settings": {
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": -14,
+        "margin_top_desktop": 34,
+        "margin_bottom_desktop": -52
+      }
+    },
+    "croquis_v2_xhLkyW": {
+      "type": "croquis-v2",
+      "blocks": {
+        "measure_3p3cfB": {
+          "type": "measure",
+          "settings": {
+            "label": "largeur",
+            "value": "352",
+            "unit": "cm"
+          }
+        },
+        "measure_qErm9m": {
+          "type": "measure",
+          "settings": {
+            "label": "profondeur",
+            "value": "210",
+            "unit": "cm"
+          }
+        },
+        "measure_TxqUMt": {
+          "type": "measure",
+          "settings": {
+            "label": "hauteur",
+            "value": "85",
+            "unit": "cm"
+          }
+        },
+        "measure_Np9Bgy": {
+          "type": "measure",
+          "settings": {
+            "label": "assise",
+            "value": "45",
+            "unit": "cm"
+          }
+        },
+        "feature_JAXNhG": {
+          "type": "feature",
+          "settings": {
+            "title": "S'adapte aux grands séjours",
+            "description": "Pensé pour les espaces de vie ouverts à partir de 25 m².",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_qNMjBW": {
+          "type": "feature",
+          "settings": {
+            "title": "Confort 5 à 6 places",
+            "description": "Assise profonde de 60 cm, dossier enveloppant à 45 cm.",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_NqPQTz": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_6gLYp6": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_BW7mtw": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_8BC9FU": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_C6zCNN": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_XcCrhy": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_jpryaF": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        },
+        "feature_krwKqQ": {
+          "type": "feature",
+          "settings": {
+            "title": "Hauteur d'assise",
+            "description": "45 cm",
+            "dot_color": "#000000"
+          }
+        }
+      },
+      "block_order": [
+        "measure_3p3cfB",
+        "measure_qErm9m",
+        "measure_TxqUMt",
+        "measure_Np9Bgy",
+        "feature_JAXNhG",
+        "feature_qNMjBW",
+        "feature_NqPQTz",
+        "feature_6gLYp6",
+        "feature_BW7mtw",
+        "feature_8BC9FU",
+        "feature_C6zCNN",
+        "feature_XcCrhy",
+        "feature_jpryaF",
+        "feature_krwKqQ"
+      ],
+      "name": "Croquis V2",
+      "settings": {
+        "kicker": "Dimensions",
+        "heading": "Une architecture pensée\nau millimètre.",
+        "body": "Chaque cote a été étudiée pour offrir un confort généreux tout en s'intégrant harmonieusement dans les intérieurs contemporains.",
+        "sketch_image_small": "{{ product.metafields.custom.croquis.value }}",
+        "card_kicker": "cotes essentielles",
+        "details_kicker": "Cotes détaillées",
+        "details_open": false,
+        "button_label": "",
+        "button_link": "",
+        "heading_size_mobile": 28,
+        "heading_size_desktop": 36,
+        "heading_weight": "600",
+        "measure_size_mobile": 20,
+        "measure_size_desktop": 20,
+        "measure_weight": "500",
+        "feature_title_size_mobile": 11,
+        "feature_title_size_desktop": 12,
+        "feature_title_weight": "500",
+        "feature_title_color": "#393939",
+        "feature_desc_size_mobile": 10,
+        "feature_desc_size_desktop": 12,
+        "feature_desc_weight": "300",
+        "feature_desc_color": "#91928b",
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "sketch_bg": "#ffffff",
+        "border_color": "#e5e5e5",
+        "card_bg": "#fafafa",
+        "divider_color": "#d8d4cb",
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "complementary_products_pwaV6A": {
+      "type": "complementary-products",
+      "name": "Produits complémentaires",
+      "settings": {
+        "subtitle": "Complétez votre intérieur",
+        "heading": "L'ensemble parfait.",
+        "collection": "",
+        "limit": 4,
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 50,
+        "margin_top_desktop": 70,
+        "margin_bottom_desktop": 70
+      }
+    },
+    "temoignages_Cqz4i3": {
+      "type": "temoignages",
+      "blocks": {
+        "testimonial_xw3934": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Sophie M.",
+            "location": "Paris 11e",
+            "text": "Le YOKO est exactement ce qu'on cherchait pour notre salon de 25m². La modularité est un vrai plus — on change la configuration selon les soirées. Le tissu est doux et résistant, même avec notre chat.",
+            "stars": 5,
+            "date": "Mars 2026"
+          }
+        },
+        "testimonial_tPeRQr": {
+          "type": "testimonial",
+          "settings": {
+            "name": "Thomas & Léa",
+            "location": "Lyon 6e",
+            "text": "Très beau canapé, confortable dès la livraison. On a pris le coloris Mousse de Boulogne, magnifique en lumière naturelle. Seul bémol : le délai de livraison un peu long, mais ça vaut l'attente.",
+            "stars": 4,
+            "date": "Février 2026"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_xw3934",
+        "testimonial_tPeRQr"
+      ],
+      "name": "Témoignages",
+      "settings": {
+        "subtitle": "témoignages",
+        "title": "La parole\nà nos clients.",
+        "rating_score": "4.5",
+        "rating_stars": 5,
+        "rating_count": "2 avis vérifiés",
+        "cta_label": "écrire un avis",
+        "cta_link": "",
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 100,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "faq_zKdwnW": {
+      "type": "faq",
+      "blocks": {
+        "question_KVEtWx": {
+          "type": "question",
+          "settings": {
+            "question": "Puis-je commander un seul module séparément ?",
+            "answer": "<p>Absolument. Chaque chauffeuse du YOKO est disponible individuellement, ce qui vous permet de composer votre configuration exacte ou d'agrandir votre canapé plus tard.</p>"
+          }
+        },
+        "question_h8wYPy": {
+          "type": "question",
+          "settings": {
+            "question": "Comment entretenir le tissu au quotidien ?",
+            "answer": "<p>Le tissu polyester certifié OEKO-TEX® se nettoie simplement avec un chiffon humide. Pour un nettoyage plus profond, les housses sont déhoussables et lavables à 30°C.</p>"
+          }
+        },
+        "question_WKQNHg": {
+          "type": "question",
+          "settings": {
+            "question": "Quelle est la politique de retour pour un canapé sur mesure ?",
+            "answer": "<p>Vous disposez de 14 jours après réception pour nous retourner votre canapé. Les frais de retour sont à notre charge.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "question_KVEtWx",
+        "question_h8wYPy",
+        "question_WKQNHg"
+      ],
+      "name": "FAQ",
+      "settings": {
+        "subtitle": "faq",
+        "title": "Vos questions,\nnos réponses.",
+        "description": "Tout ce que vous devez savoir avant de choisir votre YOKO.",
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 60,
+        "padding_top_desktop": 68,
+        "padding_bottom_desktop": 68,
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "cta_contact_w9G9yn": {
+      "type": "cta-contact",
+      "name": "CTA Contact",
+      "settings": {
+        "subtitle": "service client",
+        "title": "Une question ?\nParlons-en.",
+        "description": "Beytulah répond personnellement sous 2h,\ndu lundi au samedi.",
+        "phone_label": "téléphone",
+        "phone": "+33 6 12 34 56 78",
+        "email_label": "email",
+        "email": "contact@square-paris.fr",
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "newsletter_eihETy": {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "settings": {
+        "eyebrow": "<p>Restons en contact</p>",
+        "heading": "<p>Rejoignez l'art de vivre Square.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Inscrivez-vous et bénéficiez de -10% sur votre première commande.</p>",
+        "input_placeholder": "Votre adresse e-mail",
+        "button_label": "S'inscrire",
+        "success_message": "Merci, vous êtes inscrit(e) !",
+        "legal_text": "<p>En vous inscrivant, vous acceptez notre politique de confidentialité.</p>",
+        "heading_size_min": 28,
+        "heading_size_vw": 4,
+        "heading_size_max": 44,
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "button_color": "#000000"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "product_tabs_fNcDGq",
+    "croquis_v2_xhLkyW",
+    "complementary_products_pwaV6A",
+    "temoignages_Cqz4i3",
+    "faq_zKdwnW",
+    "cta_contact_w9G9yn",
+    "newsletter_eihETy"
+  ]
+}

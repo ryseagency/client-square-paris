@@ -1,0 +1,899 @@
+{%- liquid
+  assign muted = '#999999'
+  assign body_color = '#777777'
+  assign noir = section.settings.text_color | default: '#1a1a1a'
+  assign section_id = 'crqv2-' | append: section.id
+  assign h_size_mobile = section.settings.heading_size_mobile | default: 26
+  assign h_size_desktop = section.settings.heading_size_desktop | default: 26
+  assign h_weight = section.settings.heading_weight | default: 500
+  assign m_size_mobile = section.settings.measure_size_mobile | default: 20
+  assign m_size_desktop = section.settings.measure_size_desktop | default: 20
+  assign m_weight = section.settings.measure_weight | default: 500
+  assign ft_title_size_mobile = section.settings.feature_title_size_mobile | default: 12
+  assign ft_title_size_desktop = section.settings.feature_title_size_desktop | default: 12
+  assign ft_title_weight = section.settings.feature_title_weight | default: 400
+  assign ft_title_color = section.settings.feature_title_color | default: '#777777'
+  assign ft_desc_size_mobile = section.settings.feature_desc_size_mobile | default: 13
+  assign ft_desc_size_desktop = section.settings.feature_desc_size_desktop | default: 13
+  assign ft_desc_weight = section.settings.feature_desc_weight | default: 500
+  assign ft_desc_color = section.settings.feature_desc_color | default: '#1a1a1a'
+-%}
+
+
+{%- capture section_css -%}
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+#{{ section_id }} {
+  width: 100%;
+  background: {{ section.settings.bg_color | default: '#ffffff' }};
+  color: {{ noir }};
+  font-family: 'Poppins', sans-serif;
+}
+#{{ section_id }} *,
+#{{ section_id }} *::before,
+#{{ section_id }} *::after {
+  box-sizing: border-box;
+}
+
+#{{ section_id }} .crq__inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 32px 20px;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .crq__inner {
+    padding: 48px 48px;
+  }
+}
+
+#{{ section_id }} .crq__top {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+@media (min-width: 681px) {
+  #{{ section_id }} .crq__top {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+  }
+}
+
+#{{ section_id }} .crq__top-left {
+  min-width: 0;
+}
+
+#{{ section_id }} .crq__kicker {
+  font-family: 'ST Nova Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  margin: 0 0 8px;
+}
+
+#{{ section_id }} .crq__heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ h_weight }};
+  font-size: {{ h_size_mobile }}px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: {{ noir }};
+  margin: 0;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .crq__heading {
+    font-size: {{ h_size_desktop }}px;
+  }
+}
+
+#{{ section_id }} .crq__top-right {
+  min-width: 0;
+}
+
+#{{ section_id }} .crq__body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.75;
+  color: {{ body_color }};
+  max-width: 280px;
+  margin: 0;
+}
+@media (min-width: 681px) {
+  #{{ section_id }} .crq__body {
+    text-align: right;
+  }
+}
+
+#{{ section_id }} .crq__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  border: 1px solid {{ section.settings.border_color | default: '#e0e0e0' }};
+  border-radius: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+@media (min-width: 681px) {
+  #{{ section_id }} .crq__grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+}
+
+#{{ section_id }} .crq__sketch {
+  background: {{ section.settings.sketch_bg | default: '#f7f5f0' }};
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  border-bottom: 1px solid {{ section.settings.border_color | default: '#e0e0e0' }};
+}
+@media (min-width: 681px) {
+  #{{ section_id }} .crq__sketch {
+    padding: 0;
+    border-bottom: none;
+    border-right: 1px solid {{ section.settings.border_color | default: '#e0e0e0' }};
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    height: 100%;
+  }
+  #{{ section_id }} .crq__sketch-img-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #{{ section_id }} .crq__sketch-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* Une seule image affichée (small), la large est masquée partout */
+#{{ section_id }} .crq__sketch-image--large { display: none !important; }
+#{{ section_id }} .crq__sketch-image--small { display: block; }
+
+@media (min-width: 681px) {
+  #{{ section_id }} .crq__sketch-img-wrap .crq__sketch-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+#{{ section_id }} .crq__sketch-img-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#{{ section_id }} .crq__sketch-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+#{{ section_id }} .crq__sketch-placeholder {
+  width: 100%;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.45);
+  color: {{ muted }};
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+#{{ section_id }} .crq__card {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#{{ section_id }} .crq__panel-section,
+#{{ section_id }} .crq__panel-footer {
+  padding: 20px 24px;
+}
+
+#{{ section_id }} .crq__panel-section + .crq__panel-section,
+#{{ section_id }} .crq__panel-section + .crq__panel-footer,
+#{{ section_id }} .crq__panel-footer + .crq__panel-section {
+  border-top: 1px solid {{ section.settings.divider_color | default: '#efefef' }};
+}
+
+#{{ section_id }} .crq__section-label {
+  font-family: 'ST Nova Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  margin: 0 0 16px;
+}
+
+#{{ section_id }} .crq__measures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+#{{ section_id }} .crq__measure {
+  background: {{ section.settings.card_bg | default: '#f7f7f5' }};
+  border-radius: 0;
+  padding: 12px 14px;
+  min-width: 0;
+}
+
+#{{ section_id }} .crq__measure-label {
+  font-family: 'ST Nova Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  margin: 0 0 4px;
+}
+
+#{{ section_id }} .crq__measure-value {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ m_weight }};
+  font-size: {{ m_size_mobile }}px;
+  line-height: 1;
+  color: {{ noir }};
+  margin: 0;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .crq__measure-value {
+    font-size: {{ m_size_desktop }}px;
+  }
+}
+
+#{{ section_id }} .crq__measure-unit {
+  font-size: 0.55em;
+  font-weight: 400;
+  color: {{ muted }};
+  margin-left: 4px;
+}
+
+#{{ section_id }} .crq__features-toggle {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  font-family: 'ST Nova Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  user-select: none;
+}
+#{{ section_id }} .crq__features-toggle::-webkit-details-marker { display: none; }
+#{{ section_id }} .crq__features-toggle::marker { content: ''; }
+
+#{{ section_id }} .crq__features-details[open] .crq__features-toggle {
+  margin-bottom: 12px;
+}
+
+#{{ section_id }} .crq__features-chevron {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+  color: {{ noir }};
+}
+#{{ section_id }} .crq__features-details[open] .crq__features-chevron {
+  transform: rotate(180deg);
+}
+
+#{{ section_id }} .crq__features {
+  display: flex;
+  flex-direction: column;
+}
+
+#{{ section_id }} .crq__feature {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid {{ section.settings.divider_color | default: '#efefef' }};
+}
+
+#{{ section_id }} .crq__feature:last-child {
+  border-bottom: none;
+}
+
+#{{ section_id }} .crq__feature-main {
+  min-width: 0;
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#{{ section_id }} .crq__feature-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+#{{ section_id }} .crq__feature-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ ft_title_weight }};
+  font-size: {{ ft_title_size_mobile }}px;
+  line-height: 1.65;
+  color: {{ ft_title_color }};
+  margin: 0;
+  min-width: 0;
+  flex: 1 1 0;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .crq__feature-title {
+    font-size: {{ ft_title_size_desktop }}px;
+  }
+}
+
+#{{ section_id }} .crq__feature-desc {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ ft_desc_weight }};
+  font-size: {{ ft_desc_size_mobile }}px;
+  line-height: 1.65;
+  color: {{ ft_desc_color }};
+  margin: 0;
+  text-align: right;
+  flex-shrink: 0;
+  max-width: 45%;
+  word-break: break-word;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .crq__feature-desc {
+    font-size: {{ ft_desc_size_desktop }}px;
+  }
+}
+
+#{{ section_id }} .crq__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border: 1px solid {{ noir }};
+  background: transparent;
+  color: {{ noir }};
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+#{{ section_id }} .crq__btn:hover {
+  background: {{ noir }};
+  color: #ffffff;
+}
+
+#{{ section_id }} .crq__btn-arrow {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.25s ease;
+}
+#{{ section_id }} .crq__btn:hover .crq__btn-arrow {
+  transform: translateX(3px);
+}
+
+@media (max-width: 680px) {
+  #{{ section_id }} .crq__inner {
+    padding: 28px 16px;
+  }
+
+  #{{ section_id }} .crq__body {
+    max-width: none;
+    text-align: left;
+  }
+
+  #{{ section_id }} .crq__panel-section,
+  #{{ section_id }} .crq__panel-footer {
+    padding: 18px 18px;
+  }
+
+  #{{ section_id }} .crq__feature-desc {
+    max-width: 50%;
+  }
+}
+{%- endcapture -%}
+{%- liquid
+  assign croquis_meta_file = blank
+  if product != blank and product.metafields.custom.croquis != blank
+    assign croquis_meta_file = product.metafields.custom.croquis.value
+  endif
+-%}
+{%- if croquis_meta_file != blank -%}
+<style>{{ section_css }}</style>
+
+{%- liquid
+  assign has_measure = false
+  assign has_feature = false
+  for block in section.blocks
+    if block.type == 'measure'
+      assign has_measure = true
+    endif
+    if block.type == 'feature'
+      assign has_feature = true
+    endif
+  endfor
+-%}
+
+<section id="{{ section_id }}" class="crq">
+  <div class="crq__inner">
+    <div class="crq__top">
+      <div class="crq__top-left">
+        {%- if section.settings.kicker != blank -%}
+          <p class="crq__kicker">{{ section.settings.kicker }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="crq__heading">{{ section.settings.heading | newline_to_br }}</h2>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.body != blank -%}
+        <div class="crq__top-right">
+          <p class="crq__body">{{ section.settings.body }}</p>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="crq__grid{% if section.settings.details_open %} is-details-open{% endif %}">
+      <div class="crq__sketch">
+        <div class="crq__sketch-img-wrap">
+          {%- liquid
+            assign img_small = section.settings.sketch_image_small | default: section.settings.sketch_image
+            assign img_large = section.settings.sketch_image_large | default: section.settings.sketch_image
+          -%}
+          {%- if img_small != blank -%}
+            {{ img_small | image_url: width: 1200 | image_tag: class: 'crq__sketch-image crq__sketch-image--small', loading: 'lazy', alt: section.settings.heading | default: 'Croquis technique' }}
+          {%- endif -%}
+          {%- if img_large != blank -%}
+            {{ img_large | image_url: width: 1600 | image_tag: class: 'crq__sketch-image crq__sketch-image--large', loading: 'lazy', alt: section.settings.heading | default: 'Croquis technique' }}
+          {%- endif -%}
+          {%- if img_small == blank and img_large == blank -%}
+            <div class="crq__sketch-placeholder">aucune image</div>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <aside class="crq__card">
+        {%- if has_measure -%}
+          <div class="crq__panel-section crq__panel-section--measures">
+            {%- if section.settings.card_kicker != blank -%}
+              <p class="crq__section-label">{{ section.settings.card_kicker }}</p>
+            {%- endif -%}
+            <div class="crq__measures">
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'measure' -%}
+                  <div class="crq__measure" {{ block.shopify_attributes }}>
+                    <p class="crq__measure-label">{{ block.settings.label }}</p>
+                    <p class="crq__measure-value">{{ block.settings.value }}<span class="crq__measure-unit">{{ block.settings.unit | default: 'cm' }}</span></p>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if has_feature -%}
+          <div class="crq__panel-section crq__panel-section--features">
+            <details class="crq__features-details"{% if section.settings.details_open %} open{% endif %}>
+              <summary class="crq__features-toggle">
+                <span>{{ section.settings.details_kicker | default: 'Cotes détaillées' }}</span>
+                <svg class="crq__features-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div class="crq__features">
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'feature' -%}
+                    <div class="crq__feature" {{ block.shopify_attributes }}>
+                      <div class="crq__feature-main">
+                        <span class="crq__feature-dot" style="background: {{ block.settings.dot_color | default: '#3C3489' }};"></span>
+                        <p class="crq__feature-title">{{ block.settings.title }}</p>
+                      </div>
+                      {%- if block.settings.description != blank -%}
+                        <p class="crq__feature-desc">{{ block.settings.description }}</p>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </details>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.button_label != blank -%}
+          <div class="crq__panel-footer">
+            <a class="crq__btn" href="{{ section.settings.button_link | default: '#' }}">
+              <span>{{ section.settings.button_label }}</span>
+              <span class="crq__btn-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="100%" height="100%"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+          </div>
+        {%- endif -%}
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var section = document.getElementById('{{ section_id }}');
+  if (!section) return;
+  var grid = section.querySelector('.crq__grid');
+  var details = section.querySelector('.crq__features-details');
+  if (!grid || !details) return;
+  var sync = function() {
+    grid.classList.toggle('is-details-open', details.open);
+  };
+  details.addEventListener('toggle', sync);
+  sync();
+})();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Croquis V2",
+  "tag": "section",
+  "class": "section-croquis-v2",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Intro"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sur-titre",
+      "default": "Plan technique · vue d'ensemble"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Titre",
+      "info": "Utilisez Entrée pour passer à la ligne.",
+      "default": "Une architecture pensée\nau millimètre."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Texte d'introduction",
+      "default": "Chaque cote étudiée pour un confort généreux et une intégration harmonieuse dans les intérieurs contemporains."
+    },
+    {
+      "type": "header",
+      "content": "Croquis",
+      "info": "Recommandations : PNG transparent ou JPG, fond clair. Petit = état tab fermé (conteneur ~380px de haut). Grand = état tab ouvert (conteneur ~580px de haut). Ratio idéal 4:3 ou 5:4."
+    },
+    {
+      "type": "image_picker",
+      "id": "sketch_image_small",
+      "label": "Image — petit format (tab fermé)",
+      "info": "Recommandé : 1200 × 900 px (ratio 4:3), PNG transparent ou JPG fond clair. Cadrez serré pour rester lisible dans un conteneur ~380 px de haut."
+    },
+    {
+      "type": "image_picker",
+      "id": "sketch_image_large",
+      "label": "Image — grand format (tab ouvert)",
+      "info": "Recommandé : 1600 × 1200 px (ratio 4:3), PNG transparent ou JPG fond clair. Conteneur ~580 px de haut quand le dropdown est ouvert."
+    },
+    {
+      "type": "image_picker",
+      "id": "sketch_image",
+      "label": "Image (fallback)",
+      "info": "Utilisée si les versions petit/grand ne sont pas définies. Recommandé : 1400 × 1050 px."
+    },
+    {
+      "type": "header",
+      "content": "Panneau droit"
+    },
+    {
+      "type": "text",
+      "id": "card_kicker",
+      "label": "Label dimensions générales",
+      "default": "Dimensions générales"
+    },
+    {
+      "type": "text",
+      "id": "details_kicker",
+      "label": "Label cotes détaillées",
+      "default": "Cotes détaillées"
+    },
+    {
+      "type": "checkbox",
+      "id": "details_open",
+      "label": "Ouvrir le menu déroulant par défaut",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Libellé bouton"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Lien bouton"
+    },
+    {
+      "type": "header",
+      "content": "Typographie titre"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Taille titre — mobile",
+      "min": 18, "max": 60, "step": 1, "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Taille titre — desktop",
+      "min": 22, "max": 100, "step": 2, "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Graisse titre",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "header",
+      "content": "Typographie cotes"
+    },
+    {
+      "type": "range",
+      "id": "measure_size_mobile",
+      "label": "Taille cote — mobile",
+      "min": 16, "max": 48, "step": 1, "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "measure_size_desktop",
+      "label": "Taille cote — desktop",
+      "min": 16, "max": 56, "step": 1, "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "measure_weight",
+      "label": "Graisse cote",
+      "options": [
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "header",
+      "content": "Typographie cotes détaillées"
+    },
+    {
+      "type": "range",
+      "id": "feature_title_size_mobile",
+      "label": "Taille label détail — mobile",
+      "min": 11, "max": 24, "step": 1, "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "feature_title_size_desktop",
+      "label": "Taille label détail — desktop",
+      "min": 12, "max": 28, "step": 1, "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "feature_title_weight",
+      "label": "Graisse label détail",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "feature_title_color",
+      "label": "Couleur label détail",
+      "default": "#777777"
+    },
+    {
+      "type": "range",
+      "id": "feature_desc_size_mobile",
+      "label": "Taille valeur détail — mobile",
+      "min": 10, "max": 22, "step": 1, "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "feature_desc_size_desktop",
+      "label": "Taille valeur détail — desktop",
+      "min": 11, "max": 24, "step": 1, "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "feature_desc_weight",
+      "label": "Graisse valeur détail",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "color",
+      "id": "feature_desc_color",
+      "label": "Couleur valeur détail",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Fond de section",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur titres",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "sketch_bg",
+      "label": "Fond zone croquis",
+      "default": "#F7F5F0"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Bordure bloc principal",
+      "default": "#E0E0E0"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Fond cartes dimensions",
+      "default": "#F7F7F5"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Couleur séparateurs",
+      "default": "#EFEFEF"
+    },
+    {
+      "type": "header",
+      "content": "Marges"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge haute — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge basse — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge haute — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge basse — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "measure",
+      "name": "Dimension générale",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Largeur" },
+        { "type": "text", "id": "value", "label": "Valeur", "default": "352" },
+        { "type": "text", "id": "unit", "label": "Unité", "default": "cm" }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Cote détaillée",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Label", "default": "Hauteur d'assise" },
+        { "type": "text", "id": "description", "label": "Valeur droite", "default": "45 cm" },
+        { "type": "color", "id": "dot_color", "label": "Couleur du point", "default": "#3C3489" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Croquis V2",
+      "blocks": [
+        { "type": "measure", "settings": { "label": "Largeur", "value": "352", "unit": "cm" } },
+        { "type": "measure", "settings": { "label": "Profondeur", "value": "210", "unit": "cm" } },
+        { "type": "measure", "settings": { "label": "Hauteur totale", "value": "85", "unit": "cm" } },
+        { "type": "measure", "settings": { "label": "Prof. assise", "value": "60", "unit": "cm" } },
+        { "type": "feature", "settings": { "title": "Hauteur d'assise", "description": "45 cm", "dot_color": "#3C3489" } },
+        { "type": "feature", "settings": { "title": "Hauteur de dossier", "description": "40 cm", "dot_color": "#3C3489" } },
+        { "type": "feature", "settings": { "title": "Hauteur accoudoirs", "description": "55 cm", "dot_color": "#085041" } },
+        { "type": "feature", "settings": { "title": "Largeur méridienne", "description": "172 cm", "dot_color": "#085041" } },
+        { "type": "feature", "settings": { "title": "Profondeur méridienne", "description": "126 cm", "dot_color": "#0C447C" } },
+        { "type": "feature", "settings": { "title": "Hauteur pieds", "description": "4 cm", "dot_color": "#0C447C" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

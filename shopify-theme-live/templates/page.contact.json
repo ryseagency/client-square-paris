@@ -1,0 +1,176 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "contact_banner_3hqBj6": {
+      "type": "contact-banner",
+      "blocks": {
+        "phone_XeyC8Y": {
+          "type": "phone",
+          "settings": {
+            "label": "téléphone",
+            "value": "+33 6 12 34 56 78"
+          }
+        },
+        "email_bGLbgx": {
+          "type": "email",
+          "settings": {
+            "label": "email",
+            "value": "contact@square-paris.fr"
+          }
+        },
+        "address_gcJLiy": {
+          "type": "address",
+          "disabled": true,
+          "settings": {
+            "label": "showroom",
+            "value": "12 rue de Turenne, Paris 3e",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "phone_XeyC8Y",
+        "email_bGLbgx",
+        "address_gcJLiy"
+      ],
+      "name": "Contact Banner",
+      "settings": {
+        "kicker": "service client",
+        "heading": "Parlons de \nvotre intérieur.",
+        "body": "Beytulah, votre conseiller dédié, répond personnellement à chaque demande sous 2h, du lundi au samedi.",
+        "content_bar_gap_mobile": 48,
+        "content_bar_gap_desktop": 44,
+        "heading_size_mobile": 44,
+        "heading_size_desktop": 44,
+        "heading_weight": "400",
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "bar_color": "#3d3f30",
+        "margin_top_mobile": 32,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "faq_cta_DK3BhB": {
+      "type": "faq-cta",
+      "name": "FAQ CTA",
+      "settings": {
+        "kicker": "une réponse immédiate ?",
+        "heading": "Consultez notre FAQ avant\nde nous écrire.",
+        "body": "Livraison, paiement, retours, matériaux — la plupart des réponses s'y trouvent déjà.",
+        "button_label": "voir la faq",
+        "button_link": "",
+        "heading_size_mobile": 30,
+        "heading_size_desktop": 44,
+        "heading_weight": "400",
+        "body_size_mobile": 13,
+        "body_size_desktop": 13,
+        "body_weight": "400",
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "divider_color": "#e5e5e5",
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "contact_form_v2_cBhBKg": {
+      "type": "contact-form-v2",
+      "blocks": {
+        "hours_row_XLhHai": {
+          "type": "hours_row",
+          "settings": {
+            "day": "Lundi — Vendredi",
+            "value": "9h — 19h"
+          }
+        },
+        "hours_row_BNmrkJ": {
+          "type": "hours_row",
+          "settings": {
+            "day": "Samedi",
+            "value": "10h — 18h"
+          }
+        },
+        "hours_row_8n8qDr": {
+          "type": "hours_row",
+          "settings": {
+            "day": "Dimanche",
+            "value": "Fermé"
+          }
+        }
+      },
+      "block_order": [
+        "hours_row_XLhHai",
+        "hours_row_BNmrkJ",
+        "hours_row_8n8qDr"
+      ],
+      "name": "Contact form V2",
+      "settings": {
+        "kicker": "formulaire",
+        "heading": "Écrivez-nous.",
+        "submit_label": "envoyer le message",
+        "success_message": "Message envoyé. Nous revenons vers vous rapidement.",
+        "hours_kicker": "disponibilités",
+        "hours_heading": "Horaires.",
+        "hours_note": "Réponse garantie sous 2h ouvrées.",
+        "hours_bg": "#f7f6f2",
+        "heading_size_mobile": 30,
+        "heading_size_desktop": 44,
+        "heading_weight": "400",
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "margin_top_mobile": 0,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "newsletter_HeQHmB": {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "settings": {
+        "eyebrow": "<p>Restons en contact</p>",
+        "heading": "<p>Rejoignez l'art de vivre Square.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Inscrivez-vous et bénéficiez de -10% sur votre première commande.</p>",
+        "input_placeholder": "Votre adresse e-mail",
+        "button_label": "S'inscrire",
+        "success_message": "Merci, vous êtes inscrit(e) !",
+        "legal_text": "<p>En vous inscrivant, vous acceptez notre politique de confidentialité.</p>",
+        "heading_size_min": 28,
+        "heading_size_vw": 4,
+        "heading_size_max": 44,
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "button_color": "#000000"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "contact_banner_3hqBj6",
+    "faq_cta_DK3BhB",
+    "contact_form_v2_cBhBKg",
+    "newsletter_HeQHmB"
+  ]
+}

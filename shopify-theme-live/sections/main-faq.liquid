@@ -1,0 +1,519 @@
+{%- liquid
+  assign muted = '#91928b'
+  assign noir = section.settings.text_color | default: '#000000'
+  assign section_id = 'mfaq-' | append: section.id
+  assign h_size_mobile = section.settings.heading_size_mobile | default: 44
+  assign h_size_desktop = section.settings.heading_size_desktop | default: 88
+  assign h_weight = section.settings.heading_weight | default: 600
+  assign cat_size_mobile = section.settings.category_size_mobile | default: 24
+  assign cat_size_desktop = section.settings.category_size_desktop | default: 36
+  assign cat_weight = section.settings.category_weight | default: 600
+  assign q_size_mobile = section.settings.question_size_mobile | default: 14
+  assign q_size_desktop = section.settings.question_size_desktop | default: 15
+  assign q_weight = section.settings.question_weight | default: 500
+  assign cat_gap_mobile = section.settings.category_gap_mobile | default: 24
+  assign cat_gap_desktop = section.settings.category_gap_desktop | default: 32
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+{%- capture section_css -%}
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+#{{ section_id }} {
+  width: 100%;
+  background: {{ section.settings.bg_color | default: '#ffffff' }};
+  color: {{ noir }};
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+}
+#{{ section_id }} *,
+#{{ section_id }} *::before,
+#{{ section_id }} *::after { box-sizing: border-box; }
+
+#{{ section_id }} .mfaq__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  padding: 56px 20px;
+}
+@media (min-width: 990px) {
+  #{{ section_id }} .mfaq__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 80px;
+    padding: 96px 64px;
+  }
+}
+@media (min-width: 1280px) {
+  #{{ section_id }} .mfaq__inner {
+    gap: 120px;
+    padding: 120px 80px;
+  }
+}
+
+/* ---- Left column ---- */
+#{{ section_id }} .mfaq__intro { align-self: start; }
+@media (min-width: 990px) {
+  #{{ section_id }} .mfaq__intro { position: sticky; top: 32px; }
+}
+#{{ section_id }} .mfaq__kicker {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  margin: 0 0 24px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .mfaq__kicker { font-size: 14px; margin-bottom: 32px; }
+}
+#{{ section_id }} .mfaq__heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ h_weight }};
+  font-size: {{ h_size_mobile }}px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: {{ noir }};
+  margin: 0 0 24px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .mfaq__heading {
+    font-size: {{ h_size_desktop }}px;
+    margin-bottom: 32px;
+  }
+}
+#{{ section_id }} .mfaq__intro-body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: {{ muted }};
+  max-width: 36ch;
+  margin: 0;
+}
+
+/* ---- Right column ---- */
+#{{ section_id }} .mfaq__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#{{ section_id }} .mfaq__cat {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ cat_weight }};
+  font-size: {{ cat_size_mobile }}px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: {{ noir }};
+  margin: 0 0 12px;
+}
+#{{ section_id }} .mfaq__item + .mfaq__cat {
+  margin-top: {{ cat_gap_mobile }}px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .mfaq__cat {
+    font-size: {{ cat_size_desktop }}px;
+    margin-bottom: 14px;
+  }
+  #{{ section_id }} .mfaq__item + .mfaq__cat { margin-top: {{ cat_gap_desktop }}px; }
+}
+
+/* Question item */
+#{{ section_id }} .mfaq__item {
+  border-top: 1px solid {{ section.settings.divider_color | default: '#e5e5e5' }};
+  border-bottom: 1px solid {{ section.settings.divider_color | default: '#e5e5e5' }};
+  margin-top: -1px;
+}
+#{{ section_id }} .mfaq__btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ q_weight }};
+  font-size: {{ q_size_mobile }}px;
+  line-height: 1.4;
+  color: {{ noir }};
+  transition: color 0.2s ease;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .mfaq__btn {
+    padding: 26px 0;
+    font-size: {{ q_size_desktop }}px;
+  }
+}
+#{{ section_id }} .mfaq__btn:hover { color: {{ noir }}; }
+#{{ section_id }} .mfaq__btn-text { flex: 1; }
+
+#{{ section_id }} .mfaq__icon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: {{ muted }};
+}
+#{{ section_id }} .mfaq__icon::before,
+#{{ section_id }} .mfaq__icon::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  background: currentColor;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+#{{ section_id }} .mfaq__icon::before {
+  width: 14px; height: 1px;
+  transform: translate(-50%, -50%);
+}
+#{{ section_id }} .mfaq__icon::after {
+  width: 1px; height: 14px;
+  transform: translate(-50%, -50%);
+}
+#{{ section_id }} .mfaq__item.is-open .mfaq__icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  opacity: 0;
+}
+
+#{{ section_id }} .mfaq__answer {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+}
+#{{ section_id }} .mfaq__answer-inner {
+  padding: 0 0 28px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: {{ muted }};
+  max-width: 60ch;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .mfaq__answer-inner { font-size: 14px; padding-bottom: 32px; }
+}
+{%- endcapture -%}
+<style>{{ section_css }}</style>
+
+<section id="{{ section_id }}" class="mfaq">
+  <div class="mfaq__inner">
+    <div class="mfaq__intro">
+      {%- if section.settings.kicker != blank -%}
+        <p class="mfaq__kicker">{{ section.settings.kicker }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="mfaq__heading">{{ section.settings.heading | newline_to_br }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <p class="mfaq__intro-body">{{ section.settings.body }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="mfaq__groups">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'category' -%}
+          <h3 class="mfaq__cat" {{ block.shopify_attributes }}>{{ block.settings.title }}</h3>
+        {%- elsif block.type == 'question' -%}
+          <div class="mfaq__item" data-mfaq-item {{ block.shopify_attributes }}>
+            <button type="button" class="mfaq__btn" data-mfaq-trigger aria-expanded="false">
+              <span class="mfaq__btn-text">{{ block.settings.question }}</span>
+              <span class="mfaq__icon" aria-hidden="true"></span>
+            </button>
+            <div class="mfaq__answer" data-mfaq-answer>
+              <div class="mfaq__answer-inner">{{ block.settings.answer }}</div>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function(){
+    var root = document.getElementById('{{ section_id }}');
+    if (!root) return;
+    root.querySelectorAll('[data-mfaq-item]').forEach(function(item){
+      var btn = item.querySelector('[data-mfaq-trigger]');
+      var ans = item.querySelector('[data-mfaq-answer]');
+      if (!btn || !ans) return;
+      btn.addEventListener('click', function(){
+        var open = item.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) {
+          ans.style.maxHeight = ans.scrollHeight + 'px';
+        } else {
+          ans.style.maxHeight = '0px';
+        }
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "class": "section-main-faq",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Intro"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sur-titre",
+      "default": "faq"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Titre",
+      "info": "Utilisez Entrée pour passer à la ligne.",
+      "default": "Vos questions,\nnos réponses."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Texte d'introduction",
+      "default": "Tout ce que vous devez savoir avant et après votre commande SQUARE."
+    },
+    {
+      "type": "header",
+      "content": "Typographie titre"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Taille titre — mobile",
+      "min": 24, "max": 80, "step": 1, "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Taille titre — desktop",
+      "min": 40, "max": 160, "step": 2, "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Graisse titre",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Typographie catégories"
+    },
+    {
+      "type": "range",
+      "id": "category_size_mobile",
+      "label": "Taille catégorie — mobile",
+      "min": 16, "max": 48, "step": 1, "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "category_size_desktop",
+      "label": "Taille catégorie — desktop",
+      "min": 20, "max": 72, "step": 1, "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "category_weight",
+      "label": "Graisse catégorie",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Typographie questions"
+    },
+    {
+      "type": "range",
+      "id": "question_size_mobile",
+      "label": "Taille question — mobile",
+      "min": 12, "max": 22, "step": 1, "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "question_size_desktop",
+      "label": "Taille question — desktop",
+      "min": 13, "max": 24, "step": 1, "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "question_weight",
+      "label": "Graisse question",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "header",
+      "content": "Espacements"
+    },
+    {
+      "type": "range",
+      "id": "category_gap_mobile",
+      "label": "Espace au-dessus de chaque catégorie — mobile",
+      "min": 0, "max": 80, "step": 2, "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "category_gap_desktop",
+      "label": "Espace au-dessus de chaque catégorie — desktop",
+      "min": 0, "max": 120, "step": 2, "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Fond",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur texte",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Couleur des traits",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "Marges"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge haute — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge basse — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge haute — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge basse — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Catégorie",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titre de la catégorie",
+          "default": "Catégorie"
+        }
+      ]
+    },
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Posez votre question ici ?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Réponse",
+          "default": "<p>Saisissez la réponse à cette question.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Commande & paiement" } },
+        { "type": "question", "settings": { "question": "Quels sont les moyens de paiement acceptés ?", "answer": "<p>Nous acceptons Visa, Mastercard, American Express, Apple Pay et le paiement en 3× sans frais via Alma à partir de 200€.</p>" } },
+        { "type": "question", "settings": { "question": "Puis-je modifier ma commande après validation ?", "answer": "<p>Toute modification est possible dans les 24h suivant la commande. Contactez-nous rapidement par email.</p>" } },
+        { "type": "question", "settings": { "question": "Comment suivre ma commande ?", "answer": "<p>Vous recevez un email de suivi dès l'expédition avec un lien permettant de suivre le colis en temps réel.</p>" } },
+        { "type": "category", "settings": { "title": "Livraison" } },
+        { "type": "question", "settings": { "question": "Quels sont les délais de livraison ?", "answer": "<p>Comptez 2 à 4 semaines pour la fabrication et 5 à 10 jours ouvrés pour la livraison en France métropolitaine.</p>" } },
+        { "type": "question", "settings": { "question": "La livraison est-elle gratuite ?", "answer": "<p>La livraison standard est offerte en France métropolitaine pour toute commande supérieure à 800€.</p>" } },
+        { "type": "question", "settings": { "question": "Livrez-vous à l'étranger ?", "answer": "<p>Oui, nous livrons en Belgique, au Luxembourg, en Suisse et en Allemagne. Contactez-nous pour les autres destinations.</p>" } },
+        { "type": "category", "settings": { "title": "Produits & matériaux" } },
+        { "type": "question", "settings": { "question": "Vos produits sont-ils fabriqués en France ?", "answer": "<p>Tous nos canapés sont conçus et assemblés dans notre atelier situé en Vendée, avec des matériaux sélectionnés en Europe.</p>" } },
+        { "type": "question", "settings": { "question": "Comment entretenir le tissu au quotidien ?", "answer": "<p>Aspirez régulièrement avec un embout doux et traitez les taches immédiatement à l'eau tiède. Une notice complète est livrée avec votre canapé.</p>" } },
+        { "type": "question", "settings": { "question": "Puis-je commander des échantillons de tissu ?", "answer": "<p>Oui, nous envoyons gratuitement jusqu'à 5 échantillons sur simple demande depuis la fiche produit.</p>" } },
+        { "type": "category", "settings": { "title": "Retours & garantie" } },
+        { "type": "question", "settings": { "question": "Quelle est la politique de retour ?", "answer": "<p>Vous disposez de 30 jours après réception pour nous retourner votre canapé. Les frais de retour sont offerts en France métropolitaine.</p>" } },
+        { "type": "question", "settings": { "question": "Quelle garantie sur les canapés ?", "answer": "<p>Nos canapés sont garantis 10 ans sur la structure et 5 ans sur les mousses et les housses.</p>" } },
+        { "type": "question", "settings": { "question": "Que faire en cas de défaut à la livraison ?", "answer": "<p>Signalez-le sous 48h par email avec photos à l'appui. Nous nous engageons à résoudre la situation rapidement.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

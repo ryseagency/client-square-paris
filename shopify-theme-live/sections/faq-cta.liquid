@@ -1,0 +1,332 @@
+{%- liquid
+  assign muted = '#91928b'
+  assign noir = section.settings.text_color | default: '#000000'
+  assign section_id = 'fcta-' | append: section.id
+  assign h_size_mobile = section.settings.heading_size_mobile | default: 30
+  assign h_size_desktop = section.settings.heading_size_desktop | default: 44
+  assign h_weight = section.settings.heading_weight | default: 600
+  assign b_size_mobile = section.settings.body_size_mobile | default: 13
+  assign b_size_desktop = section.settings.body_size_desktop | default: 14
+  assign b_weight = section.settings.body_weight | default: 400
+-%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+{%- capture section_css -%}
+#shopify-section-{{ section.id }} {
+  margin-top: {{ section.settings.margin_top_mobile }}px;
+  margin-bottom: {{ section.settings.margin_bottom_mobile }}px;
+}
+@media (min-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top_desktop }}px;
+    margin-bottom: {{ section.settings.margin_bottom_desktop }}px;
+  }
+}
+
+#{{ section_id }} {
+  width: 100%;
+  background: {{ section.settings.bg_color | default: '#ffffff' }};
+  color: {{ noir }};
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  border-bottom: 1px solid {{ section.settings.divider_color | default: '#e5e5e5' }};
+}
+#{{ section_id }} *,
+#{{ section_id }} *::before,
+#{{ section_id }} *::after { box-sizing: border-box; }
+
+#{{ section_id }} .fcta__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+  padding: 48px 20px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .fcta__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 64px 64px;
+  }
+}
+@media (min-width: 1200px) {
+  #{{ section_id }} .fcta__inner { padding: 72px 80px; }
+}
+
+#{{ section_id }} .fcta__text {
+  flex: 1;
+  min-width: 0;
+}
+
+#{{ section_id }} .fcta__kicker {
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: {{ muted }};
+  margin: 0 0 18px;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .fcta__kicker { font-size: 14px; margin-bottom: 22px; }
+}
+
+#{{ section_id }} .fcta__heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ h_weight }};
+  font-size: {{ h_size_mobile }}px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: {{ noir }};
+  margin: 0 0 16px;
+  max-width: 22ch;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .fcta__heading {
+    font-size: {{ h_size_desktop }}px;
+    margin-bottom: 18px;
+  }
+}
+
+#{{ section_id }} .fcta__body {
+  font-family: 'Poppins', sans-serif;
+  font-weight: {{ b_weight }};
+  font-size: {{ b_size_mobile }}px;
+  line-height: 1.55;
+  color: {{ muted }};
+  max-width: 48ch;
+  margin: 0;
+}
+@media (min-width: 768px) {
+  #{{ section_id }} .fcta__body { font-size: {{ b_size_desktop }}px; }
+}
+
+#{{ section_id }} .fcta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 28px;
+  border: 1px solid {{ noir }};
+  background: transparent;
+  color: {{ noir }};
+  font-family: 'ST Nova Sans', 'Big Shoulders Display', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+#{{ section_id }} .fcta__btn:hover {
+  background: {{ noir }};
+  color: #fff;
+}
+#{{ section_id }} .fcta__btn-arrow {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+#{{ section_id }} .fcta__btn:hover .fcta__btn-arrow { transform: translateX(3px); }
+#{{ section_id }} .fcta__btn-arrow svg { width: 100%; height: 100%; display: block; }
+{%- endcapture -%}
+<style>{{ section_css }}</style>
+
+<section id="{{ section_id }}" class="fcta">
+  <div class="fcta__inner">
+    <div class="fcta__text">
+      {%- if section.settings.kicker != blank -%}
+        <p class="fcta__kicker">{{ section.settings.kicker }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="fcta__heading">{{ section.settings.heading | newline_to_br }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <p class="fcta__body">{{ section.settings.body }}</p>
+      {%- endif -%}
+    </div>
+    {%- if section.settings.button_label != blank -%}
+      <a class="fcta__btn" href="{{ section.settings.button_link | default: '#' }}">
+        <span>{{ section.settings.button_label }}</span>
+        <span class="fcta__btn-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ CTA",
+  "tag": "section",
+  "class": "section-faq-cta",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenu"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sur-titre",
+      "default": "une réponse immédiate ?"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Titre",
+      "info": "Utilisez la touche Entrée pour passer à la ligne.",
+      "default": "Consultez notre FAQ avant\nde nous écrire."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Texte",
+      "default": "Livraison, paiement, retours, matériaux — la plupart des réponses s'y trouvent déjà."
+    },
+    {
+      "type": "header",
+      "content": "Bouton"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Libellé du bouton",
+      "default": "voir la faq"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Lien du bouton"
+    },
+    {
+      "type": "header",
+      "content": "Typographie titre"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Taille du titre — mobile",
+      "min": 18, "max": 60, "step": 1, "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Taille du titre — desktop",
+      "min": 24, "max": 100, "step": 2, "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Graisse du titre",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Typographie texte"
+    },
+    {
+      "type": "range",
+      "id": "body_size_mobile",
+      "label": "Taille du texte — mobile",
+      "min": 11, "max": 24, "step": 1, "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "body_size_desktop",
+      "label": "Taille du texte — desktop",
+      "min": 12, "max": 28, "step": 1, "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "body_weight",
+      "label": "Graisse du texte",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi-bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Fond",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur du titre",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Couleur du trait inférieur",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "Marges"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Marge haute — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Marge basse — mobile",
+      "min": 0, "max": 120, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "label": "Marge haute — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "label": "Marge basse — desktop",
+      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    { "name": "FAQ CTA" }
+  ]
+}
+{% endschema %}

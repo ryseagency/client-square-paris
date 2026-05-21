@@ -1,0 +1,357 @@
+{%- comment -%}
+  ============================================
+  Section: Announcement Bar
+  - Dans le flux (pas sticky)
+  - Sort naturellement avec le header au scroll
+  - Expose --announcement-bar-height
+  ============================================
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign section_id = 'announcement-bar-' | append: section.id
+  assign show_timer = s.timer_enabled
+-%}
+
+<style>
+  :root {
+    --announcement-bar-height: {{ s.height }}px;
+  }
+
+  #{{ section_id }} {
+    position: relative;
+    z-index: 51;
+    width: 100%;
+    height: {{ s.height }}px;
+    background-color: {{ s.bg_color }};
+    color: {{ s.text_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 16px;
+  }
+
+  #{{ section_id }} .announcement__message {
+    font-family: var(--font-body-family);
+    font-size: {{ s.font_size }}px;
+    font-weight: 300;
+    text-transform: uppercase;
+    color: inherit;
+    opacity: {{ s.text_opacity | divided_by: 100.0 }};
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-decoration: none;
+    transition: opacity 500ms ease, transform 500ms ease;
+  }
+
+  #{{ section_id }} .announcement__message[data-visible="false"] {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  #{{ section_id }} .announcement__message[data-visible="true"] {
+    opacity: {{ s.text_opacity | divided_by: 100.0 }};
+    transform: translateY(0);
+  }
+
+  #{{ section_id }} a.announcement__message:hover,
+  #{{ section_id }} a.announcement__message:focus-visible {
+    opacity: 1;
+    outline: none;
+  }
+
+  #{{ section_id }} .announcement__track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #{{ section_id }} .announcement__content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  #{{ section_id }} .announcement__timer {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-left: 0;
+    font-family: var(--font-body-family);
+    font-size: {{ s.font_size }}px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    color: inherit;
+  }
+
+  #{{ section_id }} .announcement__timer-label {
+    font-weight: 300;
+    opacity: 0.75;
+  }
+
+  #{{ section_id }} .announcement__timer-value {
+    display: inline-block;
+    min-width: 7ch;
+    text-align: left;
+  }
+
+  #{{ section_id }} .announcement__timer[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #{{ section_id }} .announcement__message {
+      transition: none !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #{{ section_id }} .announcement__message {
+      font-size: {{ s.font_size | minus: 1 }}px;
+    }
+    #{{ section_id }} .announcement__content {
+      gap: 6px;
+    }
+  }
+</style>
+
+{%- if section.blocks.size > 0 -%}
+  <aside
+    id="{{ section_id }}"
+    class="announcement-bar"
+    role="complementary"
+    aria-label="Barre d'annonces"
+    data-interval="{{ s.rotation_interval | times: 1000 }}"
+  >
+    <div class="announcement__track" aria-live="polite" aria-atomic="true">
+      <div class="announcement__content">
+        {%- if show_timer == false -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.link != blank -%}
+              <a
+                href="{{ block.settings.link }}"
+                class="announcement__message"
+                data-index="{{ forloop.index0 }}"
+                data-visible="{% if forloop.first %}true{% else %}false{% endif %}"
+                {% unless forloop.first %}hidden{% endunless %}
+                {{ block.shopify_attributes }}
+              >
+                {{ block.settings.text | escape }}
+              </a>
+            {%- else -%}
+              <span
+                class="announcement__message"
+                data-index="{{ forloop.index0 }}"
+                data-visible="{% if forloop.first %}true{% else %}false{% endif %}"
+                {% unless forloop.first %}hidden{% endunless %}
+                {{ block.shopify_attributes }}
+              >
+                {{ block.settings.text | escape }}
+              </span>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+
+        {%- if show_timer and s.timer_end_date != blank -%}
+          <span
+            class="announcement__timer"
+            data-timer
+            data-end="{{ s.timer_end_date }}"
+            data-end-time="{{ s.timer_end_time | default: '23:59' }}"
+            data-expired-text="{{ s.timer_expired_text | default: 'Offre expirée' | escape }}"
+            data-format="{{ s.timer_format }}"
+            data-labels="{{ s.timer_unit_days | default: 'j' }}|{{ s.timer_unit_hours | default: 'h' }}|{{ s.timer_unit_minutes | default: 'm' }}|{{ s.timer_unit_seconds | default: 's' }}"
+          >
+            {%- if s.timer_label != blank -%}
+              <span class="announcement__timer-label">{{ s.timer_label | escape }}</span>
+            {%- endif -%}
+            <span class="announcement__timer-value" data-timer-value>--</span>
+          </span>
+        {%- endif -%}
+      </div>
+    </div>
+  </aside>
+
+  {%- if section.blocks.size > 1 and show_timer == false -%}
+    <script>
+      (function() {
+        var bar = document.getElementById('{{ section_id }}');
+        if (!bar) return;
+        var messages = bar.querySelectorAll('.announcement__message');
+        if (messages.length < 2) return;
+
+        var interval = parseInt(bar.dataset.interval, 10) || 3000;
+        var fadeDuration = 500;
+        var current = 0;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        function rotate() {
+          var currentEl = messages[current];
+          var nextIndex = (current + 1) % messages.length;
+          var nextEl = messages[nextIndex];
+
+          currentEl.setAttribute('data-visible', 'false');
+
+          setTimeout(function() {
+            currentEl.hidden = true;
+            nextEl.hidden = false;
+            void nextEl.offsetWidth;
+            nextEl.setAttribute('data-visible', 'true');
+            current = nextIndex;
+          }, fadeDuration);
+        }
+
+        var timer = setInterval(rotate, interval);
+
+        bar.addEventListener('mouseenter', function() { clearInterval(timer); });
+        bar.addEventListener('mouseleave', function() { timer = setInterval(rotate, interval); });
+
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) {
+            clearInterval(timer);
+          } else {
+            timer = setInterval(rotate, interval);
+          }
+        });
+      })();
+    </script>
+  {%- endif -%}
+
+  {%- if show_timer and s.timer_end_date != blank -%}
+    <script>
+      (function() {
+        var bar = document.getElementById('{{ section_id }}');
+        if (!bar) return;
+        var el = bar.querySelector('[data-timer]');
+        if (!el) return;
+        var valueEl = el.querySelector('[data-timer-value]');
+        if (!valueEl) return;
+
+        var endDate = el.getAttribute('data-end');
+        var endTime = el.getAttribute('data-end-time') || '23:59';
+        var expiredText = el.getAttribute('data-expired-text') || '';
+        var format = el.getAttribute('data-format') || 'dhms';
+        var labelsAttr = (el.getAttribute('data-labels') || 'j|h|m|s').split('|');
+        var labels = { d: labelsAttr[0] || 'j', h: labelsAttr[1] || 'h', m: labelsAttr[2] || 'm', s: labelsAttr[3] || 's' };
+
+        var target = new Date(endDate + 'T' + endTime + ':00').getTime();
+        if (isNaN(target)) return;
+
+        function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+        function render() {
+          var now = Date.now();
+          var diff = Math.max(0, target - now);
+          if (diff <= 0) {
+            valueEl.textContent = expiredText;
+            clearInterval(tick);
+            return;
+          }
+          var totalSec = Math.floor(diff / 1000);
+          var d = Math.floor(totalSec / 86400);
+          var h = Math.floor((totalSec % 86400) / 3600);
+          var m = Math.floor((totalSec % 3600) / 60);
+          var sec = totalSec % 60;
+
+          var parts = [];
+          if (format.indexOf('d') !== -1 && (d > 0 || format === 'dhms')) {
+            parts.push(d + labels.d);
+          } else if (format.indexOf('d') !== -1) {
+            // include hours adjusted
+            h += d * 24;
+          }
+          if (format.indexOf('h') !== -1) parts.push(pad(h) + labels.h);
+          if (format.indexOf('m') !== -1) parts.push(pad(m) + labels.m);
+          if (format.indexOf('s') !== -1) parts.push(pad(sec) + labels.s);
+
+          valueEl.textContent = parts.join(' ');
+        }
+
+        render();
+        var tick = setInterval(render, 1000);
+
+        document.addEventListener('visibilitychange', function() {
+          if (!document.hidden) render();
+        });
+      })();
+    </script>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Barre d'annonces",
+  "class": "section-announcement-bar",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "header", "content": "Apparence" },
+    { "type": "color", "id": "bg_color", "label": "Couleur de fond", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Couleur texte", "default": "#FFFFFF" },
+    { "type": "range", "id": "text_opacity", "label": "Opacité texte", "min": 50, "max": 100, "step": 5, "unit": "%", "default": 80 },
+    { "type": "range", "id": "height", "label": "Hauteur", "min": 24, "max": 60, "step": 2, "unit": "px", "default": 28 },
+    { "type": "range", "id": "font_size", "label": "Taille texte", "min": 8, "max": 14, "step": 1, "unit": "px", "default": 10 },
+
+    { "type": "header", "content": "Rotation" },
+    { "type": "range", "id": "rotation_interval", "label": "Durée d'affichage par message", "min": 2, "max": 10, "step": 1, "unit": "s", "default": 3 },
+
+    { "type": "header", "content": "Compte à rebours" },
+    { "type": "checkbox", "id": "timer_enabled", "label": "Afficher un compte à rebours", "default": false },
+    { "type": "text", "id": "timer_label", "label": "Texte avant le timer", "default": "Fin de l'offre dans" },
+    { "type": "text", "id": "timer_end_date", "label": "Date de fin (AAAA-MM-JJ)", "info": "Format requis : 2026-12-31" },
+    { "type": "text", "id": "timer_end_time", "label": "Heure de fin (HH:MM)", "default": "23:59", "info": "Heure locale du visiteur" },
+    {
+      "type": "select",
+      "id": "timer_format",
+      "label": "Format affiché",
+      "options": [
+        { "value": "dhms", "label": "Jours / Heures / Minutes / Secondes" },
+        { "value": "dhm", "label": "Jours / Heures / Minutes" },
+        { "value": "hms", "label": "Heures / Minutes / Secondes" },
+        { "value": "hm", "label": "Heures / Minutes" }
+      ],
+      "default": "dhms"
+    },
+    { "type": "text", "id": "timer_unit_days", "label": "Unité jours", "default": "j" },
+    { "type": "text", "id": "timer_unit_hours", "label": "Unité heures", "default": "h" },
+    { "type": "text", "id": "timer_unit_minutes", "label": "Unité minutes", "default": "m" },
+    { "type": "text", "id": "timer_unit_seconds", "label": "Unité secondes", "default": "s" },
+    { "type": "text", "id": "timer_expired_text", "label": "Texte une fois expiré", "default": "Offre expirée" }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Texte du message", "default": "LIVRAISON EN FRANCE / BELGIQUE / LUXEMBOURG / CORSE" },
+        { "type": "url", "id": "link", "label": "Lien (optionnel)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Barre d'annonces",
+      "blocks": [
+        { "type": "message", "settings": { "text": "LIVRAISON EN FRANCE / BELGIQUE / LUXEMBOURG / CORSE" } },
+        { "type": "message", "settings": { "text": "PAIEMENT EN 3×" } },
+        { "type": "message", "settings": { "text": "GARANTIE 2 ANS" } },
+        { "type": "message", "settings": { "text": "DESIGN FRANÇAIS" } }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,561 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_fullscreen_V7TbgM": {
+      "type": "hero-fullscreen",
+      "name": "Hero fullscreen",
+      "settings": {
+        "background_image": "shopify://shop_images/photo-1555041469-a586c61ea9bc.jpg",
+        "eyebrow": "<p>COLLECTION 2026</p>",
+        "heading": "<p>every line matters.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Le mobilier français pensé pour durer.</p>",
+        "button_label": "Découvrir la collection",
+        "button_link": "shopify://collections/frontpage",
+        "heading_size_min": 48,
+        "heading_size_vw": 8,
+        "heading_size_max": 88,
+        "heading_color": "#eeece5",
+        "text_color": "#ffffff",
+        "button_color": "#ffffff",
+        "overlay_color": "#000000",
+        "desktop_overlay_opacity": 40,
+        "mobile_overlay_opacity": 40,
+        "content_alignment": "bottom",
+        "show_scroll_line": true
+      }
+    },
+    "categories_grid_HkD4Uw": {
+      "type": "categories-grid",
+      "blocks": {
+        "category_3QPi3D": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/photo-1567016432779-094069958ea5.jpg",
+            "image_alt": "",
+            "label": "canapés",
+            "link": "shopify://collections/canapes"
+          }
+        },
+        "category_MpFWqx": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/photo-1616594039964-ae9021a400a0.jpg",
+            "image_alt": "",
+            "label": "chambres",
+            "link": "shopify://collections/chambres"
+          }
+        },
+        "category_UwGB3n": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/photo-1555041469-a586c61ea9bc_756ab850-6266-4d09-8528-603f5a120a6b.jpg",
+            "image_alt": "",
+            "label": "meubles",
+            "link": "shopify://collections/meubles"
+          }
+        },
+        "category_Xmw4zj": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/photo-1600166898405-da9535204843.jpg",
+            "image_alt": "",
+            "label": "tapis",
+            "link": "shopify://collections/tapis"
+          }
+        }
+      },
+      "block_order": [
+        "category_3QPi3D",
+        "category_MpFWqx",
+        "category_UwGB3n",
+        "category_Xmw4zj"
+      ],
+      "name": "Categories grid",
+      "settings": {
+        "eyebrow": "<p>Nos univers</p>",
+        "heading": "<p>Chaque pièce, son caractère.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Du salon à la chambre, retrouvez l'ensemble de notre catalogue organisé par pièce de vie.</p>",
+        "text_align": "center",
+        "heading_size_min": 24,
+        "heading_size_vw": 3,
+        "heading_size_max": 42,
+        "mobile_layout": "carousel",
+        "columns_desktop": 4,
+        "card_ratio": "3/4",
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "card_label_color": "#eeece5",
+        "card_overlay_color": "#000000",
+        "desktop_overlay_opacity": 20,
+        "mobile_overlay_opacity": 20
+      }
+    },
+    "featured_products_YXGxhR": {
+      "type": "featured-products",
+      "name": "Featured products",
+      "settings": {
+        "collection": "essentiels",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "badge_metafield_namespace": "",
+        "badge_metafield_key": "badge",
+        "new_days_threshold": 30,
+        "eyebrow": "<p>Sélection</p>",
+        "heading": "<p>Nos essentiels.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Les pièces fondatrices de l'univers SQUARE, pensées pour sublimer chaque intérieur.</p>",
+        "text_align": "center",
+        "heading_size_min": 24,
+        "heading_size_vw": 3,
+        "heading_size_max": 42,
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "badge_bg_color": "#40221e",
+        "badge_text_color": "#ffffff",
+        "discount_color": "#3d4030",
+        "round_swatches": false
+      }
+    },
+    "collections_signatures_d9BjMp": {
+      "type": "collections-signatures",
+      "blocks": {
+        "collection_GdzPU6": {
+          "type": "collection",
+          "settings": {
+            "collection": "yoko",
+            "custom_name": "{{ block.settings.collection.title }}",
+            "custom_tag": "L'élégance japonaise, revisitée",
+            "badge_new": false,
+            "badge_shipping": false,
+            "custom_badge": ""
+          }
+        },
+        "collection_FGtyhr": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_image": "shopify://shop_images/telechargement_2.jpg",
+            "custom_name": "Eva",
+            "custom_tag": "Le confort brut, lignes épurées",
+            "badge_new": false,
+            "badge_shipping": false,
+            "custom_badge": ""
+          }
+        }
+      },
+      "block_order": [
+        "collection_GdzPU6",
+        "collection_FGtyhr"
+      ],
+      "name": "Collections signatures",
+      "settings": {
+        "eyebrow": "<p>L'édition de saison</p>",
+        "heading": "<p>Nos collections signatures.</p>",
+        "heading_tag": "h2",
+        "link_label": "Voir tout le catalogue",
+        "link_url": "",
+        "heading_size_min": 24,
+        "heading_size_vw": 3,
+        "heading_size_max": 42,
+        "columns_desktop": 2,
+        "card_ratio": "4/3",
+        "text_on_image": true,
+        "badge_metafield_namespace": "custom",
+        "badge_metafield_key": "badges",
+        "badge_new_label": "NOUVEAUTÉ",
+        "badge_shipping_label": "LIVRAISON OFFERTE",
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "hover_overlay_color": "#40221e",
+        "badge_new_bg": "#40221e",
+        "badge_shipping_bg": "#3d4030",
+        "badge_text_color": "#ffffff"
+      }
+    },
+    "about_square_YjdWE9": {
+      "type": "about-square",
+      "name": "À propos",
+      "settings": {
+        "image": "shopify://shop_images/photo-1600210492486-724fe5c67fb0.jpg",
+        "image_alt": "",
+        "image_ratio": "1/1",
+        "image_position": "left",
+        "eyebrow": "<p>La maison Square</p>",
+        "heading": "<p>Un troisième chemin entre le mass-market et le luxe intimidant.</p>",
+        "heading_tag": "h2",
+        "paragraph_1": "<p>Fondée par Beytulah Altuntas, SQUARE est née d'une conviction simple : le design français ne devrait pas être un privilège. Chaque meuble que nous créons conjugue la rigueur technique, la chaleur d'une fabrication artisanale et l'exigence d'un mobilier pensé pour traverser les années.</p>",
+        "paragraph_2": "<p>Notre promesse : réconcilier la beauté et la durabilité, le confort et le style, l'accessibilité et l'exigence. Parce que chaque ligne compte.</p>",
+        "button_label": "Découvrir notre histoire",
+        "button_link": "shopify://pages/a-propos",
+        "heading_size_min": 24,
+        "heading_size_vw": 3,
+        "heading_size_max": 42,
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "button_color": "#000000"
+      }
+    },
+    "image_duo_QqmiMV": {
+      "type": "image-duo",
+      "blocks": {
+        "image_MqaXNg": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/telechargement_3.jpg",
+            "image_alt": "",
+            "label": "l'art de recevoir.",
+            "link": ""
+          }
+        },
+        "image_hPNh6F": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/telechargement_4.jpg",
+            "image_alt": "",
+            "label": "l'intimité du repos.",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "image_MqaXNg",
+        "image_hPNh6F"
+      ],
+      "disabled": true,
+      "name": "Image duo",
+      "settings": {
+        "section_label": "",
+        "ratio": "16/13",
+        "gap_px": 6,
+        "side_padding_px": 4,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 8,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 8,
+        "label_color": "#eeece5",
+        "label_size_min": 20,
+        "label_size_vw": 2,
+        "label_size_max": 28,
+        "overlay_color": "#000000",
+        "desktop_overlay_opacity": 30,
+        "mobile_overlay_opacity": 30
+      }
+    },
+    "storytelling_wRaQwK": {
+      "type": "slider-split",
+      "blocks": {
+        "slide_TWYUnF": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/artisanal.jpg",
+            "image_alt": "",
+            "title": "Des matériaux nobles.",
+            "text": "<p>Mousses haute résilience, tissus certifiés Oeko-Tex, bois issus de forêts gérées durablement. Nous ne transigeons sur rien.</p>"
+          }
+        },
+        "slide_bDtLyt": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/controle.jpg",
+            "image_alt": "",
+            "title": "Un savoir-faire artisanal.",
+            "text": "<p>Chaque pièce est assemblée à la main dans nos ateliers partenaires, sélectionnés pour leur maîtrise technique et leur exigence.</p>"
+          }
+        },
+        "slide_Eq79qh": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/materiaux.jpg",
+            "image_alt": "",
+            "title": "Un contrôle absolu.",
+            "text": "<p>Du prototype à la livraison, chaque étape suit un cahier des charges rigoureux. Rien ne quitte l'atelier sans validation.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "slide_TWYUnF",
+        "slide_bDtLyt",
+        "slide_Eq79qh"
+      ],
+      "disabled": true,
+      "name": "Storytelling slider",
+      "settings": {
+        "eyebrow": "<p>Savoir-faire</p>",
+        "heading_tag": "h2",
+        "autoplay": true,
+        "interval_seconds": 5,
+        "image_position": "right",
+        "image_ratio": "4/3",
+        "heading_size_min": 24,
+        "heading_size_vw": 3,
+        "heading_size_max": 42,
+        "bg_color": "#3d4030",
+        "eyebrow_color": "#eeece5",
+        "heading_color": "#eeece5",
+        "text_color": "#eeece5",
+        "dot_color": "#eeece5"
+      }
+    },
+    "split_list_XWThc6": {
+      "type": "split-list",
+      "blocks": {
+        "item_VLM8T6": {
+          "type": "item",
+          "settings": {
+            "label": "LIVRAISON",
+            "description": "Sur rendez-vous, à l'étage, par notre logisticien partenaire"
+          }
+        },
+        "item_zXm6Xf": {
+          "type": "item",
+          "settings": {
+            "label": "GARANTIE",
+            "description": "Deux ans, sur l'ensemble du catalogue"
+          }
+        },
+        "item_ea3H9A": {
+          "type": "item",
+          "settings": {
+            "label": "PAIEMENT",
+            "description": "En trois fois, sans frais ni dossier"
+          }
+        },
+        "item_ctM9Lc": {
+          "type": "item",
+          "settings": {
+            "label": "SAVOIR-FAIRE",
+            "description": "Ateliers partenaires sélectionnés pour leur exigence"
+          }
+        }
+      },
+      "block_order": [
+        "item_VLM8T6",
+        "item_zXm6Xf",
+        "item_ea3H9A",
+        "item_ctM9Lc"
+      ],
+      "disabled": true,
+      "name": "Split list",
+      "settings": {
+        "image": "shopify://shop_images/photo-1616486338812-3dadae4b4ace.jpg",
+        "image_alt": "",
+        "image_ratio": "4/5",
+        "image_position": "left",
+        "eyebrow": "<p>Nos engagements</p>",
+        "heading": "<p>Nos engagements.</p>",
+        "heading_tag": "h2",
+        "paragraph": "<p>Chaque pièce SQUARE est pensée pour traverser les années. Nous ne fabriquons pas du mobilier jetable. Nous sélectionnons nos ateliers, contrôlons chaque finition, et nous engageons sur deux ans.</p>",
+        "heading_size_min": 32,
+        "heading_size_vw": 4,
+        "heading_size_max": 52,
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "label_color": "#000000"
+      }
+    },
+    "gallery_marquee_QUqzB7": {
+      "type": "gallery-marquee",
+      "blocks": {
+        "image_NFtQmt": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/controle.jpg",
+            "image_alt": "",
+            "caption": "",
+            "link": ""
+          }
+        },
+        "image_KJfjkb": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/photo-1600166898405-da9535204843.jpg",
+            "image_alt": "",
+            "caption": "",
+            "link": ""
+          }
+        },
+        "image_BBD74w": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/materiaux.jpg",
+            "image_alt": "",
+            "caption": "",
+            "link": ""
+          }
+        },
+        "image_yp7dhA": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/telechargement_3.jpg",
+            "image_alt": "",
+            "caption": "",
+            "link": ""
+          }
+        },
+        "image_Gh7wck": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/photo-1600210492486-724fe5c67fb0.jpg",
+            "image_alt": "",
+            "caption": "",
+            "link": ""
+          }
+        },
+        "image_ePjJmG": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/artisanal.jpg",
+            "image_alt": "",
+            "caption": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "image_NFtQmt",
+        "image_KJfjkb",
+        "image_BBD74w",
+        "image_yp7dhA",
+        "image_Gh7wck",
+        "image_ePjJmG"
+      ],
+      "name": "Gallery marquee",
+      "settings": {
+        "eyebrow": "<p>Intérieurs</p>",
+        "heading": "<p>Chez vous, à votre image.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Découvrez comment nos clients ont intégré nos pièces dans leur quotidien.</p>",
+        "text_align": "center",
+        "aria_label": "Galerie de témoignages",
+        "image_width": 250,
+        "image_ratio": "3/4",
+        "gap_px": 12,
+        "speed_seconds": 40,
+        "pause_on_hover": true,
+        "heading_size_min": 24,
+        "heading_size_vw": 3,
+        "heading_size_max": 42,
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "padding_top_mobile": 8,
+        "padding_bottom_mobile": 20,
+        "padding_top_desktop": 16,
+        "padding_bottom_desktop": 80,
+        "margin_top_mobile": 28,
+        "margin_bottom_mobile": 0,
+        "margin_top_desktop": 0,
+        "margin_bottom_desktop": 0
+      }
+    },
+    "newsletter_cUE7KR": {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "settings": {
+        "eyebrow": "<p>Restons en contact</p>",
+        "heading": "<p>Rejoignez l'art de vivre Square.</p>",
+        "heading_tag": "h2",
+        "subheading": "<p>Inscrivez-vous et bénéficiez de -10% sur votre première commande.</p>",
+        "input_placeholder": "Votre adresse e-mail",
+        "button_label": "S'inscrire",
+        "success_message": "Merci, vous êtes inscrit(e) !",
+        "legal_text": "<p>En vous inscrivant, vous acceptez notre politique de confidentialité.</p>",
+        "heading_size_min": 28,
+        "heading_size_vw": 4,
+        "heading_size_max": 44,
+        "bg_color": "#ffffff",
+        "eyebrow_color": "#000000",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "button_color": "#000000"
+      }
+    },
+    "reassurance_FmjcmU": {
+      "type": "reassurance",
+      "blocks": {
+        "pillar_r4PMtD": {
+          "type": "pillar",
+          "settings": {
+            "icon": "shopify://shop_images/livraison.png",
+            "title": "Livraison soignée",
+            "description": "<p>Sur rendez-vous, partout en France métropolitaine, Belgique et Luxembourg.</p>"
+          }
+        },
+        "pillar_8EgcWy": {
+          "type": "pillar",
+          "settings": {
+            "icon": "shopify://shop_images/garantie.png",
+            "title": "Garantie 2 ans",
+            "description": "<p>Sur l'ensemble du catalogue. Tissus certifiés Oeko-Tex.</p>"
+          }
+        },
+        "pillar_Li3Rh7": {
+          "type": "pillar",
+          "settings": {
+            "icon": "shopify://shop_images/paiement.png",
+            "title": "Paiement en 3×",
+            "description": "<p>Sans frais jusqu'à 2 999 €, sans dossier ni justificatif.</p>"
+          }
+        },
+        "pillar_E6EmD4": {
+          "type": "pillar",
+          "settings": {
+            "icon": "shopify://shop_images/sav.png",
+            "title": "Service client",
+            "description": "<p>Une équipe française à votre écoute, du lundi au samedi.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "pillar_r4PMtD",
+        "pillar_8EgcWy",
+        "pillar_Li3Rh7",
+        "pillar_E6EmD4"
+      ],
+      "name": "Réassurance",
+      "settings": {
+        "section_label": "Nos garanties",
+        "columns_desktop": 4,
+        "icon_position": "left",
+        "auto_scroll_speed": 2,
+        "bg_color": "#eeece5",
+        "title_color": "#000000",
+        "text_color": "#000000"
+      }
+    }
+  },
+  "order": [
+    "hero_fullscreen_V7TbgM",
+    "categories_grid_HkD4Uw",
+    "featured_products_YXGxhR",
+    "collections_signatures_d9BjMp",
+    "about_square_YjdWE9",
+    "image_duo_QqmiMV",
+    "storytelling_wRaQwK",
+    "split_list_XWThc6",
+    "gallery_marquee_QUqzB7",
+    "newsletter_cUE7KR",
+    "reassurance_FmjcmU"
+  ]
+}

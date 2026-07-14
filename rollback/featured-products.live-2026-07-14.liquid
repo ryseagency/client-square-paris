@@ -26,8 +26,6 @@
   assign new_days_threshold = options.new_days_threshold | default: 30
   assign badge_metafield_namespace = options.badge_metafield_namespace | default: 'custom'
   assign badge_metafield_key = options.badge_metafield_key | default: 'badge'
-  assign image_metafield_namespace = options.image_metafield_namespace | default: 'custom'
-  assign image_metafield_key = options.image_metafield_key | default: 'image_accueil'
 -%}
 
 {%- capture section_css -%}
@@ -294,15 +292,7 @@
             assign display_name = product.title
 
             assign product_url = product.url | default: '#'
-
-            # Image « page d'accueil » : metafield image dédié du produit sinon image produit.
-            # On ne bascule que si .value est une vraie image (garde le fallback si vide, fichier supprimé, ou metafield non-image)
             assign product_image = product.featured_image
-            assign section_image = product.metafields[image_metafield_namespace][image_metafield_key]
-            if section_image.value.width != blank
-              assign product_image = section_image.value
-            endif
-
             assign product_price = product.price
             assign product_compare_price = product.compare_at_price
             assign has_discount = false
@@ -535,10 +525,6 @@
     { "type": "text", "id": "badge_metafield_namespace", "label": "Namespace du metafield", "default": "custom" },
     { "type": "text", "id": "badge_metafield_key", "label": "Clé du metafield", "default": "badge" },
     { "type": "range", "id": "new_days_threshold", "label": "Auto-badge 'NOUVEAUTÉ' si créé depuis moins de (jours)", "min": 0, "max": 180, "step": 5, "default": 30, "info": "Mis uniquement si aucun metafield badge n'est défini. Mettre 0 pour désactiver." },
-
-    { "type": "header", "content": "Photo « page d'accueil » (metafield produit)", "info": "Affiche sur cette section une photo dédiée par produit, différente de l'image de la fiche produit, sans modifier la galerie produit. Renseignez le metafield image (type Image) sur chaque fiche produit ; s'il est vide, l'image principale du produit est utilisée. Ajustez la clé ci-dessous si votre metafield porte un autre nom." },
-    { "type": "text", "id": "image_metafield_namespace", "label": "Namespace du metafield image", "default": "custom" },
-    { "type": "text", "id": "image_metafield_key", "label": "Clé du metafield image", "default": "image_accueil" },
 
     { "type": "header", "content": "Contenu" },
     { "type": "richtext", "id": "eyebrow", "label": "Sur-titre", "default": "<p>Sélection</p>" },

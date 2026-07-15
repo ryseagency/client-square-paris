@@ -1,4 +1,24 @@
+# CI theme-check — adoption sur theme legacy live (methode D1, RYSE paquet-2 2026-07-15).
+# GARDE error sur les vrais casseurs de rendu/structure (severite recommended par defaut,
+# non overridee) : LiquidHTMLSyntaxError, JSONSyntaxError, MissingTemplate, UnknownFilter, JSONMissingBlock.
+# DESCEND en warning la dette pre-existante non bloquante (visible en CI, resorbee par ratchet).
+extends: theme-check:recommended
+ignore:
+  - node_modules/**
+  - _backups/**
+  - "**/*backup*/**"
+
+ImgWidthAndHeight:
+  severity: warning
+ParserBlockingScript:
+  severity: warning
+ValidSchemaTranslations:
+  severity: warning
+TranslationKeyExists:
+  severity: warning
 MatchingTranslations:
-  enabled: false
-TemplateLength:
-  enabled: false
+  severity: warning
+MissingAsset:
+  severity: warning
+ValidBlockTarget:
+  severity: warning

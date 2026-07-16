@@ -20,6 +20,23 @@
           {
             "type": "command",
             "command": "bash -c 'test -x .claude/hooks/pre-bash-push-validator.sh && exec .claude/hooks/pre-bash-push-validator.sh || true'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/pre-git-push-guard.sh && exec .claude/hooks/pre-git-push-guard.sh || true'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/pre-enable-auto-merge-gate.sh && exec .claude/hooks/pre-enable-auto-merge-gate.sh || true'"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__github__enable_pr_auto_merge",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -x .claude/hooks/pre-enable-auto-merge-gate.sh && exec .claude/hooks/pre-enable-auto-merge-gate.sh || true'"
           }
         ]
       }

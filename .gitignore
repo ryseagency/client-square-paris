@@ -10,3 +10,7 @@ build/
 playwright-profile/
 browser-profile/
 _playwright/
+
+# Hook session state (not code)
+.claude/review-verdicts/
+.claude/auto-merge-armed/

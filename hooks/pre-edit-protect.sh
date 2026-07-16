@@ -16,7 +16,7 @@ file_path=$(echo "$payload" | jq -r '.tool_input.file_path // empty')
 
 # Skip les fichiers non-livrables (tasks/, lessons.md, scripts/, .claude/, README, docs)
 case "$file_path" in
-  */tasks/*|*/lessons.md|*/scripts/*|*/.claude/*|*/README*|*/docs/*|*/CLAUDE.md|*/CLIENT.md)
+  */tasks/*|*/lessons.md|*/scripts/*|*/.claude/*|*/hooks/*|*/README*|*/docs/*|*/CLAUDE.md|*/CLIENT.md)
     exit 0
     ;;
 esac

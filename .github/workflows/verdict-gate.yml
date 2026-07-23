@@ -1,0 +1,96 @@
+# Verdict Gate — server-side DoD enforcement
+#
+# Bloque le merge tant qu'un commentaire REVIEW-VERDICT: N/10 MERGE <sha>
+# (N >= 9, sha = HEAD de la PR) n'est pas poste. Comble le trou du hook
+# local : un merge via l'UI web GitHub ne passe plus sans verdict.
+#
+# Poste un commit status "review-verdict" sur le HEAD SHA de la PR.
+# Ce status doit etre ajoute aux required checks dans la branch protection
+# apres le premier merge de ce workflow (cf. PR description).
+
+name: Verdict Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  statuses: write
+  pull-requests: read
+  issues: read
+
+jobs:
+  verdict-check:
+    if: >-
+      github.event_name != 'issue_comment' ||
+      github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check review verdict
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            PR_NUM="${{ github.event.issue.number }}"
+            HEAD_SHA=$(gh api "repos/${REPO}/pulls/${PR_NUM}" -q '.head.sha' 2>/dev/null || true)
+          else
+            PR_NUM="${{ github.event.pull_request.number }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          fi
+
+          if [ -z "$HEAD_SHA" ]; then
+            echo "::notice::SHA non resolvable (PR fermee ou inexistante), skip"
+            exit 0
+          fi
+
+          SHORT="${HEAD_SHA:0:7}"
+          echo "PR #${PR_NUM} HEAD ${SHORT}"
+
+          BODIES=""
+          for endpoint in "pulls/${PR_NUM}/comments" "pulls/${PR_NUM}/reviews" "issues/${PR_NUM}/comments"; do
+            BODIES+=$(gh api "repos/${REPO}/${endpoint}" --paginate -q '.[].body' 2>/dev/null || true)
+            BODIES+=$'\n'
+          done
+
+          VERDICT_SHA=$(printf '%s' "$BODIES" | grep -oE "REVIEW-VERDICT:[[:space:]]*[0-9]+(\.[0-9]+)?/10[[:space:]]+(MERGE|REFACTO|CLOSE)[[:space:]]+${SHORT}[a-f0-9]*" | tail -1 || true)
+          VERDICT_ANY=$(printf '%s' "$BODIES" | grep -oE "REVIEW-VERDICT:[[:space:]]*[0-9]+(\.[0-9]+)?/10[[:space:]]+(MERGE|REFACTO|CLOSE)" | tail -1 || true)
+
+          if [ -n "$VERDICT_SHA" ]; then
+            VERDICT="$VERDICT_SHA"
+          elif [ -n "$VERDICT_ANY" ]; then
+            VERDICT="$VERDICT_ANY"
+            echo "::warning::Verdict sans SHA — poster avec SHA recommande (REVIEW-VERDICT: N/10 MERGE ${SHORT})"
+          else
+            DESC="En attente : REVIEW-VERDICT N/10 MERGE ${SHORT} (N >= 9)"
+            gh api "repos/${REPO}/statuses/${HEAD_SHA}" \
+              -f state=pending \
+              -f context=review-verdict \
+              -f description="${DESC}"
+            echo "::notice::${DESC}"
+            exit 0
+          fi
+
+          SCORE=$(printf '%s' "$VERDICT" | grep -oE '[0-9]+(\.[0-9]+)?' | head -1)
+          DECISION=$(printf '%s' "$VERDICT" | grep -oE '(MERGE|REFACTO|CLOSE)')
+          SCORE_INT=${SCORE%%.*}
+
+          if [ "$DECISION" = "MERGE" ] && [ "${SCORE_INT:-0}" -ge 9 ]; then
+            gh api "repos/${REPO}/statuses/${HEAD_SHA}" \
+              -f state=success \
+              -f context=review-verdict \
+              -f description="REVIEW-VERDICT: ${SCORE}/10 MERGE ${SHORT}"
+            echo "Verdict OK: ${SCORE}/10 MERGE ${SHORT}"
+          else
+            gh api "repos/${REPO}/statuses/${HEAD_SHA}" \
+              -f state=failure \
+              -f context=review-verdict \
+              -f description="REVIEW-VERDICT: ${SCORE}/10 ${DECISION} — il faut >= 9/10 MERGE"
+            echo "::error::Verdict insuffisant : ${SCORE}/10 ${DECISION}"
+          fi
